@@ -6,19 +6,24 @@
   "scripts": {
     "start": "node rss3-comm-agent/index.js"
   },
-  "dependencies": {
-    "express": "^4.18.2",
-    "body-parser": "^1.20.2"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/launchpad-PMA/ai-agents.git"
   },
+  "keywords": [],
+  "author": "baba",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.7",
+    "web3": "^4.3.0",
+    "@bufferapp/buffer-js": "^1.0.0"
+  },
   "bugs": {
     "url": "https://github.com/launchpad-PMA/ai-agents/issues"
   },
-  "homepage": "https://github.com/launchpad-PMA/ai-agents#readme",
-  "author": "",
-  "license": "ISC"
+  "homepage": "https://github.com/launchpad-PMA/ai-agents#readme"
 }
 
