@@ -8,6 +8,28 @@
   "dependencies": {
     "express": "^4.18.2",
     "body-parser": "^1.20.2"
-  }
+  },
+"repository": {
+"type": "git",
+"url": "git+https://github.com/launchpad-PMA/ai-agents.git""
+},
+...{
+  "name": "rss3-comm-agent",
+  "version": "1.0.0",
+  "description": "These are the Divine agents of the Launchpad.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/launchpad-PMA/ai-agents.git"
+  },
+  ...
 }
 
+ }
