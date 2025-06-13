@@ -1,11 +1,6 @@
-build:
-  builder: NIXPACKS
-  buildCommand: "npm install"
-  startCommand: "npm start"
-
-services:
-  - name: rss3-comm-agent
-    rootDir: rss3-comm-agent
-    envVars:
-      - key: PORT
-        value: "3000"
+webhook:
+  path: /api/envents
+  method: POST
+  description: "Webhook for processing and indexing broadcasts"
+  headers:
+    Content-Type: application/json
