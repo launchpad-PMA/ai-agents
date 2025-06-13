@@ -1,0 +1,11 @@
+build:
+  builder: NIXPACKS
+  buildCommand: "npm install"
+  startCommand: "npm start"
+
+services:
+  - name: rss3-comm-agent
+    rootDir: rss3-comm-agent
+    envVars:
+      - key: PORT
+        value: "3000"
