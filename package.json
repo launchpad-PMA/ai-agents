@@ -18,8 +18,8 @@
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "axios": "^1.6.7",
-    "web3": "^4.3.0",
-    "@bufferapp/buffer-js": "^1.0.0"
+    "web3": "^4.3.0"
+
   },
   "bugs": {
     "url": "https://github.com/launchpad-PMA/ai-agents/issues"
