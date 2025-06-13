@@ -1,0 +1,18 @@
+{
+  "name": "rss3-comm-agent",
+  "version": "1.0.0",
+  "description": "Maxayauwi is the Comm Agent for RSS3 events and message routing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.0.3",
+    "axios": "^1.7.2"
+  },
+  "keywords": ["rss3", "agent", "webhook", "event", "dao", "Maxayauwi"],
+  "author": "Baba",
+  "license": "MIT"
+}
