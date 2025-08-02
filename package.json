@@ -1,29 +1,14 @@
 {
-  "name": "rss3-comm-agent",
+  "name": "ai-agents",
   "version": "1.0.0",
-  "description": "These are the Divine agents of the Launchpad.",
-  "main": "rss3-comm-agent/index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node rss3-comm-agent/index.js"
+    "start": "node post-nft/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/launchpad-PMA/ai-agents.git"
-  },
-  "keywords": [],
-  "author": "baba",
-  "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "body-parser": "^1.20.2",
-    "dotenv": "^16.3.1",
-    "axios": "^1.6.7",
-    "web3": "^4.3.0"
-
-  },
-  "bugs": {
-    "url": "https://github.com/launchpad-PMA/ai-agents/issues"
-  },
-  "homepage": "https://github.com/launchpad-PMA/ai-agents#readme"
+    "axios": "^1.6.8",
+    "dotenv": "^16.0.3"
+  }
 }
 
