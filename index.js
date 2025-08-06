@@ -5,30 +5,44 @@ const { TwitterApi } = require('twitter-api-v2');
 const app = express();
 app.use(express.json());
 
-// Setup Twitter client using env secrets
+// ---- Require OAuth 1.0a user context (tweet now) ----
+function need(name) {
+  const v = process.env[name];
+  if (!v || !v.trim()) throw new Error(`Missing env: ${name}`);
+  return v.trim();
+}
+
 const twitter = new TwitterApi({
-  appKey: process.env.TWITTER_API_KEY,
-  appSecret: process.env.TWITTER_API_SECRET,
-  accessToken: process.env.TWITTER_ACCESS_TOKEN,
-  accessSecret: process.env.TWITTER_ACCESS_SECRET,
-});
+  appKey:     need('TWITTER_API_KEY'),
+  appSecret:  need('TWITTER_API_SECRET'),
+  accessToken: need('TWITTER_ACCESS_TOKEN'),
+  accessSecret: need('TWITTER_ACCESS_SECRET'),
+}).readWrite;
 
-// Webhook endpoint
+app.get('/health', (_req, res) => res.json({ ok: true, mode: 'oauth1a-user' }));
+
 app.post('/api/events', async (req, res) => {
-  const { agent, message } = req.body;
-
   try {
+    const { agent = 'maxayauwi', message } = req.body || {};
+    if (!message) return res.status(400).json({ status: 'error', message: 'message is required' });
+
     const { data } = await twitter.v2.tweet(`[${agent}] says: ${message}`);
-    res.json({ status: 'success', tweet: data });
+    return res.json({ status: 'success', tweet: data });
   } catch (err) {
-    console.error('❌ Twitter Error:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    const api = err?.data || err?.response?.data;
+    console.error('❌ Twitter post failed:', api ?? err);
+    return res.status(500).json({
+      status: 'error',
+      message: api?.title || err.message || 'unknown error',
+      detail: api || undefined
+    });
   }
 });
 
-// Start the agent
+// ---- Placeholders for OAuth 2.0 (later) ----
+// Add TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET, TWITTER_REDIRECT_URI
+// and we’ll wire /api/twitter/auth + /api/twitter/callback when ready.
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Agent is live on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`✅ Agent listening on ${PORT}`));
 
