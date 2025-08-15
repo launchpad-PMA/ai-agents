@@ -1,0 +1,14 @@
+{
+  "name": "rss3-node",
+  "version": "1.0.0",
+  "description": "Express webhook and health endpoint for RSS3 Node on Railway",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.0.3",
+    "body-parser": "^1.20.2"
+  }
+}
