@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node post-nft/index.js"
+    "start": "node rss3-comm-agent/index.js"
   },
   "dependencies": {
     "axios": "^1.6.8",

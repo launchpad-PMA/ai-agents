@@ -24,7 +24,12 @@ app.get('/', (req, res) => {
   res.send('🧠 Maxayauwi RSS3 Comm Agent is running');
 });
 
+// Add healthcheck endpoint
+app.get('/healthz', (_req, res) => {
+  res.status(200).send('OK');
+});
+
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Maxayauwi agent listening on port ${PORT}`);
 });
