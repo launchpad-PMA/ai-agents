@@ -1,0 +1,42 @@
+[
+ {
+  "RuleID": "generic-api-key",
+  "Description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+  "StartLine": 569,
+  "EndLine": 569,
+  "StartColumn": 15,
+  "EndColumn": 48,
+  "Match": "DB_PASSWORD=REDACTED",
+  "Secret": "REDACTED",
+  "File": "/workspace/README.md",
+  "SymlinkFile": "",
+  "Commit": "",
+  "Entropy": 3.5383105,
+  "Author": "",
+  "Email": "",
+  "Date": "",
+  "Message": "",
+  "Tags": [],
+  "Fingerprint": "/workspace/README.md:generic-api-key:569"
+ },
+ {
+  "RuleID": "sidekiq-secret",
+  "Description": "Discovered a Sidekiq Secret, which could lead to compromised background job processing and application data breaches.",
+  "StartLine": 51,
+  "EndLine": 51,
+  "StartColumn": 23,
+  "EndColumn": 75,
+  "Match": "BUNDLE_ENTERPRISE__CONTRIBSYS__COM=REDACTED\"",
+  "Secret": "REDACTED",
+  "File": "/workspace/README.md",
+  "SymlinkFile": "",
+  "Commit": "",
+  "Entropy": 2.6098502,
+  "Author": "",
+  "Email": "",
+  "Date": "",
+  "Message": "",
+  "Tags": [],
+  "Fingerprint": "/workspace/README.md:sidekiq-secret:51"
+ }
+]
