@@ -1,0 +1,8 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "cd rss3-comm-agent && npm install && npm start"
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+

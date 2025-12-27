@@ -1,4 +1,5 @@
 {
+  "_comment": "Vercel configuration - can be used for Railway-Vercel integration or as backup deployment",
   "version": 2,
   "builds": [
     {
@@ -13,3 +14,4 @@
     }
   ]
 }
+
