@@ -146,6 +146,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// RSS3 AI component health endpoint (required by RSS3 node)
+app.get('/api/v1/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    neynar_configured: !!NEYNAR_API_KEY,
+    signer_configured: !!NEYNAR_SIGNER_UUID
+  });
+});
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.send('🧠 Maxayauwi RSS3 + Farcaster Comm Agent is running');
