@@ -4,7 +4,8 @@
   "description": "Maxayauwi is the Comm Agent for RSS3 events and message routing",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "check-health": "node check-health.js"
   },
   "dependencies": {
     "express": "^4.18.2",
