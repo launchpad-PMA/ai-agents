@@ -22,6 +22,10 @@ A worker follows this simple workflow:
 
 4. **Store**: Stores the structured data in the Node's database
 
+## DAO Information
+- **DAO Name**: Maxayauwi / Temple of Roots
+- **ENS Domain**: templeofroots.eth
+
 ## Our Current Workers
 
 ### Ethereum Core Worker
