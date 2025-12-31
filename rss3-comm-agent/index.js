@@ -155,6 +155,28 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
+// RSS3 DSL API: Get activity by ID
+app.get('/api/rss3/activity/:id', async (req, res) => {
+  const { id } = req.params;
+  const { action_limit = 50, action_page = 1 } = req.query;
+  
+  try {
+    const response = await axios.get(`https://gi.rss3.io/decentralized/tx/${id}`, {
+      params: {
+        action_limit: parseInt(action_limit),
+        action_page: parseInt(action_page)
+      }
+    });
+    
+    res.json(response.data);
+  } catch (error) {
+    console.error('❌ Failed to fetch RSS3 activity:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data || error.message 
+    });
+  }
+});
+
 // Serve static files
 app.use(express.static('public'));
 
