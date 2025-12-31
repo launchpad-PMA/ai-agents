@@ -3,23 +3,46 @@
 ## What is VSL?
 The VSL (Value Sublayer) RPC Node is a component of the RSS3 network that handles value-related operations and provides RPC access to the RSS3 Value Sublayer.
 
+## Important Architecture Clarification
+
+### How Global Indexer Works with VSL vs DSL Nodes
+
+**Key Distinction:**
+- **Global Indexer (GI)** itself interacts with VSL - it's a centralized service run by RSS3
+- **DSL Nodes** (like ours) communicate with the Global Indexer, NOT directly with VSL
+- **VSL RPC Nodes** are separate infrastructure - you run them if you want to provide VSL RPC services to others
+
+**How GI Indexes DSL Nodes:**
+- The Global Indexer's core functions (monitoring nodes, enforcing rules, structuring activities) focus on the Data Sublayer
+- GI monitors DSL nodes by checking their `/operators` endpoint and worker status
+- GI can index and coordinate among DSL nodes - this is its primary function
+- GI engages with VSL centrally for value-related operations (payments, rewards, settlements)
+- **Individual DSL nodes don't need to run VSL** - the GI handles VSL interactions on behalf of the network
+
+**Our Current Setup:**
+- ✅ DSL Node (running) - indexes data, communicates with GI via `/operators` endpoint
+- ✅ Global Indexer - coordinates nodes, handles VSL interactions centrally (RSS3's infrastructure)
+- ❌ VSL RPC Node (not needed for DSL operation) - only needed if you want to provide VSL RPC services
+
 ## Current Status
-- **Status**: Configured but not running
+- **Status**: Configured but not running (not required for DSL node operation)
 - **Location**: `/home/babajohn33/VSL-RPC-Node` on Linode server
 - **Configuration**: Ready (secrets generated, .env configured)
 
 ## When Will We Need It?
 
 ### Primary Use Cases:
-1. **Value-Related Queries**: If you need to query value/transaction data from RSS3's Value Sublayer
-2. **Enhanced Node Rewards**: Some RSS3 network rewards may require VSL node participation
-3. **Full Network Participation**: To participate in both Data Sublayer (DSL - current) and Value Sublayer (VSL)
+1. **Providing VSL RPC Services**: If you want to run a VSL RPC endpoint for others to use
+2. **Direct VSL Queries**: If you need to query VSL data directly (rather than through GI)
+3. **Advanced Network Participation**: If RSS3 introduces requirements for node operators to run both DSL and VSL
 
 ### Current Priority:
-**We DON'T need it right now** because:
+**We DON'T need it for DSL node operation** because:
+- ✅ DSL nodes communicate with Global Indexer (not VSL directly)
+- ✅ Global Indexer (RSS3's infrastructure) handles VSL interactions centrally
+- ✅ Our node is being indexed by GI without VSL running (proof: node shows as indexed)
 - ✅ Our primary goal (earning RSS3 rewards) is achieved through DSL node indexing
 - ✅ Ethereum worker is successfully indexing and earning rewards
-- ✅ VSL is a separate layer - not required for basic DSL node operations
 
 ## If We Need to Deploy It:
 
