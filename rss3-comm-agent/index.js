@@ -158,14 +158,29 @@ app.get('/api/v1/health', (req, res) => {
 // RSS3 DSL API: Get activity by ID
 app.get('/api/rss3/activity/:id', async (req, res) => {
   const { id } = req.params;
-  const { action_limit = 50, action_page = 1 } = req.query;
+  
+  // Build query params object, only include if they have valid values
+  const params = {};
+  
+  // Validate and parse action_limit (must be 1-100)
+  if (req.query.action_limit) {
+    const action_limit = parseInt(req.query.action_limit);
+    if (!isNaN(action_limit) && action_limit >= 1 && action_limit <= 100) {
+      params.action_limit = action_limit;
+    }
+  }
+  
+  // Validate and parse action_page (must be >= 1)
+  if (req.query.action_page) {
+    const action_page = parseInt(req.query.action_page);
+    if (!isNaN(action_page) && action_page >= 1) {
+      params.action_page = action_page;
+    }
+  }
   
   try {
     const response = await axios.get(`https://gi.rss3.io/decentralized/tx/${id}`, {
-      params: {
-        action_limit: parseInt(action_limit),
-        action_page: parseInt(action_page)
-      }
+      params: params
     });
     
     res.json(response.data);
