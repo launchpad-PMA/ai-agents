@@ -1,0 +1,93 @@
+services:
+  node-ethereum-core:
+    command: --module=worker --worker.id=ethereum-core
+    container_name: node-ethereum-core
+    image: ghcr.io/rss3-network/node:v2.0.0
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/config:/etc/rss3/node
+    depends_on:
+      rss3_node_redis:
+        condition: service_healthy
+  node-farcaster-core:
+    command: --module=worker --worker.id=farcaster-core
+    container_name: node-farcaster-core
+    image: ghcr.io/rss3-network/node:v2.0.0
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/config:/etc/rss3/node
+    depends_on:
+      rss3_node_redis:
+        condition: service_healthy
+  rss3_node_agentdata:
+    container_name: rss3_node_agentdata
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: ${DB_CONNECTION}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      TWITTER_ACCESS_TOKEN: ${NODE_TWITTER_ACCESS_TOKEN}
+      TWITTER_ACCESS_TOKEN_SECRET: ${NODE_TWITTER_ACCESS_TOKEN_SECRET}
+      TWITTER_API_KEY: ${NODE_TWITTER_API_KEY}
+      TWITTER_API_SECRET: ${NODE_TWITTER_API_SECRET}
+      TWITTER_BEARER_TOKEN: ${NODE_TWITTER_BEARER_TOKEN}
+    image: ghcr.io/rss3-network/agentdata
+    restart: unless-stopped
+    ports:
+      - 8887:8887
+  rss3_node_broadcaster:
+    command: --module=broadcaster
+    container_name: rss3_node_broadcaster
+    environment:
+      NODE_COMPONENT_AI_ENDPOINT: http://rss3_node_agentdata:8887
+    image: ghcr.io/rss3-network/node:v2.0.0
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/config:/etc/rss3/node
+    depends_on:
+      rss3_node_redis:
+        condition: service_healthy
+  rss3_node_core:
+    command: --module=core
+    container_name: rss3_node_core
+    environment:
+      NODE_COMPONENT_AI_ENDPOINT: http://rss3_node_agentdata:8887
+    image: ghcr.io/rss3-network/node:v2.0.0
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    volumes:
+      - ${PWD}/config:/etc/rss3/node
+    depends_on:
+      rss3_node_redis:
+        condition: service_healthy
+  rss3_node_monitor:
+    command: --module=monitor
+    container_name: rss3_node_monitor
+    environment:
+      NODE_COMPONENT_AI_ENDPOINT: http://rss3_node_agentdata:8887
+    image: ghcr.io/rss3-network/node:v2.0.0
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/config:/etc/rss3/node
+    depends_on:
+      rss3_node_redis:
+        condition: service_healthy
+  rss3_node_redis:
+    container_name: rss3_node_redis
+    networks:
+      default:
+        aliases:
+          - redis
+    expose:
+      - "6379"
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 5s
+      timeout: 10s
+      retries: 3
