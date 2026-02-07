@@ -1,0 +1,6 @@
+webhook:
+  path: /api/events
+  method: POST
+  description: "Webhook for processing and indexing broadcasts"
+  headers:
+    Content-Type: application/json

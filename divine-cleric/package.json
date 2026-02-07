@@ -1,0 +1,21 @@
+{
+<<<<<<< HEAD
+  "name": "ai-agents",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node post-nft/index.js"
+  },
+  "dependencies": {
+    "@neynar/nodejs-sdk": "^2.19.0",
+    "@vercel/speed-insights": "^1.2.0",
+    "axios": "^1.12.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "twitter-api-v2": "^1.24.0"
+=======
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.1"
+>>>>>>> e9aa711 (feat: setup aragamago for railway deployment with docker, supabase, and pinecone)
+  }
+}
