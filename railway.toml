@@ -3,7 +3,7 @@ builder = "DOCKERFILE"
 dockerfilePath = "divine-cleric/Dockerfile"
 
 [deploy]
-startCommand = "npm install && node index.js"
-healthcheckPath = "/health"
+startCommand = "python agents/aragamago/bot.py"
+healthcheckPath = "/"
 healthcheckTimeout = 100
 
