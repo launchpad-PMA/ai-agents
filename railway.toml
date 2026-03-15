@@ -3,7 +3,5 @@ builder = "DOCKERFILE"
 dockerfilePath = "divine-cleric/Dockerfile"
 
 [deploy]
-startCommand = "python agents/aragamago/bot.py"
-healthcheckPath = "/"
 healthcheckTimeout = 100
 
