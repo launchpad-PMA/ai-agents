@@ -7,6 +7,7 @@ If no OPENAI_API_KEY is set, falls back to a smart canned response.
 
 import os
 import logging
+import base64
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -44,19 +45,32 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s �
 logger = logging.getLogger(__name__)
 
 # ── OpenAI reply (if key present) ──────────────────────────────────────────
-def get_ai_reply(user_message: str) -> str:
+def get_ai_reply(user_message: str, image_b64: str = None) -> str:
     if not OPENAI_API_KEY:
         return None
     try:
         from openai import OpenAI
         client = OpenAI(api_key=OPENAI_API_KEY)
+        
+        # Build message payload
+        content = []
+        if user_message:
+            content.append({"type": "text", "text": user_message})
+        if image_b64:
+            content.append({
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}
+            })
+            
+        messages = [
+            {"role": "system", "content": SOUL},
+            {"role": "user", "content": content}
+        ]
+        
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": SOUL},
-                {"role": "user", "content": user_message}
-            ],
-            max_tokens=500,
+            messages=messages,
+            max_tokens=600,
             temperature=0.7
         )
         return response.choices[0].message.content.strip()
