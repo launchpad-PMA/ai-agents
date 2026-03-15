@@ -1,5 +1,6 @@
 [build]
-builder = "nixpacks"
+builder = "DOCKERFILE"
+dockerfilePath = "divine-cleric/Dockerfile"
 
 [deploy]
 startCommand = "npm install && node index.js"
