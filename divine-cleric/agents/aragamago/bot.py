@@ -306,7 +306,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        self.wfile.write(b"OK - Bot is healthy!")
+        self.wfile.write(b"OK - Aragamago is healthy!")
     def log_message(self, format, *args):
         pass # Suppress logs so it doesn't spam the console
 
