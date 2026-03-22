@@ -163,7 +163,6 @@ def main():
     if not TELEGRAM_TOKEN:
         logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN missing! Environment might not be configured correctly.")
         # We don't exit immediately to let the healthcheck server stay up briefly for debugging
-        import time
         time.sleep(30)
         raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
 
