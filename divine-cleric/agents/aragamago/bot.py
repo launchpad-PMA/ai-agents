@@ -14,6 +14,11 @@ import threading
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 print("DIAGNOSTIC: Basic imports successful")
+
+# Move logger definition to the top for early diagnostics
+logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
+logger = logging.getLogger(__name__)
+
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -70,9 +75,6 @@ def _get_soul() -> str:
     return "You are Aragamago, Baba John's most trusted AI helper. (Fallback activated)"
 
 # We compute this dynamically in get_ai_reply to guarantee it updates instantly
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
-logger = logging.getLogger(__name__)
 
 # ── OpenAI reply (if key present) ──────────────────────────────────────────
 def get_ai_reply(user_message: str, image_b64: str = None) -> str:
