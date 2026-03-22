@@ -71,7 +71,13 @@ def _get_soul() -> str:
 # ── OpenAI reply (if key present) ──────────────────────────────────────────
 def get_ai_reply(user_message: str, image_b64: str = None) -> str:
     if not OPENAI_API_KEY:
+        logger.warning("No OPENAI_API_KEY found in environment.")
         return None
+        
+    # Log key prefix for debugging (safe, only first 5 chars)
+    key_prefix = OPENAI_API_KEY[:7] if OPENAI_API_KEY else "None"
+    logger.info(f"Attempting AI reply with key prefix: {key_prefix}...")
+
     try:
         from openai import OpenAI
         # Using OpenRouter as a consolidated AI provider
@@ -107,7 +113,7 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        logger.error(f"AI Provider error (OpenRouter): {e}")
+        logger.error(f"❌ AI Provider Error (OpenRouter): {type(e).__name__} — {e}")
         return None
 
 # ── Handlers ───────────────────────────────────────────────────────────────
@@ -128,13 +134,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Try AI reply first
     reply = get_ai_reply(user_msg)
 
-    # Fallback if no OpenAI key
+    # Fallback if no AI reply (due to quota, key, or provider error)
     if not reply:
         reply = (
             f"🦜 *Aragamago hears you, {user_name}.*\n\n"
             f"You said: _{user_msg}_\n\n"
-            "I am online and listening. To unlock my full AI reasoning, "
-            "add your `OPENAI_API_KEY` to the `.env` file."
+            "I am currently having trouble reaching my AI reasoning unit at OpenRouter. "
+            "Please check the Railway logs to see the specific error (quota, billing, or invalid key)."
         )
 
     await update.message.reply_text(reply, parse_mode="Markdown")
