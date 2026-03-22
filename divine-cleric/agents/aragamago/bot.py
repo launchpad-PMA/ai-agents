@@ -272,6 +272,35 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             logger.error("❌ Voice generation failed - check ElevenLabs API key and quota")
 
+async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_name = update.effective_user.first_name or "traveler"
+    chat_id = update.effective_chat.id
+    logger.info(f"📷 RECEIVED PHOTO from {user_name} (Chat: {chat_id})")
+    
+    try:
+        photo = update.message.photo[-1]
+        photo_file = await context.bot.get_file(photo.file_id)
+        temp_path = f"/tmp/photo_{update.message.message_id}.jpg"
+        await photo_file.download_to_drive(temp_path)
+        
+        with open(temp_path, "rb") as f:
+            image_b64 = base64.b64encode(f.read()).decode()
+        
+        user_caption = update.message.caption or "What do you see in this image?"
+        logger.info(f"📥 Photo caption: {user_caption}")
+        
+        reply = get_ai_reply(user_caption, image_b64=image_b64)
+        if not reply:
+            reply = f"🦜 I see the image you sent, {user_name}, but I'm having trouble describing it right now."
+        
+        await update.message.reply_text(reply, parse_mode="Markdown")
+        logger.info("✅ Photo analysis sent")
+        
+        os.remove(temp_path)
+    except Exception as e:
+        logger.error(f"❌ Photo handling error: {e}")
+        await update.message.reply_text("I couldn't process that image, sir. My apologies.")
+
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name or "traveler"
     logger.info(f"📥 RECEIVED VOICE MESSAGE from {user_name}")
@@ -343,9 +372,10 @@ def main():
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
-    app.add_handler(MessageHandler(filters.AUDIO, handle_voice)) # Also handle audio files
+    app.add_handler(MessageHandler(filters.AUDIO, handle_voice))
     app.add_error_handler(error_handler)
 
     logger.info("✅ Aragamago is live. Listening for messages...")
