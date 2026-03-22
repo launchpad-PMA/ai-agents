@@ -5,7 +5,6 @@ Reads token from .env, listens for messages, replies via OpenAI.
 If no OPENAI_API_KEY is set, falls back to a smart canned response.
 """
 
-print("DIAGNOSTIC: bot.py entry point (line 1)")
 import os
 import sys
 import logging
@@ -13,7 +12,6 @@ import base64
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
-print("DIAGNOSTIC: Basic imports successful")
 
 # Move logger definition to the top for early diagnostics
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
@@ -36,14 +34,8 @@ def _load_env():
     
 _load_env()
 
-# Use logger for diagnostics to ensure they appear in Railway logs
-env_keys = [k for k in os.environ.keys() if k.startswith('OPENAI') or k.startswith('TELEGRAM')]
-logger.info(f"DIAGNOSTIC: Environment keys starting with OPENAI/TELEGRAM: {env_keys}")
-
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
-
-logger.info(f"DIAGNOSTIC: OPENAI_API_KEY presence: {bool(OPENAI_API_KEY)} (Length: {len(OPENAI_API_KEY)})")
 
 if not TELEGRAM_TOKEN:
     logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN IS MISSING!")
@@ -161,14 +153,12 @@ def run_dummy_server():
 # ── Main ───────────────────────────────────────────────────────────────────
 def main():
     # Spin up the background web server IMMEDIATELY to satisfy Railway
-    logger.info("DIAGNOSTIC: Entering main(), starting healthcheck thread")
     threading.Thread(target=run_dummy_server, daemon=True).start()
     
     # Give the thread a moment to bind to the port
     time.sleep(2)
     
-    logger.info("🦜 Aragamago is waking up and ready to serve...")
-    logger.info(f"DIAGNOSTIC: TELEGRAM_TOKEN presence: {bool(TELEGRAM_TOKEN)}")
+    logger.info("🦜 Aragamago is online.")
     
     if not TELEGRAM_TOKEN:
         logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN missing! Environment might not be configured correctly.")
