@@ -40,7 +40,7 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
 # Allow ANY OpenRouter model (e.g. anthropic/claude-3.5-sonnet, google/gemini-2.0-flash, etc.)
 AI_MODEL = os.environ.get("AI_MODEL", "openai/gpt-4o-mini").strip()
 ELEVENLABS_API_KEY = (os.environ.get("ELEVENLABS_API_KEY") or os.environ.get("ELEVENLAB_API_KEY") or "").strip()
-ELEVENLABS_VOICE_ID = os.environ.get("ELEVENLAB_VOICE_ID", "pNInz6obpgnuMvtmW4fz").strip() # Default: Adam (Butler-ish)
+ELEVENLABS_VOICE_ID = os.environ.get("ELEVENLABS_VOICE_ID", "pNInz6obpgnuMvtmW4fz").strip()
 
 if not TELEGRAM_TOKEN:
     logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN IS MISSING!")
