@@ -31,18 +31,17 @@ def _load_env():
     
 _load_env()
 
-# Diagnostic: Check for Railway environment variables
-print(f"DIAGNOSTIC: Environment keys starting with OPENAI/TELEGRAM: "
-      f"{[k for k in os.environ.keys() if k.startswith('OPENAI') or k.startswith('TELEGRAM')]}")
+# Use logger for diagnostics to ensure they appear in Railway logs
+env_keys = [k for k in os.environ.keys() if k.startswith('OPENAI') or k.startswith('TELEGRAM')]
+logger.info(f"DIAGNOSTIC: Environment keys starting with OPENAI/TELEGRAM: {env_keys}")
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
 
-print(f"DIAGNOSTIC: OPENAI_API_KEY length: {len(OPENAI_API_KEY)}")
+logger.info(f"DIAGNOSTIC: OPENAI_API_KEY presence: {bool(OPENAI_API_KEY)} (Length: {len(OPENAI_API_KEY)})")
 
 if not TELEGRAM_TOKEN:
-    logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN missing! Environment might not be configured correctly.")
-    # We don't exit immediately to let the healthcheck server stay up briefly for debugging
+    logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN IS MISSING!")
     time.sleep(30)
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
 
@@ -160,14 +159,14 @@ def run_dummy_server():
 # ── Main ───────────────────────────────────────────────────────────────────
 def main():
     # Spin up the background web server IMMEDIATELY to satisfy Railway
-    print("DIAGNOSTIC: Entering main(), starting healthcheck thread")
+    logger.info("DIAGNOSTIC: Entering main(), starting healthcheck thread")
     threading.Thread(target=run_dummy_server, daemon=True).start()
     
     # Give the thread a moment to bind to the port
     time.sleep(2)
     
-    logger.info("🦜 Aragamago starting...")
-    print(f"DIAGNOSTIC: TELEGRAM_TOKEN presence: {bool(TELEGRAM_TOKEN)}")
+    logger.info("🦜 Aragamago starting process...")
+    logger.info(f"DIAGNOSTIC: TELEGRAM_TOKEN presence: {bool(TELEGRAM_TOKEN)}")
     
     if not TELEGRAM_TOKEN:
         logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN missing! Environment might not be configured correctly.")
