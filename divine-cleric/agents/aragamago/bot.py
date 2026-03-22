@@ -39,6 +39,8 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
 # Allow ANY OpenRouter model (e.g. anthropic/claude-3.5-sonnet, google/gemini-2.0-flash, etc.)
 AI_MODEL = os.environ.get("AI_MODEL", "openai/gpt-4o-mini").strip()
+ELEVENLABS_API_KEY = (os.environ.get("ELEVENLABS_API_KEY") or os.environ.get("ELEVENLAB_API_KEY") or "").strip()
+ELEVENLABS_VOICE_ID = os.environ.get("ELEVENLAB_VOICE_ID", "pNInz6obpgnuMvtmW4fz").strip() # Default: Adam (Butler-ish)
 
 if not TELEGRAM_TOKEN:
     logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN IS MISSING!")
@@ -63,11 +65,14 @@ def _get_soul() -> str:
     for path in soul_paths:
         try:
             with io.open(path, 'r', encoding='utf-8') as f:
-                return f.read()
+                content = f.read()
+                return content + "\n\nIMPORTANT: You must speak with the refined, polite, and observant tone of a high-class English Butler. Use 'sir' or 'Baba' or 'traveler' as appropriate."
         except FileNotFoundError:
             continue
             
-    return "You are Aragamago, Baba John's most trusted AI helper. (Fallback activated)"
+    return ("You are Aragamago, Baba John's most trusted AI helper. "
+            "You must speak with the refined, polite, and observant tone of a high-class English Butler. "
+            "Use 'sir' or 'Baba' or 'traveler' as appropriate.")
 
 # We compute this dynamically in get_ai_reply to guarantee it updates instantly
 
@@ -124,6 +129,56 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
         logger.error(f"❌ Internal AI request error: {type(e).__name__} — {e}")
         return None
 
+# ── Voice / TTS / STT Logic ───────────────────────────────────────────────
+def transcribe_audio(file_path: str) -> str:
+    """Uses ElevenLabs Scribe API (STT) to transcribe audio."""
+    if not ELEVENLABS_API_KEY:
+        logger.warning("No ELEVENLABS_API_KEY available for transcription.")
+        return None
+    
+    try:
+        url = "https://api.elevenlabs.io/v1/speech-to-text"
+        headers = {"xi-api-key": ELEVENLABS_API_KEY}
+        files = {"file": (os.path.basename(file_path), open(file_path, "rb"), "audio/ogg")}
+        data = {"model_id": "scribe_v1"} # ElevenLabs Scribe model
+        
+        response = requests.post(url, headers=headers, files=files, data=data, timeout=60)
+        if response.status_code != 200:
+            logger.error(f"❌ ElevenLabs STT Error ({response.status_code}): {response.text}")
+            return None
+        
+        return response.json().get("text", "").strip()
+    except Exception as e:
+        logger.error(f"❌ Transcription error: {e}")
+        return None
+
+def generate_voice_reply(text: str) -> bytes:
+    """Uses ElevenLabs TTS to generate audio bytes."""
+    if not ELEVENLABS_API_KEY:
+        return None
+    
+    try:
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
+        headers = {
+            "xi-api-key": ELEVENLABS_API_KEY,
+            "Content-Type": "application/json"
+        }
+        data = {
+            "text": text,
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {"stability": 0.5, "similarity_boost": 0.5}
+        }
+        
+        response = requests.post(url, headers=headers, json=data, timeout=60)
+        if response.status_code == 200:
+            return response.content
+        else:
+            logger.error(f"❌ ElevenLabs TTS Error ({response.status_code}): {response.text}")
+            return None
+    except Exception as e:
+        logger.error(f"❌ TTS Error: {e}")
+        return None
+
 # ── Handlers ───────────────────────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -154,8 +209,40 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Please check the Railway logs to see the specific error (quota, billing, or invalid key)."
         )
 
+    # 1. Reply via Text
     sent_msg = await update.message.reply_text(reply, parse_mode="Markdown")
-    logger.info(f"✅ TELEGRAM REPLY SENT (Msg ID: {sent_msg.message_id})")
+    logger.info(f"✅ TELEGRAM TEXT REPLY SENT (Msg ID: {sent_msg.message_id})")
+
+    # 2. Reply via Voice (if TTS is enabled)
+    voice_bytes = generate_voice_reply(reply)
+    if voice_bytes:
+        await update.message.reply_voice(voice_bytes)
+        logger.info("✅ TELEGRAM VOICE REPLY SENT")
+
+async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_name = update.effective_user.first_name or "traveler"
+    logger.info(f"📥 RECEIVED VOICE MESSAGE from {user_name}")
+
+    # Download the voice file
+    voice_file = await update.message.voice.get_file()
+    temp_path = f"/tmp/voice_{update.message.message_id}.ogg"
+    await voice_file.download_to_drive(temp_path)
+
+    # Transcribe
+    transcribed_text = transcribe_audio(temp_path)
+    if not transcribed_text:
+        await update.message.reply_text("I heard your voice, sir, but my ears are a bit stuffed. Could you repeat that in writing?")
+        return
+
+    logger.info(f"🎙️ TRANSCRIBED: {transcribed_text}")
+    
+    # Process as regular message
+    update.message.text = transcribed_text
+    await handle_message(update, context)
+
+    # Cleanup
+    if os.path.exists(temp_path):
+        os.remove(temp_path)
 
 async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
     logger.error(f"Error: {context.error}")
@@ -204,6 +291,8 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    app.add_handler(MessageHandler(filters.AUDIO, handle_voice)) # Also handle audio files
     app.add_error_handler(error_handler)
 
     logger.info("✅ Aragamago is live. Listening for messages...")
