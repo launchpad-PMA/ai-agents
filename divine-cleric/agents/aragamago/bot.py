@@ -5,11 +5,15 @@ Reads token from .env, listens for messages, replies via OpenAI.
 If no OPENAI_API_KEY is set, falls back to a smart canned response.
 """
 
+print("DIAGNOSTIC: bot.py entry point (line 1)")
 import os
+import sys
 import logging
 import base64
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
+print("DIAGNOSTIC: Basic imports successful")
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -17,10 +21,13 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from dotenv import load_dotenv, find_dotenv
 
 def _load_env():
-    # Aggressively load all known .env locations to solve the multiple .env issue
-    load_dotenv(find_dotenv()) # Local project root
-    load_dotenv(r"C:\Users\Baba\Documents\antigravity\.env", override=True) # App config
-    load_dotenv(r"C:\Users\Baba\.env", override=True) # Global config
+    # Load .env relative to the project root
+    load_dotenv(find_dotenv())
+    
+    # Only try absolute Windows paths if running locally on Windows
+    if os.name == 'nt':
+        load_dotenv(r"C:\Users\Baba\Documents\antigravity\.env", override=True) # App config
+        load_dotenv(r"C:\Users\Baba\.env", override=True) # Global config
     
 _load_env()
 
@@ -34,13 +41,25 @@ import io
 
 # ── Dynamic Soul Identity ───────────────────────────────────────────────────
 def _get_soul() -> str:
-    # Continuously read the exact SOUL file the user manages before every prompt
-    soul_path = r"C:\Users\Baba\Documents\openclaw\agents\aragamago\SOUL.md.txt"
-    try:
-        with io.open(soul_path, 'r', encoding='utf-8') as f:
-            return f.read()
-    except FileNotFoundError:
-        return "You are Aragamago, Baba John's most trusted AI helper. (Fallback activated)"
+    # Use relative path for the container, fallback to absolute for local Windows
+    soul_filename = "SOUL.md.txt"
+    soul_paths = [
+        soul_filename,
+        os.path.join("divine-cleric", soul_filename),
+        os.path.join("agents", "aragamago", soul_filename)
+    ]
+    
+    if os.name == 'nt':
+        soul_paths.append(r"C:\Users\Baba\Documents\openclaw\agents\aragamago\SOUL.md.txt")
+
+    for path in soul_paths:
+        try:
+            with io.open(path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            continue
+            
+    return "You are Aragamago, Baba John's most trusted AI helper. (Fallback activated)"
 
 # We compute this dynamically in get_ai_reply to guarantee it updates instantly
 
@@ -131,10 +150,23 @@ def run_dummy_server():
 
 # ── Main ───────────────────────────────────────────────────────────────────
 def main():
-    # Spin up the background web server to satisfy Railway
+    # Spin up the background web server IMMEDIATELY to satisfy Railway
+    print("DIAGNOSTIC: Entering main(), starting healthcheck thread")
     threading.Thread(target=run_dummy_server, daemon=True).start()
     
+    # Give the thread a moment to bind to the port
+    time.sleep(2)
+    
     logger.info("🦜 Aragamago starting...")
+    print(f"DIAGNOSTIC: TELEGRAM_TOKEN presence: {bool(TELEGRAM_TOKEN)}")
+    
+    if not TELEGRAM_TOKEN:
+        logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN missing! Environment might not be configured correctly.")
+        # We don't exit immediately to let the healthcheck server stay up briefly for debugging
+        import time
+        time.sleep(30)
+        raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
+
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
