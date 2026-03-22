@@ -74,7 +74,15 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
         return None
     try:
         from openai import OpenAI
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        # Using OpenRouter as a consolidated AI provider
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=OPENAI_API_KEY,
+            default_headers={
+                "HTTP-Referer": "https://railway.app", # Required for OpenRouter
+                "X-Title": "Aragamago Bot",
+            }
+        )
         
         # Build message payload
         content = []
@@ -92,14 +100,14 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
         ]
         
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="openai/gpt-4o-mini", # OpenRouter model format
             messages=messages,
             max_tokens=600,
             temperature=0.7
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        logger.error(f"OpenAI error: {e}")
+        logger.error(f"AI Provider error (OpenRouter): {e}")
         return None
 
 # ── Handlers ───────────────────────────────────────────────────────────────
