@@ -166,7 +166,8 @@ def generate_voice_reply(text: str) -> bytes:
         data = {
             "text": text,
             "model_id": "eleven_monolingual_v1",
-            "voice_settings": {"stability": 0.5, "similarity_boost": 0.5}
+            "voice_settings": {"stability": 0.5, "similarity_boost": 0.5},
+            "output_format": "ogg"
         }
         
         response = requests.post(url, headers=headers, json=data, timeout=60)
