@@ -132,10 +132,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_msg = update.message.text
     user_name = update.effective_user.first_name or "traveler"
-    logger.info(f"Message from {user_name}: {user_msg}")
+    chat_id = update.effective_chat.id
+    logger.info(f"📥 RECEIVED MESSAGE from {user_name} (Chat: {chat_id}): {user_msg}")
 
     # Try AI reply first
+    logger.info(f"🤖 Requesting AI reply for: '{user_msg[:50]}...' using model {AI_MODEL}")
     reply = get_ai_reply(user_msg)
+    logger.info(f"📤 AI RESPONSE generated (length: {len(reply) if reply else 0})")
 
     # Fallback if no AI reply (due to quota, key, or provider error)
     if not reply:
@@ -146,7 +149,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Please check the Railway logs to see the specific error (quota, billing, or invalid key)."
         )
 
-    await update.message.reply_text(reply, parse_mode="Markdown")
+    sent_msg = await update.message.reply_text(reply, parse_mode="Markdown")
+    logger.info(f"✅ TELEGRAM REPLY SENT (Msg ID: {sent_msg.message_id})")
 
 async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
     logger.error(f"Error: {context.error}")
@@ -167,10 +171,18 @@ def run_dummy_server():
     logger.info(f"Started dummy healthcheck server on port {port}")
     server.serve_forever()
 
+def heartbeat():
+    while True:
+        logger.info("💓 HEARTBEAT: Aragamago is still breathing...")
+        time.sleep(60)
+
 # ── Main ───────────────────────────────────────────────────────────────────
 def main():
     # Spin up the background web server IMMEDIATELY to satisfy Railway
     threading.Thread(target=run_dummy_server, daemon=True).start()
+    
+    # Heartbeat to prove we haven't hung
+    threading.Thread(target=heartbeat, daemon=True).start()
     
     # Give the thread a moment to bind to the port
     time.sleep(2)
