@@ -8,6 +8,8 @@ If no OPENAI_API_KEY is set, falls back to a smart canned response.
 import os
 import logging
 import base64
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -111,8 +113,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
     logger.error(f"Error: {context.error}")
 
+# ── Dummy Web Server for Railway Healthcheck ───────────────────────────────
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(b"OK - Bot is healthy!")
+    def log_message(self, format, *args):
+        pass # Suppress logs so it doesn't spam the console
+
+def run_dummy_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+    logger.info(f"Started dummy healthcheck server on port {port}")
+    server.serve_forever()
+
 # ── Main ───────────────────────────────────────────────────────────────────
 def main():
+    # Spin up the background web server to satisfy Railway
+    threading.Thread(target=run_dummy_server, daemon=True).start()
+    
     logger.info("🦜 Aragamago starting...")
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
