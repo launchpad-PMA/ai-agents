@@ -11,6 +11,7 @@ import logging
 import base64
 import threading
 import time
+import requests
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 # Move logger definition to the top for early diagnostics
@@ -73,50 +74,54 @@ def _get_soul() -> str:
 # ── OpenAI reply (if key present) ──────────────────────────────────────────
 def get_ai_reply(user_message: str, image_b64: str = None) -> str:
     if not OPENAI_API_KEY:
-        logger.warning("No OPENAI_API_KEY found in environment.")
+        logger.warning("No OPENAI_API_KEY available.")
         return None
         
-    # Log key prefix for debugging (safe, only first 5 chars)
-    key_prefix = OPENAI_API_KEY[:7] if OPENAI_API_KEY else "None"
-    logger.info(f"Attempting AI reply with key prefix: {key_prefix}...")
+    # Log key prefix for debugging (safe, only first 10 chars)
+    key_prefix = OPENAI_API_KEY[:10] if OPENAI_API_KEY else "None"
+    logger.info(f"Attempting AI reply with key prefix: {key_prefix}... (Total length: {len(OPENAI_API_KEY)})")
 
     try:
-        from openai import OpenAI
-        # Explicitly set OpenRouter headers and Authorization to prevent 'Missing Authentication Header' errors
-        client = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=OPENAI_API_KEY,
-            default_headers={
-                "Authorization": f"Bearer {OPENAI_API_KEY}",
-                "HTTP-Referer": "https://railway.app", 
-                "X-Title": "Aragamago Bot",
-            }
-        )
+        url = "https://openrouter.ai/api/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "HTTP-Referer": "https://railway.app", 
+            "X-Title": "Aragamago Bot",
+            "Content-Type": "application/json"
+        }
         
         # Build message payload
-        content = []
+        messages = [{"role": "system", "content": _get_soul()}]
+        
+        user_content = []
         if user_message:
-            content.append({"type": "text", "text": user_message})
+            user_content.append({"type": "text", "text": user_message})
         if image_b64:
-            content.append({
+            user_content.append({
                 "type": "image_url",
                 "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}
             })
             
-        messages = [
-            {"role": "system", "content": _get_soul()},
-            {"role": "user", "content": content}
-        ]
+        messages.append({"role": "user", "content": user_content})
         
-        response = client.chat.completions.create(
-            model=AI_MODEL, # Now configurable via Railway env!
-            messages=messages,
-            max_tokens=600,
-            temperature=0.7
-        )
-        return response.choices[0].message.content.strip()
+        payload = {
+            "model": AI_MODEL,
+            "messages": messages,
+            "max_tokens": 600,
+            "temperature": 0.7
+        }
+        
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        
+        if response.status_code != 200:
+            logger.error(f"❌ AI Provider Error (OpenRouter {response.status_code}): {response.text}")
+            return None
+            
+        result = response.json()
+        return result['choices'][0]['message']['content'].strip()
+        
     except Exception as e:
-        logger.error(f"❌ AI Provider Error (OpenRouter): {type(e).__name__} — {e}")
+        logger.error(f"❌ Internal AI request error: {type(e).__name__} — {e}")
         return None
 
 # ── Handlers ───────────────────────────────────────────────────────────────
