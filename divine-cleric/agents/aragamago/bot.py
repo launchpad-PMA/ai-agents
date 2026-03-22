@@ -165,7 +165,7 @@ def main():
     # Give the thread a moment to bind to the port
     time.sleep(2)
     
-    logger.info("🦜 Aragamago starting process...")
+    logger.info("🦜 Aragamago is waking up and ready to serve...")
     logger.info(f"DIAGNOSTIC: TELEGRAM_TOKEN presence: {bool(TELEGRAM_TOKEN)}")
     
     if not TELEGRAM_TOKEN:
