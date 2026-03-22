@@ -215,10 +215,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f"✅ TELEGRAM TEXT REPLY SENT (Msg ID: {sent_msg.message_id})")
 
     # 2. Reply via Voice (if TTS is enabled)
-    voice_bytes = generate_voice_reply(reply)
-    if voice_bytes:
-        await update.message.reply_voice(voice_bytes)
-        logger.info("✅ TELEGRAM VOICE REPLY SENT")
+    if not ELEVENLABS_API_KEY:
+        logger.warning("⚠️ ELEVENLABS_API_KEY not set - voice disabled")
+    else:
+        voice_bytes = generate_voice_reply(reply)
+        if voice_bytes:
+            await update.message.reply_voice(voice_bytes, caption="🗣️ Voice reply")
+            logger.info("✅ TELEGRAM VOICE REPLY SENT")
+        else:
+            logger.error("❌ Voice generation failed - check ElevenLabs API key and quota")
 
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name or "traveler"
