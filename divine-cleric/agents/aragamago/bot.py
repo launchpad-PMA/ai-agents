@@ -49,6 +49,15 @@ if not TELEGRAM_TOKEN:
 
 import io
 
+# ── Brain / Memory ─────────────────────────────────────────────────────────
+try:
+    from connectors.pinecone_connector import query_brain, upsert_to_brain
+    BRAIN_AVAILABLE = True
+    logger.info("🧠 Context Brain (Pinecone) connected")
+except ImportError:
+    BRAIN_AVAILABLE = False
+    logger.warning("⚠️ Context Brain unavailable - memory disabled")
+
 # ── Dynamic Soul Identity ───────────────────────────────────────────────────
 def _get_soul() -> str:
     # Use relative path for the container, fallback to absolute for local Windows
@@ -95,8 +104,27 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
             "Content-Type": "application/json"
         }
         
+        # Query memory for relevant context
+        memory_context = ""
+        if BRAIN_AVAILABLE:
+            try:
+                memories = query_brain(user_message, top_k=3)
+                if memories:
+                    memory_parts = []
+                    for m in memories:
+                        if m.get('metadata', {}).get('text'):
+                            memory_parts.append(f"- {m['metadata']['text']}")
+                    if memory_parts:
+                        memory_context = "\n\n📚 RELEVANT MEMORIES:\n" + "\n".join(memory_parts)
+                        logger.info(f"🧠 Found {len(memories)} memory matches")
+            except Exception as e:
+                logger.warning(f"Memory query failed: {e}")
+        
         # Build message payload
-        messages = [{"role": "system", "content": _get_soul()}]
+        soul = _get_soul()
+        if memory_context:
+            soul += memory_context
+        messages = [{"role": "system", "content": soul}]
         
         user_content = []
         if user_message:
@@ -213,6 +241,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # 1. Reply via Text
     sent_msg = await update.message.reply_text(reply, parse_mode="Markdown")
     logger.info(f"✅ TELEGRAM TEXT REPLY SENT (Msg ID: {sent_msg.message_id})")
+
+    # 2. Save to memory
+    if BRAIN_AVAILABLE:
+        import time
+        timestamp = int(time.time())
+        try:
+            upsert_to_brain(
+                f"user_{chat_id}_{timestamp}",
+                f"{user_name}: {user_msg}",
+                {"source": "telegram", "user": user_name, "chat_id": str(chat_id), "type": "user_message"}
+            )
+            upsert_to_brain(
+                f"bot_{chat_id}_{timestamp}",
+                f"Aragamago: {reply}",
+                {"source": "telegram", "user": user_name, "chat_id": str(chat_id), "type": "bot_response"}
+            )
+            logger.info("💾 Saved conversation to memory")
+        except Exception as e:
+            logger.warning(f"Memory save failed: {e}")
 
     # 2. Reply via Voice (if TTS is enabled)
     if not ELEVENLABS_API_KEY:
