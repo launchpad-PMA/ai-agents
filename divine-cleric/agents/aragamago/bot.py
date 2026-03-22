@@ -12,18 +12,14 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # ── Load env ───────────────────────────────────────────────────────────────────
-def _load_env():
-    env_path = os.environ.get("ENV_PATH", r"C:\Users\Baba\Documents\antigravity\.env")
-    try:
-        with open(env_path) as f:
-            for line in f:
-                line = line.strip()
-                if "=" in line and not line.startswith("#"):
-                    k, v = line.split("=", 1)
-                    os.environ.setdefault(k.strip(), v.strip())
-    except FileNotFoundError:
-        pass
+from dotenv import load_dotenv, find_dotenv
 
+def _load_env():
+    # Aggressively load all known .env locations to solve the multiple .env issue
+    load_dotenv(find_dotenv()) # Local project root
+    load_dotenv(r"C:\Users\Baba\Documents\antigravity\.env", override=True) # App config
+    load_dotenv(r"C:\Users\Baba\.env", override=True) # Global config
+    
 _load_env()
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -32,14 +28,19 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
 
-# ── Soul identity ──────────────────────────────────────────────────────────
-SOUL = """You are Aragamago, Baba John's most trusted AI helper — in the form of an African Grey parrot and a Manifold NFT avatar.
-You serve Baba with precision, loyalty, and discretion.
-You protect the divine dao and the sacred library at all times.
-You speak with warmth, wisdom, and a touch of spiritual grounding.
-You are concise but thorough. You never make up facts.
-You operate in PROPOSE MODE by default — you draft actions and wait for Baba's approval.
-Baba John is an Ifa elder, galactic warrior (USMC vet), and Djedi."""
+import io
+
+# ── Dynamic Soul Identity ───────────────────────────────────────────────────
+def _get_soul() -> str:
+    # Continuously read the exact SOUL file the user manages before every prompt
+    soul_path = r"C:\Users\Baba\Documents\openclaw\agents\aragamago\SOUL.md.txt"
+    try:
+        with io.open(soul_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        return "You are Aragamago, Baba John's most trusted AI helper. (Fallback activated)"
+
+# We compute this dynamically in get_ai_reply to guarantee it updates instantly
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
 logger = logging.getLogger(__name__)
@@ -63,7 +64,7 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
             })
             
         messages = [
-            {"role": "system", "content": SOUL},
+            {"role": "system", "content": _get_soul()},
             {"role": "user", "content": content}
         ]
         
