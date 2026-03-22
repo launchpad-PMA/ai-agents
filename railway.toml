@@ -3,5 +3,5 @@ builder = "DOCKERFILE"
 dockerfilePath = "divine-cleric/Dockerfile"
 
 [deploy]
+healthcheckPath = ""
 healthcheckTimeout = 100
-
