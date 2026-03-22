@@ -36,6 +36,8 @@ _load_env()
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
+# Allow ANY OpenRouter model (e.g. anthropic/claude-3.5-sonnet, google/gemini-2.0-flash, etc.)
+AI_MODEL = os.environ.get("AI_MODEL", "openai/gpt-4o-mini").strip()
 
 if not TELEGRAM_TOKEN:
     logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN IS MISSING!")
@@ -106,7 +108,7 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
         ]
         
         response = client.chat.completions.create(
-            model="openai/gpt-4o-mini", # OpenRouter model format
+            model=AI_MODEL, # Now configurable via Railway env!
             messages=messages,
             max_tokens=600,
             temperature=0.7
