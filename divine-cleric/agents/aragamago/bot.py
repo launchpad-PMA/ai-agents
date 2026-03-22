@@ -31,10 +31,19 @@ def _load_env():
     
 _load_env()
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+# Diagnostic: Check for Railway environment variables
+print(f"DIAGNOSTIC: Environment keys starting with OPENAI/TELEGRAM: "
+      f"{[k for k in os.environ.keys() if k.startswith('OPENAI') or k.startswith('TELEGRAM')]}")
+
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
+
+print(f"DIAGNOSTIC: OPENAI_API_KEY length: {len(OPENAI_API_KEY)}")
 
 if not TELEGRAM_TOKEN:
+    logger.error("❌ CRITICAL: TELEGRAM_BOT_TOKEN missing! Environment might not be configured correctly.")
+    # We don't exit immediately to let the healthcheck server stay up briefly for debugging
+    time.sleep(30)
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
 
 import io
