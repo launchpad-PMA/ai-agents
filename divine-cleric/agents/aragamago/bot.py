@@ -82,12 +82,13 @@ def get_ai_reply(user_message: str, image_b64: str = None) -> str:
 
     try:
         from openai import OpenAI
-        # Using OpenRouter as a consolidated AI provider
+        # Explicitly set OpenRouter headers and Authorization to prevent 'Missing Authentication Header' errors
         client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=OPENAI_API_KEY,
             default_headers={
-                "HTTP-Referer": "https://railway.app", # Required for OpenRouter
+                "Authorization": f"Bearer {OPENAI_API_KEY}",
+                "HTTP-Referer": "https://railway.app", 
                 "X-Title": "Aragamago Bot",
             }
         )
