@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSS3 node · Adbongo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0c0a12;
+      color: #f4f4f5;
+      min-height: 100vh;
+      padding: 1.5rem;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 42rem; margin: 0 auto; }
+    a { color: #a78bfa; }
+    a:hover { color: #c4b5fd; }
+    h1 { font-size: 1.35rem; margin-bottom: 0.5rem; }
+    p { color: #a1a1aa; margin-bottom: 1rem; font-size: 0.95rem; }
+    ul { margin: 0.75rem 0 1rem 1.25rem; color: #a1a1aa; }
+    .card {
+      background: #161222;
+      border: 1px solid rgba(167, 139, 250, 0.22);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    code { font-size: 0.85rem; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p><a href="/">← Adbongo home</a></p>
+    <h1>RSS3 node (reference)</h1>
+    <p>
+      The consulting landing and RSS3 stack both use <strong>web3.adbongo.io</strong> on Linode (this page is static nginx HTML).
+      Long-form essays live on <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">www.adbongo.io</a> (Substack).
+    </p>
+    <p>
+      This static page lists public links. Full ops dashboard (dynamic health, comm agent URL) is served at
+      <code>/node</code> when you run the <code>rss3-comm-agent</code> Express app—not plain nginx-only hosting.
+    </p>
+    <div class="card">
+      <p><strong>Node address</strong></p>
+      <p><code id="addr">0x0063951De34a75c25279cFe3C212F4855125Fd8f</code></p>
+      <p style="margin-top:0.75rem"><a id="explorer" href="#" target="_blank" rel="noopener">RSS3 Explorer →</a></p>
+    </div>
+    <div class="card">
+      <p><strong>Typical endpoints</strong></p>
+      <ul>
+        <li>RSS3 core HTTP (Linode Docker): <code>http://web3.adbongo.io:8080</code> — often blocked by firewall; use SSH tunnel or open the port only if you intend it to be public.</li>
+        <li>Comm agent APIs: same host as your deployed <code>index.js</code> (e.g. Railway), paths <code>/health</code>, <code>/api/events</code>.</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var a = document.getElementById("addr").textContent.trim();
+      document.getElementById("explorer").href =
+        "https://explorer.rss3.io/nodes/" + encodeURIComponent(a);
+    })();
+  </script>
+</body>
+</html>

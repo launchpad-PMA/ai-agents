@@ -13,6 +13,14 @@ app.use(bodyParser.json());
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
 const NEYNAR_API_URL = 'https://api.neynar.com/v2/farcaster';
 const NEYNAR_SIGNER_UUID = process.env.NEYNAR_SIGNER_UUID;
+// Public URL of this Railway service (Maxayauwi comm agent); override in Railway Variables if needed
+const PUBLIC_AGENT_URL = process.env.PUBLIC_AGENT_URL || 'https://rss3-comm-agent-production.up.railway.app';
+
+const NODE_ADDRESS =
+  process.env.RSS3_NODE_ADDRESS || '0x0063951De34a75c25279cFe3C212F4855125Fd8f';
+const RSS3_FEED_ACCOUNT = process.env.RSS3_FEED_ACCOUNT || NODE_ADDRESS;
+const RSS3_NODE_PUBLIC_URL =
+  process.env.RSS3_NODE_PUBLIC_URL || 'http://web3.adbongo.io:8080';
 
 // Helper function to post to Farcaster
 async function postToFarcaster(message) {
@@ -192,15 +200,72 @@ app.get('/api/rss3/activity/:id', async (req, res) => {
   }
 });
 
-// Serve static files
-app.use(express.static('public'));
+// JSON for Adbongo landing (social URLs, node links)
+app.get('/api/site-config', (req, res) => {
+  const explorerUrl = `https://explorer.rss3.io/nodes/${NODE_ADDRESS}`;
+  res.json({
+    brand: 'Adbongo',
+    tagline:
+      'Consulting for AI agents, web3 interfaces, and product design—with room for Launchpad when the fit is right.',
+    /** Public site hostname (static landing + same host as RSS3 stack on Linode) */
+    marketingSiteUrl: (process.env.ADBONGO_SITE_URL || 'https://web3.adbongo.io').trim(),
+    nodeAddress: NODE_ADDRESS,
+    explorerNodeUrl: explorerUrl,
+    rss3NodeUrl: RSS3_NODE_PUBLIC_URL,
+    commAgentUrl: PUBLIC_AGENT_URL,
+    feedAccount: RSS3_FEED_ACCOUNT,
+    social: {
+      farcaster: (process.env.SOCIAL_FARCASTER_URL || '').trim(),
+      warpcast: (process.env.SOCIAL_WARPCAST_URL || '').trim(),
+      x: (process.env.SOCIAL_X_URL || '').trim(),
+    },
+    contactHref: (process.env.ADBONGO_CONTACT_HREF || 'mailto:adbongorocks@gmail.com').trim(),
+  });
+});
 
-// Root endpoint - serve website
-app.get('/', (req, res) => {
-  const nodeAddress = '0x0063951De34a75c25279cFe3C212F4855125Fd8f';
-  const nodeEndpoint = 'http://web3.adbongo.io:8080';
+// RSS3 Global Indexer: activities for configured account (feed on landing page)
+app.get('/api/rss3/feed', async (req, res) => {
+  const limit = Math.min(
+    100,
+    Math.max(1, parseInt(String(req.query.limit || '24'), 10) || 24),
+  );
+  const params = { limit, action_limit: 8 };
+  if (req.query.cursor) {
+    params.cursor = String(req.query.cursor);
+  }
+  if (req.query.tag) {
+    params.tag = String(req.query.tag);
+  }
+  if (req.query.platform) {
+    params.platform = String(req.query.platform);
+  }
+  try {
+    const response = await axios.get(
+      `https://gi.rss3.io/decentralized/${RSS3_FEED_ACCOUNT}`,
+      { params },
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error('❌ RSS3 feed proxy:', error.response?.data || error.message);
+    res.status(error.response?.status || 502).json({
+      data: [],
+      meta: {},
+      error:
+        error.response?.data?.message ||
+        error.response?.data ||
+        error.message ||
+        'Feed unavailable',
+    });
+  }
+});
+
+// Maxayauwi / node ops dashboard (was previously at /)
+app.get('/node', (req, res) => {
+  const nodeAddress = NODE_ADDRESS;
+  const nodeEndpoint = RSS3_NODE_PUBLIC_URL;
+  const commAgentUrl = PUBLIC_AGENT_URL;
   const explorerUrl = `https://explorer.rss3.io/nodes/${nodeAddress}`;
-  
+
   res.send(`
 <!DOCTYPE html>
 <html lang="en">
@@ -312,6 +377,7 @@ app.get('/', (req, res) => {
             <p>DAO Communication Agent & RSS3 Data Sublayer Node</p>
         </div>
         <div class="content">
+            <p style="text-align:center;margin-bottom:20px"><a href="/" class="link">← Adbongo home</a></p>
             <div class="section">
                 <h2>📍 Node Information</h2>
                 <div class="info-grid">
@@ -321,9 +387,14 @@ app.get('/', (req, res) => {
                         <a href="${explorerUrl}" target="_blank" class="link">View on RSS3 Explorer →</a>
                     </div>
                     <div class="info-card">
-                        <h3>Endpoint</h3>
+                        <h3>RSS3 node (Linode)</h3>
                         <p>${nodeEndpoint}</p>
                         <span class="status-badge status-online">🟢 Online</span>
+                    </div>
+                    <div class="info-card">
+                        <h3>Comm agent (this service)</h3>
+                        <p>${commAgentUrl}</p>
+                        <p style="margin-top: 8px; font-size: 0.85em;">Webhooks: <code>/api/events</code></p>
                     </div>
                     <div class="info-card">
                         <h3>Status</h3>
@@ -372,6 +443,8 @@ app.get('/', (req, res) => {
 </html>
   `);
 });
+
+app.use(express.static('public'));
 
 // Start server
 app.listen(PORT, () => {

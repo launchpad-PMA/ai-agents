@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent NFT upgrades · Adbongo</title>
+  <meta name="description" content="Connect your wallet and upgrade Adbongo AI agent NFTs—capabilities, tiers, and tooling." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&family=Orbitron:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0a12;
+      --surface: #161222;
+      --border: rgba(167, 139, 250, 0.22);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --primary: #a78bfa;
+      --cta: #22c55e;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Exo 2", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1.5rem 1.25rem 2.5rem;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 42rem; margin: 0 auto; }
+    a { color: var(--primary); }
+    a:hover { color: #c4b5fd; }
+    .back { margin-bottom: 1.25rem; font-size: 0.95rem; }
+    h1 {
+      font-family: Orbitron, sans-serif;
+      font-size: clamp(1.25rem, 3vw, 1.5rem);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .lede { color: var(--muted); margin-bottom: 1.5rem; max-width: 40rem; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-top: 1rem;
+    }
+    .card h2 {
+      font-family: Orbitron, sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+      color: var(--primary);
+    }
+    .card p, .card li { color: var(--muted); font-size: 0.95rem; margin-bottom: 0.65rem; }
+    .card p:last-child, .card li:last-child { margin-bottom: 0; }
+    ul { margin: 0.5rem 0 0 1.1rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.55rem 1.15rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      color: var(--primary);
+      margin-top: 0.75rem;
+      cursor: default;
+      opacity: 0.75;
+    }
+    .btn-live {
+      background: var(--cta);
+      color: #052e16;
+      border: none;
+      opacity: 1;
+      cursor: pointer;
+    }
+    .btn-live:hover { filter: brightness(1.08); }
+    .note { font-size: 0.85rem; color: var(--muted); margin-top: 1.5rem; max-width: 40rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="back"><a href="/">← Adbongo home</a></p>
+    <h1>AI agent NFT upgrades</h1>
+    <p class="lede">
+      A dedicated surface for holders: connect a wallet, prove ownership of an Adbongo AI agent NFT, and unlock
+      upgrade paths—higher capability tiers, extra tools, or expanded context—depending on how we ship the collection
+      contract and metadata.
+    </p>
+
+    <div class="card">
+      <h2>Product reference (UX)</h2>
+      <p>
+        We want the same clarity as interactive NFT upgrade experiences—visual progression, obvious next steps, and
+        on-chain actions you confirm in your wallet. A well-known example of that pattern is
+        <a href="https://noahsark.ai" target="_blank" rel="noopener noreferrer">noahsark.ai</a>
+        (independent project; cited for interaction design, not partnership).
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>How it will work</h2>
+      <ul>
+        <li><strong style="color:var(--text)">Connect</strong> — Wallet (e.g. MetaMask, Rabby, WalletConnect).</li>
+        <li><strong style="color:var(--text)">Verify</strong> — Check that your address holds a valid Adbongo agent NFT.</li>
+        <li><strong style="color:var(--text)">Upgrade</strong> — Choose a path (tier, module, or burn/mint rules as defined in the collection).</li>
+      </ul>
+      <p style="margin-top:0.75rem">
+        The live app will call your deployed contracts and agent services; this page is the public entry point until that
+        host is wired (e.g. <code style="font-size:0.85rem;color:var(--text)">agents.adbongo.io</code> or a path on your
+        existing app).
+      </p>
+    </div>
+
+    <p>
+      <span class="btn" aria-disabled="true">Open upgrade app — coming soon</span>
+    </p>
+    <p>
+      <a class="btn btn-live" href="mailto:adbongorocks@gmail.com?subject=Agent%20NFT%20holder%20%E2%80%94%20upgrades">Email holders line</a>
+    </p>
+
+    <p class="note">
+      If you are integrating: replace the disabled button with your production URL and add wallet + network checks
+      (chain ID, contract address, token balance) in a small SPA or Next.js app served from the same brand domain.
+    </p>
+  </div>
+</body>
+</html>

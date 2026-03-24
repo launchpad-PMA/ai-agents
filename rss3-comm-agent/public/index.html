@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adbongo — AI agents & web3 design</title>
+  <meta name="description" content="Adbongo — consulting since 2007. AI agents, web3 interfaces, and product design. From legacy WordPress-era web to RSS3-indexed open activity and Launchpad." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300..700;1,300..700&family=Orbitron:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0a12;
+      --surface: #161222;
+      --border: rgba(167, 139, 250, 0.22);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --primary: #a78bfa;
+      --primary-dim: #7c3aed;
+      --cta: #22c55e;
+      --cta-hover: #4ade80;
+      --max: 72rem;
+      --radius: 12px;
+      --header-h: 4.25rem;
+    }
+    html {
+      color-scheme: dark;
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--header-h) + 0.75rem);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      .hero-matrix { display: none !important; }
+    }
+
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Exo 2", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--primary); }
+    a:hover { color: var(--cta-hover); }
+    .skip {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+    .skip:focus {
+      position: fixed;
+      left: 1rem;
+      top: 1rem;
+      width: auto;
+      height: auto;
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      z-index: 100;
+    }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(12, 10, 18, 0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-family: Orbitron, sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .logo:hover { color: var(--primary); }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 1.25rem;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+      cursor: pointer;
+    }
+    .nav-links a:hover { color: var(--text); }
+    @media (max-width: 36rem) {
+      .nav-links .nav-contact-dup { display: none; }
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+    .btn-primary {
+      background: var(--cta);
+      color: #052e16;
+    }
+    .btn-primary:hover { background: var(--cta-hover); color: #052e16; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: rgba(167, 139, 250, 0.08);
+      color: var(--text);
+    }
+    .btn-compact {
+      font-size: 0.85rem;
+      padding: 0.45rem 0.95rem;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 4rem 0 3rem;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.35), transparent),
+        var(--bg);
+    }
+    .hero-matrix {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.42;
+      mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 92%);
+      -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 92%);
+    }
+    .hero-matrix::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 0, 0, 0.18) 3px,
+        rgba(0, 0, 0, 0.18) 4px
+      );
+      pointer-events: none;
+    }
+    .hero-matrix canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .hero .wrap {
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      font-family: Orbitron, sans-serif;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      max-width: 20ch;
+    }
+    .hero p.lead {
+      color: var(--muted);
+      font-size: 1.125rem;
+      max-width: 42rem;
+      margin-bottom: 1.75rem;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    section {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+      scroll-margin-top: calc(var(--header-h) + 0.5rem);
+    }
+    section h2 {
+      font-family: Orbitron, sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: var(--primary);
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      border-color: rgba(167, 139, 250, 0.45);
+      box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.15);
+    }
+    .card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .card p { color: var(--muted); font-size: 0.95rem; }
+    .mono {
+      font-family: ui-monospace, "Cascadia Code", "Courier New", monospace;
+      font-size: 0.82rem;
+      word-break: break-all;
+      color: var(--text);
+      margin: 0.35rem 0 0;
+    }
+    .strip {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(34, 197, 94, 0.06));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.35rem;
+    }
+    .strip p { color: var(--muted); margin-bottom: 0.75rem; max-width: 48rem; }
+    .strip strong { color: var(--text); }
+    .feed-meta {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .feed-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .feed-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      display: grid;
+      gap: 0.35rem;
+    }
+    .feed-item header-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: baseline;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .feed-item a.detail {
+      font-size: 0.9rem;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .feed-item a.detail:hover { color: var(--primary); }
+    .feed-empty, .feed-error {
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .feed-error { border-color: rgba(248, 113, 113, 0.4); color: #fecaca; }
+    footer {
+      padding: 2.5rem 0 2rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .social {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .social a {
+      display: inline-flex;
+      width: 2.5rem;
+      height: 2.5rem;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+    .social a:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: rgba(167, 139, 250, 0.06);
+    }
+    .social a:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+    .social svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.15rem;
+      align-items: center;
+    }
+    .footer-links a {
+      font-size: 0.9rem;
+      padding: 0.35rem 0;
+      min-height: 2.5rem;
+      display: inline-flex;
+      align-items: center;
+    }
+    .feed-details {
+      margin-bottom: 1rem;
+      max-width: 48rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.65rem 1rem 0.85rem;
+      background: rgba(22, 18, 34, 0.45);
+    }
+    .feed-details summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.9rem;
+      list-style: none;
+    }
+    .feed-details summary::-webkit-details-marker { display: none; }
+    .feed-details summary::after {
+      content: " ▾";
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+    .feed-details[open] summary::after { content: " ▴"; }
+    .feed-details summary:hover { color: var(--text); }
+    .feed-details p {
+      margin-top: 0.65rem;
+      margin-bottom: 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header>
+    <div class="wrap nav">
+      <a class="logo" href="/">ADBONGO</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#services">Services</a>
+        <a href="#writing">Writing</a>
+        <a href="#infrastructure">This host</a>
+        <a href="#activity">RSS3 activity</a>
+        <a class="btn btn-ghost btn-compact" href="/maxayauwi-dashboard.html">RSS3 dashboard</a>
+        <a href="/node.html">Node reference</a>
+        <a href="/agents-upgrade.html">Agent upgrades</a>
+        <a id="contact-nav" class="nav-contact-dup" href="mailto:adbongorocks@gmail.com">Contact</a>
+        <a class="btn btn-primary" id="cta-contact" href="mailto:adbongorocks@gmail.com">Start a project</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="hero">
+      <div class="hero-matrix" aria-hidden="true">
+        <canvas id="hero-matrix-canvas" width="160" height="90"></canvas>
+      </div>
+      <div class="wrap">
+        <h1>AI agents, web3 surfaces, and design that ships.</h1>
+        <p class="lead" id="hero-tagline">
+          Consulting studio since 2007: agent systems, interfaces, and on-chain-adjacent product work—with a path toward Launchpad for projects that fit.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" id="hero-cta" href="mailto:adbongorocks@gmail.com">Start a project</a>
+          <a class="btn btn-ghost" href="/maxayauwi-dashboard.html">RSS3 dashboard</a>
+        </div>
+      </div>
+    </div>
+
+    <section id="evolution" aria-labelledby="evolution-heading">
+      <div class="wrap">
+        <h2 id="evolution-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">From legacy web to open stack</h2>
+        <div class="strip">
+          <p>
+            <strong>Legacy → now.</strong> Adbongo spent years on WordPress-class sites and traditional marketing tooling.
+            What you see here is the same brand on a deliberate upgrade path: <strong>static, fast surfaces</strong>,
+            <strong>RSS3-indexed</strong> open activity, <strong>AI-assisted</strong> workflows where they earn their place,
+            and infra you control—not a theme lock-in from fifteen years ago.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" aria-labelledby="services-heading">
+      <div class="wrap">
+        <h2 id="services-heading">Services</h2>
+        <div class="cards">
+          <article class="card">
+            <h3>AI agents</h3>
+            <p>Orchestration, tools, memory patterns, and Telegram or API-facing agents tailored to your workflow.</p>
+          </article>
+          <article class="card">
+            <h3>Web &amp; product design</h3>
+            <p>Interfaces for web3 and AI products—clear IA, accessible components, and deployable front ends.</p>
+          </article>
+          <article class="card">
+            <h3>RSS3 &amp; social graphs</h3>
+            <p>Hooks into open activity layers, explorers, and Farcaster-adjacent flows where your roadmap needs them.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="launchpad" aria-labelledby="launchpad-heading">
+      <div class="wrap">
+        <h2 id="launchpad-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Launchpad</h2>
+        <div class="strip">
+          <p><strong>Launchpad</strong> runs as a private membership accelerator. Projects that meet criteria can enter when they hold the right program NFT—separate from day-to-day consulting engagements.</p>
+          <a class="btn btn-ghost" href="mailto:adbongorocks@gmail.com?subject=Launchpad%20inquiry">Ask about Launchpad</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="writing" aria-labelledby="writing-heading">
+      <div class="wrap">
+        <h2 id="writing-heading">Writing</h2>
+        <p class="feed-meta" style="margin-bottom:1.25rem;max-width:48rem;">
+          Essays and advocacy—including company history and Launchpad framing—are published on
+          <strong style="color:var(--text)">Advocacy Launchpad PMA</strong> (Substack on
+          <strong style="color:var(--text)">adbongo.io</strong>).
+        </p>
+        <div class="cards">
+          <article class="card">
+            <h3>The Future of Adbongo</h3>
+            <p class="feed-meta" style="margin-bottom:0.75rem;">May 25, 2022 · Quantum Law and Golden Age Advocacy</p>
+            <p>
+              Opens with founding Adbongo in 2007 (“Ad” as advertising), burnout and evolution, and certifying as a
+              benefit corporation in 2011 with a triple-bottom-line structure—full piece may require a Substack sign-in
+              or subscription.
+            </p>
+            <p style="margin-top:0.75rem;">
+              <a href="https://www.adbongo.io/p/the-future-of-adbongo" target="_blank" rel="noopener noreferrer">Read on adbongo.io →</a>
+            </p>
+          </article>
+          <article class="card">
+            <h3>Publication &amp; RSS</h3>
+            <p>Browse all posts, subscribe, and use the feed in readers or your own site.</p>
+            <p style="margin-top:0.75rem;">
+              <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Advocacy Launchpad PMA →</a>
+            </p>
+            <p style="margin-top:0.5rem;">
+              <a href="https://www.adbongo.io/feed" target="_blank" rel="noopener noreferrer">RSS / Atom feed</a>
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="infrastructure" aria-labelledby="infra-heading">
+      <div class="wrap">
+        <h2 id="infra-heading">RSS3 on web3.adbongo.io</h2>
+        <p class="feed-meta" style="margin-bottom:1.25rem;">
+          Same stack as your Linode <strong style="color:var(--text)">rss3-node</strong> deploy: operator node, Maxayauwi comm agent path, and indexer-facing activity. Port <strong style="color:var(--text)">8080</strong> is the node HTTP API (may be blocked off-LAN).
+        </p>
+        <div class="cards">
+          <article class="card">
+            <h3>Node address</h3>
+            <p class="mono" id="infra-node-addr">0x0063951De34a75c25279cFe3C212F4855125Fd8f</p>
+            <p style="margin-top:0.75rem;"><a id="link-explorer-card" href="https://explorer.rss3.io/nodes/0x0063951De34a75c25279cFe3C212F4855125Fd8f" target="_blank" rel="noopener noreferrer">RSS3 Explorer →</a></p>
+          </article>
+          <article class="card">
+            <h3>Node API (this host)</h3>
+            <p>Core / operators and worker routes served by the RSS3 node container.</p>
+            <p style="margin-top:0.75rem;"><a href="http://web3.adbongo.io:8080/operators" target="_blank" rel="noopener noreferrer">Operators endpoint</a></p>
+          </article>
+          <article class="card">
+            <h3>RSS3 dashboard</h3>
+            <p>Maxayauwi node view: status-style layout (purple theme) — same UX that used to be the default landing here.</p>
+            <p style="margin-top:0.85rem;">
+              <a class="btn btn-primary" href="/maxayauwi-dashboard.html">Open RSS3 dashboard</a>
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="collect" aria-labelledby="collect-heading">
+      <div class="wrap">
+        <h2 id="collect-heading">Access NFTs</h2>
+        <div class="strip">
+          <p>Program NFTs can gate Launchpad eligibility. Mint paths may include Farcaster Frames where supported, with a stable web fallback for the long term.</p>
+          <span class="btn btn-ghost" style="opacity:0.65;cursor:default;pointer-events:none;">Mint — coming soon</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="upgrades" aria-labelledby="upgrades-heading">
+      <div class="wrap">
+        <h2 id="upgrades-heading">Agent NFT upgrades</h2>
+        <p class="feed-meta" style="margin-bottom:1.25rem;max-width:48rem;">
+          Holders of Adbongo <strong style="color:var(--text)">AI agent NFTs</strong> get a dedicated flow to evolve
+          capabilities—wallet connect, verify ownership, then choose upgrade paths (tiers, tools, or contract-defined
+          mechanics). Interaction model similar to polished NFT upgrade UIs like
+          <a href="https://noahsark.ai" target="_blank" rel="noopener noreferrer">noahsark.ai</a>.
+        </p>
+        <div class="strip">
+          <p>
+            The upgrade web app will ship on its own URL when contracts and agent backends are live. Until then, this
+            site links to the holder page and a contact line for early NFT buyers.
+          </p>
+          <a class="btn btn-ghost" href="/agents-upgrade.html">Holder hub — upgrades</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="activity" aria-labelledby="activity-heading">
+      <div class="wrap">
+        <h2 id="activity-heading">RSS3 activity</h2>
+        <p class="feed-meta" style="margin-bottom:0.75rem;max-width:48rem;">
+          Public activity for the operator address, from the RSS3 Global Indexer when this page is static (no comm-agent APIs). Not the same as node health.
+        </p>
+        <details class="feed-details">
+          <summary>Why not straight from the node?</summary>
+          <p class="feed-meta">
+            The legacy Maxayauwi view never wired node → webhook → comm-agent end-to-end. This list uses <strong style="color:var(--text)">public DSL</strong> data so visitors still see indexed activity when it exists—separate from “everything on the node is green.”
+          </p>
+        </details>
+        <p class="feed-meta" id="feed-account-line" aria-live="polite">Loading feed…</p>
+        <div id="feed-status" role="status" aria-live="polite"></div>
+        <ul class="feed-list" id="feed-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-row">
+      <div>
+        <div class="social" id="social-row" aria-label="Social links"></div>
+        <div class="footer-links" style="margin-top:1rem;">
+          <a id="link-explorer" href="#" target="_blank" rel="noopener noreferrer">RSS3 node explorer</a>
+          <a href="http://web3.adbongo.io:8080/operators" target="_blank" rel="noopener noreferrer">Operators API</a>
+          <a class="btn btn-ghost btn-compact" href="/maxayauwi-dashboard.html">RSS3 dashboard</a>
+          <a href="https://docs.rss3.io" target="_blank" rel="noopener noreferrer">RSS3 docs</a>
+          <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Blog (adbongo.io)</a>
+          <a href="https://www.adbongo.io/p/the-future-of-adbongo" target="_blank" rel="noopener noreferrer">Future of Adbongo</a>
+          <a href="/agents-upgrade.html">Agent NFT upgrades</a>
+        </div>
+      </div>
+      <p id="footer-infra" style="color:var(--muted);font-size:0.85rem;max-width:36rem;">
+        This site and the RSS3 stack run on <strong style="color:var(--text);font-weight:600;">web3.adbongo.io</strong> (Linode).
+        <span style="display:block;margin-top:0.35rem;">Long-form writing: <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);">www.adbongo.io</a> (Substack).</span>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const $ = (id) => document.getElementById(id);
+
+      /** Defaults when this file is served as static HTML (no Express /api routes). */
+      const DEFAULT_FEED_ACCOUNT =
+        "0x0063951De34a75c25279cFe3C212F4855125Fd8f";
+      const DEFAULT_EXPLORER =
+        "https://explorer.rss3.io/nodes/" + DEFAULT_FEED_ACCOUNT;
+
+      function fetchWithTimeout(url, ms) {
+        const c = new AbortController();
+        const t = setTimeout(function () {
+          c.abort();
+        }, ms);
+        return fetch(url, { signal: c.signal }).finally(function () {
+          clearTimeout(t);
+        });
+      }
+
+      function iconX() {
+        const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        s.setAttribute("viewBox", "0 0 24 24");
+        s.setAttribute("aria-hidden", "true");
+        const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        p.setAttribute(
+          "d",
+          "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+        );
+        s.appendChild(p);
+        return s;
+      }
+      function iconGlobe() {
+        const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        s.setAttribute("viewBox", "0 0 24 24");
+        s.setAttribute("aria-hidden", "true");
+        const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        p.setAttribute(
+          "d",
+          "M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm6.93 9h-2.65a15.65 15.65 0 0 0-1.52-5.3A8.012 8.012 0 0 1 18.93 11zM12 4a14.12 14.12 0 0 1 1.54 5H10.46A14.12 14.12 0 0 1 12 4zm-6.93 7h2.65a15.65 15.65 0 0 0 1.52 5.3A8.012 8.012 0 0 1 5.07 11zm0-2a8.012 8.012 0 0 1 5.74-5.3A15.65 15.65 0 0 0 8.37 9H5.07zm7.86 0a15.65 15.65 0 0 0 1.52-5.3 8.012 8.012 0 0 1 5.74 5.3h-2.65a15.65 15.65 0 0 0-1.52 5.3A8.012 8.012 0 0 1 12.93 11zm-1.86 0H12.93a13.72 13.72 0 0 1-.93 4.22A13.72 13.72 0 0 1 11.07 11zm-2.14 0H8.07a13.72 13.72 0 0 1 .93-4.22A13.72 13.72 0 0 1 8.93 11zm1.07 9a14.12 14.12 0 0 1-1.54-5h6.16a14.12 14.12 0 0 1-1.54 5 8.012 8.012 0 0 1-3.08 0zm5.74-.7a15.65 15.65 0 0 0 1.52-5.3h2.65a8.012 8.012 0 0 1-5.74 5.3z"
+        );
+        s.appendChild(p);
+        return s;
+      }
+
+      function addSocialLink(href, label, iconEl) {
+        const a = document.createElement("a");
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.setAttribute("aria-label", label);
+        a.appendChild(iconEl);
+        $("social-row").appendChild(a);
+      }
+
+      function fmtTime(ts) {
+        if (!ts) return "—";
+        const d = new Date(ts * 1000);
+        return isNaN(d.getTime()) ? "—" : d.toLocaleString();
+      }
+
+      function shortAddr(a) {
+        if (!a || typeof a !== "string") return "";
+        return a.length > 14 ? a.slice(0, 6) + "…" + a.slice(-4) : a;
+      }
+
+      function renderFeedItems(payload) {
+        const list = $("feed-list");
+        list.innerHTML = "";
+        const status = $("feed-status");
+        status.innerHTML = "";
+        if (payload.error) {
+          status.innerHTML =
+            '<p class="feed-error" role="alert">' +
+            String(payload.error).replace(/</g, "&lt;") +
+            "</p>";
+          return;
+        }
+        const items = payload.data || [];
+        if (!items.length) {
+          status.innerHTML =
+            '<p class="feed-empty">No activities returned yet for this account. Check RSS3 indexer coverage or RSS3_FEED_ACCOUNT.</p>';
+          return;
+        }
+        items.forEach(function (item) {
+          const li = document.createElement("li");
+          li.className = "feed-item";
+          const head = document.createElement("div");
+          head.className = "feed-item-header-line";
+          head.style.cssText =
+            "display:flex;flex-wrap:wrap;gap:0.5rem 1rem;align-items:center;font-size:0.8rem;color:var(--muted);";
+          const parts = [
+            item.network || "—",
+            item.platform || "—",
+            item.tag || "",
+            item.type || "",
+          ].filter(Boolean);
+          head.textContent = parts.join(" · ");
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = (item.direction || "activity").toUpperCase();
+          const line = document.createElement("div");
+          line.appendChild(badge);
+          line.appendChild(head);
+          li.appendChild(line);
+
+          const action = (item.actions && item.actions[0]) || {};
+          const meta = action.metadata || {};
+          const title =
+            meta.title ||
+            meta.name ||
+            meta.content ||
+            (item.id ? "Tx " + shortAddr(item.id) : "Activity");
+          const url =
+            (action.related_urls && action.related_urls[0]) ||
+            (item.id
+              ? "https://explorer.rss3.io/tx/" + encodeURIComponent(item.id)
+              : null);
+
+          const a = document.createElement("a");
+          a.className = "detail";
+          a.href = url || "#";
+          if (!url) {
+            a.removeAttribute("href");
+            a.style.pointerEvents = "none";
+            a.style.opacity = "0.85";
+          } else {
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+          }
+          a.textContent =
+            typeof title === "string"
+              ? title.length > 160
+                ? title.slice(0, 157) + "…"
+                : title
+              : "View activity";
+
+          const time = document.createElement("div");
+          time.style.fontSize = "0.8rem";
+          time.style.color = "var(--muted)";
+          time.textContent = fmtTime(item.timestamp);
+
+          li.appendChild(a);
+          li.appendChild(time);
+          list.appendChild(li);
+        });
+      }
+
+      async function loadConfig() {
+        try {
+          const r = await fetchWithTimeout("/api/site-config", 6000);
+          if (r.ok) {
+            const cfg = await r.json();
+            if (cfg && cfg.brand) return cfg;
+          }
+        } catch (e) {}
+        return {
+          brand: "Adbongo",
+          tagline: null,
+          marketingSiteUrl: "https://web3.adbongo.io",
+          feedAccount: DEFAULT_FEED_ACCOUNT,
+          nodeAddress: DEFAULT_FEED_ACCOUNT,
+          explorerNodeUrl: DEFAULT_EXPLORER,
+          contactHref: "mailto:adbongorocks@gmail.com",
+          social: {},
+        };
+      }
+
+      async function loadFeedPayload(account) {
+        try {
+          const r = await fetchWithTimeout("/api/rss3/feed?limit=20", 10000);
+          if (r.ok) {
+            const j = await r.json();
+            if (!j.error) return { payload: j, source: "same-origin" };
+          }
+        } catch (e) {}
+        const giUrl =
+          "https://gi.rss3.io/decentralized/" +
+          encodeURIComponent(account) +
+          "?limit=20&action_limit=8";
+        const r2 = await fetchWithTimeout(giUrl, 15000);
+        if (!r2.ok) {
+          const errText = await r2.text().catch(function () {
+            return r2.statusText;
+          });
+          throw new Error(errText || "RSS3 indexer error");
+        }
+        return { payload: await r2.json(), source: "gi.rss3.io" };
+      }
+
+      (async function run() {
+        let cfg;
+        try {
+          cfg = await loadConfig();
+        } catch (e) {
+          cfg = {
+            marketingSiteUrl: "https://web3.adbongo.io",
+            feedAccount: DEFAULT_FEED_ACCOUNT,
+            nodeAddress: DEFAULT_FEED_ACCOUNT,
+            explorerNodeUrl: DEFAULT_EXPLORER,
+            contactHref: "mailto:adbongorocks@gmail.com",
+            social: {},
+          };
+        }
+
+        if (cfg.tagline) $("hero-tagline").textContent = cfg.tagline;
+        const contact = cfg.contactHref || "mailto:adbongorocks@gmail.com";
+        $("contact-nav").href = contact;
+        $("cta-contact").href = contact;
+        $("hero-cta").href = contact;
+        $("link-explorer").href = cfg.explorerNodeUrl || DEFAULT_EXPLORER;
+
+        var addrLine = $("infra-node-addr");
+        if (addrLine) {
+          addrLine.textContent = cfg.nodeAddress || DEFAULT_FEED_ACCOUNT;
+        }
+        var explorerCard = $("link-explorer-card");
+        if (explorerCard) {
+          explorerCard.href = cfg.explorerNodeUrl || DEFAULT_EXPLORER;
+        }
+
+        var infraEl = $("footer-infra");
+        if (infraEl && cfg.marketingSiteUrl) {
+          var m = String(cfg.marketingSiteUrl).replace(/^https?:\/\//i, "");
+          m = m.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+          infraEl.innerHTML =
+            'This site and the RSS3 stack run on <strong style="color:var(--text);font-weight:600;">' +
+            m +
+            '</strong> (Linode).' +
+            '<span style="display:block;margin-top:0.35rem;">Long-form writing: <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);">www.adbongo.io</a> (Substack).</span>';
+        }
+
+        const row = $("social-row");
+        row.innerHTML = "";
+        const social = cfg.social || {};
+        if (social.warpcast) addSocialLink(social.warpcast, "Warpcast", iconGlobe());
+        if (social.farcaster) addSocialLink(social.farcaster, "Farcaster profile", iconGlobe());
+        if (social.x) addSocialLink(social.x, "X", iconX());
+
+        const acc = cfg.feedAccount || cfg.nodeAddress || DEFAULT_FEED_ACCOUNT;
+        $("feed-account-line").textContent =
+          "Account indexed in RSS3 DSL: " + acc;
+
+        const feedList = $("feed-list");
+        feedList.setAttribute("aria-busy", "true");
+        try {
+          const { payload, source } = await loadFeedPayload(acc);
+          if (source === "gi.rss3.io") {
+            $("feed-account-line").textContent +=
+              " · feed loaded via RSS3 Global Indexer (static site mode)";
+          }
+          renderFeedItems(payload);
+        } catch (e) {
+          $("feed-status").innerHTML =
+            '<p class="feed-error" role="alert">Could not load activity feed. If you expected same-origin APIs, run the comm agent behind this host or open port 8080 only on a trusted network.</p>';
+        } finally {
+          feedList.removeAttribute("aria-busy");
+        }
+      })();
+    })();
+  </script>
+  <script>
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var canvas = document.getElementById("hero-matrix-canvas");
+      var hero = document.querySelector(".hero");
+      if (!canvas || !hero) return;
+      var ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.imageSmoothingEnabled = false;
+
+      var CELL = 4;
+      var drops = [];
+      var lowW = 0;
+      var lowH = 0;
+      var raf = 0;
+
+      function layout() {
+        var w = hero.offsetWidth;
+        var h = hero.offsetHeight;
+        if (w < 1 || h < 1) return;
+        lowW = Math.max(32, Math.ceil(w / CELL));
+        lowH = Math.max(24, Math.ceil(h / CELL));
+        canvas.width = lowW;
+        canvas.height = lowH;
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+        while (drops.length < lowW) drops.push(Math.random() * -lowH);
+        drops.length = lowW;
+      }
+
+      function tick() {
+        ctx.fillStyle = "rgba(12, 10, 18, 0.35)";
+        ctx.fillRect(0, 0, lowW, lowH);
+
+        for (var col = 0; col < lowW; col++) {
+          var y = drops[col];
+          var yi = Math.floor(y);
+          var len = 5 + ((col * 7) % 9);
+          for (var dy = 0; dy < len; dy++) {
+            var row = yi - dy;
+            if (row < 0 || row >= lowH) continue;
+            var head = dy === 0;
+            var a = head ? 0.92 : Math.max(0, 0.55 - dy * 0.07);
+            if (head && Math.random() < 0.08) {
+              ctx.fillStyle = "rgba(190, 255, 210, " + a + ")";
+            } else {
+              ctx.fillStyle = "rgba(34, 220, 100, " + a + ")";
+            }
+            ctx.fillRect(col, row, 1, 1);
+          }
+          if (y > lowH + len && Math.random() > 0.975) drops[col] = Math.random() * -8;
+          drops[col] += 0.35 + (col % 5) * 0.04;
+        }
+
+        raf = requestAnimationFrame(tick);
+      }
+
+      layout();
+      if (lowW > 0) tick();
+
+      var ro = new ResizeObserver(function () {
+        cancelAnimationFrame(raf);
+        layout();
+        if (lowW > 0) tick();
+      });
+      ro.observe(hero);
+    })();
+  </script>
+</body>
+</html>
