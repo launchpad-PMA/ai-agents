@@ -12,20 +12,20 @@ from datetime import datetime
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# ── Load env from local .env ────────────────────────────────────────────────────
-def _load_env():
-    env_path = os.environ.get("ENV_PATH", r"C:\Users\Baba\.env")
-    try:
-        with open(env_path) as f:
-            for line in f:
-                line = line.strip()
-                if "=" in line and not line.startswith("#"):
-                    k, v = line.split("=", 1)
-                    os.environ.setdefault(k.strip(), v.strip())
-    except FileNotFoundError:
-        pass
-
-_load_env()
+# ── Load local .env only if running locally (not on Railway) ──────────────────
+if not os.environ.get("RAILWAY_STATIC_URL"):
+    def _load_env():
+        env_path = os.environ.get("ENV_PATH", r"C:\Users\Baba\.env")
+        try:
+            with open(env_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if "=" in line and not line.startswith("#"):
+                        k, v = line.split("=", 1)
+                        os.environ.setdefault(k.strip(), v.strip())
+        except FileNotFoundError:
+            pass
+    _load_env()
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
