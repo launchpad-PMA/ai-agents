@@ -30,8 +30,8 @@ if not os.environ.get("RAILWAY_STATIC_URL"):
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_SERVICE_ACCOUNT_EMAIL = os.environ.get("GOOGLE_SERVICE_ACCOUNT_EMAIL", "")
+GOOGLE_PRIVATE_KEY = os.environ.get("GOOGLE_PRIVATE_KEY", "")
 
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
@@ -179,18 +179,22 @@ def save_to_memory(text: str, source: str = "telegram") -> bool:
         logger.error(f"Save memory error: {e}")
         return False
 
-# ── Google Tasks ───────────────────────────────────────────────────────────────
+# ── Google Tasks (Service Account) ─────────────────────────────────────────────
 def _get_tasks_service():
-    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+    if not GOOGLE_SERVICE_ACCOUNT_EMAIL or not GOOGLE_PRIVATE_KEY:
+        logger.warning("Google Service Account not configured")
         return None
     try:
-        from google.oauth2.credentials import Credentials
+        from google.oauth2 import service_account
         from googleapiclient.discovery import build
-        creds = Credentials.from_authorized_user_info({
-            "client_id": GOOGLE_CLIENT_ID,
-            "client_secret": GOOGLE_CLIENT_SECRET,
+        
+        credentials = service_account.Credentials.from_service_account_info({
+            "type": "service_account",
+            "client_email": GOOGLE_SERVICE_ACCOUNT_EMAIL,
+            "private_key": GOOGLE_PRIVATE_KEY.replace("\\n", "\n"),
         }, scopes=["https://www.googleapis.com/auth/tasks"])
-        return build("tasks", "v1", credentials=creds)
+        
+        return build("tasks", "v1", credentials=credentials)
     except Exception as e:
         logger.error(f"Google Tasks error: {e}")
         return None
@@ -206,18 +210,38 @@ def get_tasks() -> list:
         logger.error(f"Get tasks error: {e}")
         return []
 
-# ── Google Sheets ───────────────────────────────────────────────────────────────
+def add_task(title: str, notes: str = "") -> bool:
+    """Add a task to the default task list"""
+    service = _get_tasks_service()
+    if service is None:
+        return False
+    try:
+        tasklist_id = "@default"
+        task = {"title": title}
+        if notes:
+            task["notes"] = notes
+        service.tasks().insert(tasklist=tasklist_id, body=task).execute()
+        return True
+    except Exception as e:
+        logger.error(f"Add task error: {e}")
+        return False
+
+# ── Google Sheets (Service Account) ─────────────────────────────────────────────
 def _get_sheets_service():
-    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+    if not GOOGLE_SERVICE_ACCOUNT_EMAIL or not GOOGLE_PRIVATE_KEY:
+        logger.warning("Google Service Account not configured")
         return None
     try:
-        from google.oauth2.credentials import Credentials
+        from google.oauth2 import service_account
         from googleapiclient.discovery import build
-        creds = Credentials.from_authorized_user_info({
-            "client_id": GOOGLE_CLIENT_ID,
-            "client_secret": GOOGLE_CLIENT_SECRET,
+        
+        credentials = service_account.Credentials.from_service_account_info({
+            "type": "service_account",
+            "client_email": GOOGLE_SERVICE_ACCOUNT_EMAIL,
+            "private_key": GOOGLE_PRIVATE_KEY.replace("\\n", "\n"),
         }, scopes=["https://www.googleapis.com/auth/spreadsheets"])
-        return build("sheets", "v4", credentials=creds)
+        
+        return build("sheets", "v4", credentials=credentials)
     except Exception as e:
         logger.error(f"Google Sheets error: {e}")
         return None
@@ -260,7 +284,10 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• \"Remember that...\"\n"
         "• \"What did I say about...\"\n\n"
         "*Images:*\n"
-        "• Send photo + caption to analyze"
+        "• Send photo + caption to analyze\n\n"
+        "*Tasks:*\n"
+        "• \"add task...\" - adds to Google Tasks\n"
+        "• /tasks - view your tasks"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
@@ -294,6 +321,16 @@ async def tasks_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for task in tasks[:10]:
         task_text += f"• {task.get('title', 'Untitled')}\n"
     await update.message.reply_text(task_text, parse_mode="Markdown")
+
+async def addtask_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: /addtask <task title>")
+        return
+    title = " ".join(context.args)
+    if add_task(title):
+        await update.message.reply_text(f"🦜 *Task added:* _{title}_", parse_mode="Markdown")
+    else:
+        await update.message.reply_text("🦜 Could not add task. Check Google Tasks config.")
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name or "traveler"
@@ -342,6 +379,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(context_text, parse_mode="Markdown")
         else:
             await update.message.reply_text("🦜 Nothing found in memory.")
+        return
+    
+    # Natural language task addition
+    if lower_msg.startswith("add task") or lower_msg.startswith("create task") or lower_msg.startswith("new task"):
+        task_title = user_msg
+        for prefix in ["add task", "create task", "new task"]:
+            task_title = task_title.replace(prefix, "", 1).strip()
+        task_title = task_title.lstrip(": ").strip()
+        if task_title and add_task(task_title):
+            await update.message.reply_text(f"🦜 *Task added:* _{task_title}_", parse_mode="Markdown")
+        else:
+            await update.message.reply_text("🦜 Could not add task. Check Google Tasks config.")
         return
     
     context_text = search_memory(user_msg)
@@ -396,6 +445,7 @@ def main():
     app.add_handler(CommandHandler("memory", memory_cmd))
     app.add_handler(CommandHandler("save", save_cmd))
     app.add_handler(CommandHandler("tasks", tasks_cmd))
+    app.add_handler(CommandHandler("addtask", addtask_cmd))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
