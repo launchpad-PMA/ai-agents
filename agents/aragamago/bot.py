@@ -62,19 +62,38 @@ def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -
         full_prompt = SOUL
         if context:
             full_prompt += f"\n\n--- RELEVANT MEMORY ---\n{context}\n--- END MEMORY ---"
+        full_prompt += f"\n\nBaba says: {user_message}"
         
-        if image_path and os.path.exists(image_path):
-            from PIL import Image
-            image = Image.open(image_path)
-            content_parts = [full_prompt, image, f"\n\nBaba says: {user_message}"]
-            response = model.generate_content(content_parts)
-        else:
-            full_prompt += f"\n\nBaba says: {user_message}"
-            response = model.generate_content(full_prompt)
-        
+        response = model.generate_content(full_prompt)
         return response.text.strip()
     except Exception as e:
         logger.error(f"Gemini error: {e}")
+        return None
+
+def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
+    """Handle messages with images - accepts BytesIO object"""
+    if not GEMINI_API_KEY:
+        return None
+    try:
+        import google.generativeai as genai
+        from PIL import Image
+        import io
+        
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        
+        full_prompt = SOUL
+        if context:
+            full_prompt += f"\n\n--- RELEVANT MEMORY ---\n{context}\n--- END MEMORY ---"
+        
+        image_bytes.seek(0)
+        image = Image.open(image_bytes)
+        content_parts = [full_prompt, image, f"\n\nBaba says: {user_message}"]
+        response = model.generate_content(content_parts)
+        
+        return response.text.strip()
+    except Exception as e:
+        logger.error(f"Gemini image error: {e}")
         return None
 
 # ── Voice Processing ───────────────────────────────────────────────────────────
@@ -283,15 +302,20 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     status_msg = await update.message.reply_text("🦜 *Analyzing image...*", parse_mode="Markdown")
     try:
         photo = update.message.photo[-1]
-        input_path = "user_image.jpg"
-        await photo.get_file().download_to_drive(input_path)
+        file = await photo.get_file()
+        
+        # Download to bytes (works on Railway's ephemeral filesystem)
+        import io
+        image_bytes = io.BytesIO()
+        await file.download_to_memory(image_bytes)
+        image_bytes.seek(0)
+        
         context_text = search_memory(user_msg)
-        reply = get_ai_reply(user_msg, context_text, image_path=input_path)
+        reply = get_ai_reply_image(user_msg, context_text, image_bytes)
+        
         if not reply:
             reply = "🦜 I see the image but cannot process it right now."
         await status_msg.edit_text(reply, parse_mode="Markdown")
-        if os.path.exists(input_path):
-            os.remove(input_path)
     except Exception as e:
         logger.error(f"Photo handler error: {e}")
         await status_msg.edit_text("🦜 Something disrupted the signal.")
