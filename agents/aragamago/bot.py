@@ -30,8 +30,8 @@ if not os.environ.get("RAILWAY_STATIC_URL"):
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
-GOOGLE_SERVICE_ACCOUNT_EMAIL = os.environ.get("GOOGLE_SERVICE_ACCOUNT_EMAIL", "")
-GOOGLE_PRIVATE_KEY = os.environ.get("GOOGLE_PRIVATE_KEY", "")
+
+GOOGLE_SERVICE_ACCOUNT_JSON = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "")
 
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
@@ -181,18 +181,19 @@ def save_to_memory(text: str, source: str = "telegram") -> bool:
 
 # ── Google Tasks (Service Account) ─────────────────────────────────────────────
 def _get_tasks_service():
-    if not GOOGLE_SERVICE_ACCOUNT_EMAIL or not GOOGLE_PRIVATE_KEY:
+    if not GOOGLE_SERVICE_ACCOUNT_JSON:
         logger.warning("Google Service Account not configured")
         return None
     try:
+        import json
         from google.oauth2 import service_account
         from googleapiclient.discovery import build
         
-        credentials = service_account.Credentials.from_service_account_info({
-            "type": "service_account",
-            "client_email": GOOGLE_SERVICE_ACCOUNT_EMAIL,
-            "private_key": GOOGLE_PRIVATE_KEY.replace("\\n", "\n"),
-        }, scopes=["https://www.googleapis.com/auth/tasks"])
+        service_account_info = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
+        credentials = service_account.Credentials.from_service_account_info(
+            service_account_info,
+            scopes=["https://www.googleapis.com/auth/tasks"]
+        )
         
         return build("tasks", "v1", credentials=credentials)
     except Exception as e:
@@ -228,18 +229,19 @@ def add_task(title: str, notes: str = "") -> bool:
 
 # ── Google Sheets (Service Account) ─────────────────────────────────────────────
 def _get_sheets_service():
-    if not GOOGLE_SERVICE_ACCOUNT_EMAIL or not GOOGLE_PRIVATE_KEY:
+    if not GOOGLE_SERVICE_ACCOUNT_JSON:
         logger.warning("Google Service Account not configured")
         return None
     try:
+        import json
         from google.oauth2 import service_account
         from googleapiclient.discovery import build
         
-        credentials = service_account.Credentials.from_service_account_info({
-            "type": "service_account",
-            "client_email": GOOGLE_SERVICE_ACCOUNT_EMAIL,
-            "private_key": GOOGLE_PRIVATE_KEY.replace("\\n", "\n"),
-        }, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+        service_account_info = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
+        credentials = service_account.Credentials.from_service_account_info(
+            service_account_info,
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+        )
         
         return build("sheets", "v4", credentials=credentials)
     except Exception as e:
