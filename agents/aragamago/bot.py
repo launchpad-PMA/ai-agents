@@ -29,6 +29,7 @@ if not os.environ.get("RAILWAY_STATIC_URL"):
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
 
 GOOGLE_SERVICE_ACCOUNT_JSON = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "")
@@ -50,25 +51,45 @@ IMPORTANT: You have access to a long-term memory system. When Baba asks about pa
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
 logger = logging.getLogger(__name__)
 
-# ── Google Gemini Reply ─────────────────────────────────────────────────────────
+# ── AI Reply Logic (Gemini + OpenRouter Fallback) ────────────────────────────────
 def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -> str:
-    if not GEMINI_API_KEY:
-        return None
-    try:
-        import google.generativeai as genai
-        genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-2.0-flash")
+    full_prompt = SOUL
+    if context:
+        full_prompt += f"\n\n--- RELEVANT MEMORY ---\n{context}\n--- END MEMORY ---"
         
-        full_prompt = SOUL
-        if context:
-            full_prompt += f"\n\n--- RELEVANT MEMORY ---\n{context}\n--- END MEMORY ---"
-        full_prompt += f"\n\nBaba says: {user_message}"
-        
-        response = model.generate_content(full_prompt)
-        return response.text.strip()
-    except Exception as e:
-        logger.error(f"Gemini error: {e}")
-        return None
+    combined_prompt = f"{full_prompt}\n\nBaba says: {user_message}"
+
+    # 1. Try Gemini
+    if GEMINI_API_KEY:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=GEMINI_API_KEY)
+            model = genai.GenerativeModel("gemini-2.0-flash")
+            response = model.generate_content(combined_prompt)
+            return response.text.strip()
+        except Exception as e:
+            logger.error(f"Gemini error/exhausted: {e}. Falling back to OpenRouter...")
+
+    # 2. Try OpenRouter Fallback
+    if OPENROUTER_API_KEY:
+        try:
+            from openai import OpenAI
+            client = OpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=OPENROUTER_API_KEY,
+            )
+            response = client.chat.completions.create(
+                model="google/gemini-2.5-flash", # Fallback model
+                messages=[
+                    {"role": "system", "content": full_prompt},
+                    {"role": "user", "content": user_message}
+                ]
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            logger.error(f"OpenRouter error: {e}")
+
+    return None
 
 def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
     """Handle messages with images - accepts BytesIO object"""
@@ -399,7 +420,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply = get_ai_reply(user_msg, context_text)
     
     if not reply:
-        reply = f"🦜 *Aragamago hears you, {user_name}.*\n\nAdd `GEMINI_API_KEY` to enable AI responses."
+        reply = f"🦜 *Aragamago hears you, {user_name}.*\n\nAdd `GEMINI_API_KEY` or `OPENROUTER_API_KEY` to enable AI responses."
     
     await update.message.reply_text(reply, parse_mode="Markdown")
 
@@ -418,7 +439,7 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
         reply_text = get_ai_reply(user_msg)
         if not reply_text:
-            await status_msg.edit_text("🦜 Gemini not configured.")
+            await status_msg.edit_text("🦜 AI not configured (Missing Gemini or OpenRouter Key).")
             return
         if ELEVENLABS_API_KEY:
             await status_msg.edit_text("🦜 *Speaking...*", parse_mode="Markdown")
