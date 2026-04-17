@@ -32,8 +32,6 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
 
-GOOGLE_SERVICE_ACCOUNT_JSON = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "")
-
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
 
@@ -187,6 +185,42 @@ def search_memory(query: str, top_k: int = 5) -> str:
 def save_to_memory(text: str, source: str = "telegram") -> bool:
     if upsert_to_brain is None:
         return False
+
+def get_recent_history(chat_id: str, limit: int = 5) -> str:
+    try:
+        import sys
+        sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+        from connectors.supabase_connector import db
+        if not db:
+            return ""
+        # Fetch last `limit` messages. Limit usually takes the first N, 
+        # so if we want the actual most recent, we'd need to order by created_at DESC then reverse.
+        result = db.table("conversation_history").select("*").eq("chat_id", str(chat_id)).order("created_at", desc=True).limit(limit).execute()
+        history = result.data or []
+        history.reverse() # Correct chronological order
+        context_parts = []
+        for row in history:
+            role = row.get("role", "user")
+            content = row.get("content", "")
+            context_parts.append(f"{role.capitalize()}: {content}")
+        return "\n".join(context_parts)
+    except Exception as e:
+        logger.error(f"Error fetching conversation history: {e}")
+        return ""
+
+def save_interaction(chat_id: str, role: str, content: str):
+    try:
+        import sys
+        sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+        from connectors.supabase_connector import insert
+        insert("conversation_history", {
+            "chat_id": str(chat_id),
+            "role": role,
+            "content": content
+        })
+    except Exception as e:
+        logger.error(f"Error saving to conversation history: {e}")
+
     try:
         doc_id = f"telegram_{uuid.uuid4().hex[:12]}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         metadata = {
@@ -200,87 +234,11 @@ def save_to_memory(text: str, source: str = "telegram") -> bool:
         logger.error(f"Save memory error: {e}")
         return False
 
-# ── Google Tasks (Service Account) ─────────────────────────────────────────────
-def _get_tasks_service():
-    if not GOOGLE_SERVICE_ACCOUNT_JSON:
-        logger.warning("Google Service Account not configured")
-        return None
-    try:
-        import json
-        from google.oauth2 import service_account
-        from googleapiclient.discovery import build
-        
-        service_account_info = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
-        credentials = service_account.Credentials.from_service_account_info(
-            service_account_info,
-            scopes=["https://www.googleapis.com/auth/tasks"]
-        )
-        
-        return build("tasks", "v1", credentials=credentials)
-    except Exception as e:
-        logger.error(f"Google Tasks error: {e}")
-        return None
-
-def get_tasks() -> list:
-    service = _get_tasks_service()
-    if service is None:
-        return []
-    try:
-        results = service.tasklists().list().execute()
-        return results.get("items", [])
-    except Exception as e:
-        logger.error(f"Get tasks error: {e}")
-        return []
-
-def add_task(title: str, notes: str = "") -> bool:
-    """Add a task to the default task list"""
-    service = _get_tasks_service()
-    if service is None:
-        return False
-    try:
-        tasklist_id = "@default"
-        task = {"title": title}
-        if notes:
-            task["notes"] = notes
-        service.tasks().insert(tasklist=tasklist_id, body=task).execute()
-        return True
-    except Exception as e:
-        logger.error(f"Add task error: {e}")
-        return False
-
-# ── Google Sheets (Service Account) ─────────────────────────────────────────────
-def _get_sheets_service():
-    if not GOOGLE_SERVICE_ACCOUNT_JSON:
-        logger.warning("Google Service Account not configured")
-        return None
-    try:
-        import json
-        from google.oauth2 import service_account
-        from googleapiclient.discovery import build
-        
-        service_account_info = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
-        credentials = service_account.Credentials.from_service_account_info(
-            service_account_info,
-            scopes=["https://www.googleapis.com/auth/spreadsheets"]
-        )
-        
-        return build("sheets", "v4", credentials=credentials)
-    except Exception as e:
-        logger.error(f"Google Sheets error: {e}")
-        return None
-
-def read_sheet(spreadsheet_id: str, range_name: str = "Sheet1!A1:Z100") -> list:
-    service = _get_sheets_service()
-    if service is None:
-        return []
-    try:
-        result = service.spreadsheets().values().get(
-            spreadsheetId=spreadsheet_id, range=range_name
-        ).execute()
-        return result.get("values", [])
-    except Exception as e:
-        logger.error(f"Read sheet error: {e}")
-        return []
+# ── Google integrations ────────────────────────────────────────────────────────
+try:
+    from agents.aragamago.google_tools import get_tasks, add_task, read_sheet, append_sheet
+except ImportError:
+    pass
 
 # ── Handlers ───────────────────────────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -416,8 +374,20 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("🦜 Could not add task. Check Google Tasks config.")
         return
     
+    chat_id = str(update.effective_chat.id)
+    save_interaction(chat_id, "user", user_msg)
+    
+    # Context combination
     context_text = search_memory(user_msg)
+    recent_history = get_recent_history(chat_id, limit=5)
+    
+    if recent_history:
+        context_text = f"--- RECENT CHAT HISTORY ---\n{recent_history}\n\n--- VECTOR MEMORY ---\n{context_text}"
+        
     reply = get_ai_reply(user_msg, context_text)
+    
+    if reply:
+        save_interaction(chat_id, "assistant", reply)
     
     if not reply:
         reply = f"🦜 *Aragamago hears you, {user_name}.*\n\nAdd `GEMINI_API_KEY` or `OPENROUTER_API_KEY` to enable AI responses."
