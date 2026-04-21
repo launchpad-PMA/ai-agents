@@ -15,12 +15,32 @@ The bot needs its API keys to function. It will crash until these are provided.
 2. Go to the **Variables** tab.
 3. Click **Raw Editor** or add them one by one. You need to add the following keys from your local `.env`:
    - `TELEGRAM_BOT_TOKEN`
+   - `GEMINI_API_KEY`
+   - `OPENROUTER_API_KEY`
+   - `ELEVENLABS_API_KEY`
    - `OPENAI_API_KEY`
    - `SUPABASE_URL`
    - `SUPABASE_PUBLISHABLE_KEY`
    - `SUPABASE_SECRET_KEY`
    - `PINECONE_API_KEY`
    - `PINECONE_HOST`
+   - `PINECONE_INDEX_NAME`
+   - `GOOGLE_SERVICE_ACCOUNT_JSON`
+   - `GOOGLE_SHEET_ID`
+
+Optional, depending on features you want enabled:
+
+- `GOOGLE_SHEET_URL` if you prefer to store the full Google Sheets link instead of only the raw ID
+- `GOOGLE_TOKEN_JSON` for Google Tasks and Calendar access
+- `GOOGLE_CREDENTIALS_JSON` if you need to generate a fresh `GOOGLE_TOKEN_JSON`
+- `GOOGLE_CALENDAR_ID` if not using the default `primary` calendar
+- `ELEVENLABS_VOICE_ID` if you want a configurable voice ID later
+
+Notes:
+
+- Sheets can run with a service account.
+- Google Tasks and Google Calendar currently require OAuth user credentials via `GOOGLE_TOKEN_JSON`.
+- Do not set `ENV_PATH` on Railway; Railway should inject the actual variables directly.
 
 ## 3. Deploy
 1. Once the variables are added, Railway should automatically trigger a new deployment.
