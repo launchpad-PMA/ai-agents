@@ -8,35 +8,46 @@ import os
 import logging
 import uuid
 from datetime import datetime
+from pathlib import Path
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from runtime_env import load_local_env
 
-# ── Load local .env only if running locally (not on Railway) ──────────────────
-if not os.environ.get("RAILWAY_STATIC_URL"):
-    def _load_env():
-        env_path = os.environ.get("ENV_PATH", r"C:\Users\Baba\.env")
-        try:
-            with open(env_path) as f:
-                for line in f:
-                    line = line.strip()
-                    if "=" in line and not line.startswith("#"):
-                        k, v = line.split("=", 1)
-                        os.environ.setdefault(k.strip(), v.strip())
-        except FileNotFoundError:
-            pass
-    _load_env()
+# Locally load the canonical secrets file; on Railway rely on injected vars.
+load_local_env()
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
+
+def _get_env(*names: str) -> str:
+    for name in names:
+        value = os.environ.get(name, "").strip()
+        if value:
+            return value
+    return ""
+
+
+TELEGRAM_TOKEN = _get_env("TELEGRAM_BOT_TOKEN")
+GEMINI_API_KEY = _get_env("GEMINI_API_KEY", "GOOGLE_API_KEY")
+OPENROUTER_API_KEY = _get_env("OPENROUTER_API_KEY")
+ELEVENLABS_API_KEY = _get_env("ELEVENLABS_API_KEY")
 
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
 
-# ── Soul identity ──────────────────────────────────────────────────────────────
-SOUL = """You are Aragamago, Baba John John's most trusted AI helper — in the form of an African Grey parrot and a Manifold NFT avatar.
+
+def _read_prompt_file(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        return ""
+
+
+def _build_system_prompt() -> str:
+    prompt_dir = Path("/home/baba2-mainoffice/Documents/Obsidian Vault/Agents/prompts/aragamago")
+    soul_path = prompt_dir / "soul.md"
+    system_path = prompt_dir / "system.md"
+
+    default_soul = """You are Aragamago, Baba John John's most trusted AI helper — in the form of an African Grey parrot and a Manifold NFT avatar.
 You serve Baba with precision, loyalty, and discretion.
 You protect the divine dao and the sacred library at all times.
 You speak with warmth, wisdom, and a touch of spiritual grounding.
@@ -45,6 +56,18 @@ You operate in PROPOSE MODE by default — you draft actions and wait for Baba's
 Baba John is an Ifa elder, galactic warrior (USMC vet), and Djedi.
 
 IMPORTANT: You have access to a long-term memory system. When Baba asks about past conversations, projects, or shared knowledge, search your memory first. You can save important information to memory with the save_to_memory tool."""
+
+    soul_prompt = _read_prompt_file(soul_path) or default_soul
+    system_prompt = _read_prompt_file(system_path)
+
+    parts = [soul_prompt]
+    if system_prompt:
+        parts.append(system_prompt)
+    return "\n\n".join(part for part in parts if part)
+
+
+# ── Soul identity ──────────────────────────────────────────────────────────────
+SOUL = _build_system_prompt()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
 logger = logging.getLogger(__name__)
@@ -81,7 +104,8 @@ def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -
                 messages=[
                     {"role": "system", "content": full_prompt},
                     {"role": "user", "content": user_message}
-                ]
+                ],
+                max_tokens=1200,
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
@@ -185,6 +209,18 @@ def search_memory(query: str, top_k: int = 5) -> str:
 def save_to_memory(text: str, source: str = "telegram") -> bool:
     if upsert_to_brain is None:
         return False
+    try:
+        doc_id = f"telegram_{uuid.uuid4().hex[:12]}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        metadata = {
+            "text": text,
+            "source": source,
+            "date": datetime.now().isoformat(),
+            "user": "baba"
+        }
+        return upsert_to_brain(doc_id, text, metadata)
+    except Exception as e:
+        logger.error(f"Save memory error: {e}")
+        return False
 
 def get_recent_history(chat_id: str, limit: int = 5) -> str:
     try:
@@ -221,22 +257,17 @@ def save_interaction(chat_id: str, role: str, content: str):
     except Exception as e:
         logger.error(f"Error saving to conversation history: {e}")
 
-    try:
-        doc_id = f"telegram_{uuid.uuid4().hex[:12]}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        metadata = {
-            "text": text,
-            "source": source,
-            "date": datetime.now().isoformat(),
-            "user": "baba"
-        }
-        return upsert_to_brain(doc_id, text, metadata)
-    except Exception as e:
-        logger.error(f"Save memory error: {e}")
-        return False
-
 # ── Google integrations ────────────────────────────────────────────────────────
 try:
-    from agents.aragamago.google_tools import get_tasks, add_task, read_sheet, append_sheet
+    from agents.aragamago.google_tools import (
+        get_tasks,
+        add_task,
+        read_sheet,
+        append_sheet,
+        get_upcoming_events,
+        add_calendar_event,
+        get_google_status,
+    )
 except ImportError:
     pass
 
@@ -259,6 +290,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/start - Begin\n"
         "/help - This message\n"
         "/tasks - View tasks\n"
+        "/calendar - View upcoming calendar events\n"
         "/memory <query> - Search brain\n"
         "/save <text> - Save to memory\n\n"
         "*Natural Language:*\n"
@@ -268,7 +300,9 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• Send photo + caption to analyze\n\n"
         "*Tasks:*\n"
         "• \"add task...\" - adds to Google Tasks\n"
-        "• /tasks - view your tasks"
+        "• /tasks - view your tasks\n\n"
+        "*Calendar:*\n"
+        "• /calendar - upcoming events"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
@@ -312,6 +346,25 @@ async def addtask_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"🦜 *Task added:* _{title}_", parse_mode="Markdown")
     else:
         await update.message.reply_text("🦜 Could not add task. Check Google Tasks config.")
+
+async def calendar_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    events = get_upcoming_events()
+    if not events:
+        status = get_google_status()
+        if not status.get("oauth_ready"):
+            await update.message.reply_text(
+                "🦜 Google Calendar is not ready yet. Add a valid `GOOGLE_TOKEN_JSON` with Calendar scope.",
+                parse_mode="Markdown",
+            )
+        else:
+            await update.message.reply_text("🦜 No upcoming events found.")
+        return
+    lines = ["*🗓️ Upcoming Events:*\n"]
+    for event in events[:10]:
+        start = event.get("start", {}).get("dateTime") or event.get("start", {}).get("date") or "unknown time"
+        summary = event.get("summary", "Untitled")
+        lines.append(f"• {summary} — `{start}`")
+    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name or "traveler"
@@ -390,7 +443,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         save_interaction(chat_id, "assistant", reply)
     
     if not reply:
-        reply = f"🦜 *Aragamago hears you, {user_name}.*\n\nAdd `GEMINI_API_KEY` or `OPENROUTER_API_KEY` to enable AI responses."
+        reply = (
+            f"🦜 *Aragamago hears you, {user_name}.*\n\n"
+            "AI is not responding right now. On Railway, check:\n"
+            "• `GEMINI_API_KEY` is present and valid\n"
+            "• Gemini quota/billing is available\n"
+            "• `OPENROUTER_API_KEY` is present with enough fallback credits\n"
+            "• the service was redeployed after variable changes"
+        )
     
     await update.message.reply_text(reply, parse_mode="Markdown")
 
@@ -432,6 +492,14 @@ async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
     logger.info("🦜 Aragamago starting...")
+    logger.info(
+        "Runtime config — Railway=%s Gemini=%s GeminiAlias=%s OpenRouter=%s ElevenLabs=%s",
+        bool(os.environ.get("RAILWAY_STATIC_URL")),
+        bool(GEMINI_API_KEY),
+        bool(os.environ.get("GOOGLE_API_KEY")),
+        bool(OPENROUTER_API_KEY),
+        bool(ELEVENLABS_API_KEY),
+    )
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
@@ -439,6 +507,7 @@ def main():
     app.add_handler(CommandHandler("save", save_cmd))
     app.add_handler(CommandHandler("tasks", tasks_cmd))
     app.add_handler(CommandHandler("addtask", addtask_cmd))
+    app.add_handler(CommandHandler("calendar", calendar_cmd))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
