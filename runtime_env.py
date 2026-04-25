@@ -48,8 +48,12 @@ def load_local_env() -> None:
                 line = line.strip()
                 if "=" in line and not line.startswith("#"):
                     key, value = line.split("=", 1)
-                    if key.strip() in LOCAL_ONLY_SKIP_KEYS:
+                    key = key.strip()
+                    if key in LOCAL_ONLY_SKIP_KEYS:
                         continue
-                    os.environ.setdefault(key.strip(), clean_env_value(value))
+                    cleaned_value = clean_env_value(value)
+                    # Treat empty preexisting values as unset so local secrets still load.
+                    if not os.environ.get(key):
+                        os.environ[key] = cleaned_value
     except FileNotFoundError:
         pass
