@@ -7,6 +7,8 @@ Uses Google Gemini, Pinecone brain memory, Google Tasks & Sheets.
 import os
 import logging
 import uuid
+import base64
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -31,6 +33,7 @@ GEMINI_API_KEY = _get_env("GEMINI_API_KEY", "GOOGLE_API_KEY")
 OPENROUTER_API_KEY = _get_env("OPENROUTER_API_KEY")
 OPENAI_API_KEY = _get_env("OPENAI_API_KEY")
 ELEVENLABS_API_KEY = _get_env("ELEVENLABS_API_KEY")
+ELEVENLABS_VOICE_ID = _get_env("ELEVENLABS_VOICE_ID") or "nPczCjzI2devNBz1zQrb"
 AI_PROVIDER_ORDER = [
     provider.strip().lower()
     for provider in _get_env("AI_PROVIDER_ORDER").split(",")
@@ -130,11 +133,74 @@ def _chat_via_gemini(combined_prompt: str) -> str:
     return response.text.strip()
 
 
-def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -> str:
+def _build_full_prompt(context: str = "") -> str:
     full_prompt = SOUL
     if context:
         full_prompt += f"\n\n--- RELEVANT MEMORY ---\n{context}\n--- END MEMORY ---"
+    return full_prompt
 
+
+def _chat_image_via_openrouter(full_prompt: str, user_message: str, image_bytes) -> str:
+    if not OPENROUTER_API_KEY:
+        return None
+    from openai import OpenAI
+
+    image_bytes.seek(0)
+    image_b64 = base64.b64encode(image_bytes.read()).decode("utf-8")
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=OPENROUTER_API_KEY,
+    )
+    response = client.chat.completions.create(
+        model=OPENROUTER_MODEL,
+        messages=[
+            {"role": "system", "content": full_prompt},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": user_message or "Analyze this image."},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"},
+                    },
+                ],
+            },
+        ],
+        max_tokens=1200,
+    )
+    return (response.choices[0].message.content or "").strip()
+
+
+def _chat_image_via_openai(full_prompt: str, user_message: str, image_bytes) -> str:
+    if not OPENAI_API_KEY:
+        return None
+    from openai import OpenAI
+
+    image_bytes.seek(0)
+    image_b64 = base64.b64encode(image_bytes.read()).decode("utf-8")
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    response = client.chat.completions.create(
+        model=OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": full_prompt},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": user_message or "Analyze this image."},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"},
+                    },
+                ],
+            },
+        ],
+        max_tokens=1200,
+    )
+    return (response.choices[0].message.content or "").strip()
+
+
+def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -> str:
+    full_prompt = _build_full_prompt(context)
     combined_prompt = f"{full_prompt}\n\nBaba says: {user_message}"
 
     providers = {
@@ -156,30 +222,82 @@ def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -
     return None
 
 def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
-    """Handle messages with images - accepts BytesIO object"""
+    """Handle messages with images using the same provider fallback chain as text."""
+    full_prompt = _build_full_prompt(context)
+
+    providers = {
+        "openrouter": lambda: _chat_image_via_openrouter(full_prompt, user_message, image_bytes),
+        "openai": lambda: _chat_image_via_openai(full_prompt, user_message, image_bytes),
+        "gemini": lambda: _chat_via_gemini_image(full_prompt, user_message, image_bytes),
+    }
+    for provider in AI_PROVIDER_ORDER:
+        handler = providers.get(provider)
+        if not handler:
+            continue
+        try:
+            reply = handler()
+            if reply:
+                return reply
+        except Exception as e:
+            logger.error("%s image error: %s", provider, e)
+
+    return None
+
+
+def _chat_via_gemini_image(full_prompt: str, user_message: str, image_bytes) -> str:
     if not GEMINI_API_KEY:
         return None
     try:
         import google.generativeai as genai
         from PIL import Image
-        import io
-        
+
         genai.configure(api_key=GEMINI_API_KEY)
         model = genai.GenerativeModel(GEMINI_MODEL)
-        
-        full_prompt = SOUL
-        if context:
-            full_prompt += f"\n\n--- RELEVANT MEMORY ---\n{context}\n--- END MEMORY ---"
-        
+
         image_bytes.seek(0)
         image = Image.open(image_bytes)
         content_parts = [full_prompt, image, f"\n\nBaba says: {user_message}"]
         response = model.generate_content(content_parts)
-        
+
         return response.text.strip()
     except Exception as e:
-        logger.error(f"Gemini image error: {e}")
+        logger.error("Gemini image error: %s", e)
         return None
+
+
+def _build_text_unavailable_message(user_name: str) -> str:
+    return (
+        f"🦜 *Aragamago hears you, {user_name}.*\n\n"
+        "AI is not responding right now. On Railway, check:\n"
+        "• `OPENROUTER_API_KEY` is present and the selected `OPENROUTER_MODEL` is available\n"
+        "• `OPENAI_API_KEY` is present if you want direct OpenAI fallback\n"
+        "• `GEMINI_API_KEY` is present only if you still want Gemini as a fallback or for image/voice features\n"
+        "• provider credits/quota are available\n"
+        "• the service was redeployed after variable changes"
+    )
+
+
+def _build_image_unavailable_message() -> str:
+    configured = []
+    if OPENROUTER_API_KEY:
+        configured.append(f"OpenRouter `{OPENROUTER_MODEL}`")
+    if OPENAI_API_KEY:
+        configured.append(f"OpenAI `{OPENAI_MODEL}`")
+    if GEMINI_API_KEY:
+        configured.append(f"Gemini `{GEMINI_MODEL}`")
+
+    if configured:
+        configured_text = ", ".join(configured)
+        return (
+            "🦜 I received the image, but the configured vision providers did not return an analysis.\n\n"
+            f"Tried: {configured_text}\n"
+            "Check model vision support, provider quota, and Railway env values."
+        )
+
+    return (
+        "🦜 I received the image, but no vision provider is configured.\n\n"
+        "Add at least one of: `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, or `GEMINI_API_KEY`."
+    )
 
 # ── Voice Processing ───────────────────────────────────────────────────────────
 async def get_transcription(file_path: str) -> str:
@@ -208,10 +326,11 @@ def generate_voice(text: str) -> str:
         client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
         audio_generator = client.generate(
             text=text,
-            voice="nPczCjzI2devNBz1zQrb",
+            voice=ELEVENLABS_VOICE_ID,
             model="eleven_multilingual_v2"
         )
-        output_path = "reply.mp3"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_file:
+            output_path = temp_file.name
         with open(output_path, "wb") as f:
             for chunk in audio_generator:
                 f.write(chunk)
@@ -449,7 +568,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply = get_ai_reply_image(user_msg, context_text, image_bytes)
         
         if not reply:
-            reply = "🦜 I see the image but cannot process it right now."
+            reply = _build_image_unavailable_message()
         await status_msg.edit_text(reply, parse_mode="Markdown")
     except Exception as e:
         logger.error(f"Photo handler error: {e}")
@@ -507,24 +626,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         save_interaction(chat_id, "assistant", reply)
 
     if not reply:
-        reply = (
-            f"🦜 *Aragamago hears you, {user_name}.*\n\n"
-            "AI is not responding right now. On Railway, check:\n"
-            "• `OPENROUTER_API_KEY` is present and the selected `OPENROUTER_MODEL` is available\n"
-            "• `OPENAI_API_KEY` is present if you want direct OpenAI fallback\n"
-            "• `GEMINI_API_KEY` is present only if you still want Gemini as a fallback or for image/voice features\n"
-            "• provider credits/quota are available\n"
-            "• the service was redeployed after variable changes"
-        )
+        reply = _build_text_unavailable_message(user_name)
     
     await update.message.reply_text(reply, parse_mode="Markdown")
 
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name or "traveler"
     status_msg = await update.message.reply_text("🦜 *Listening...*", parse_mode="Markdown")
+    input_path = None
+    audio_path = None
     try:
         voice_file = await update.message.voice.get_file()
-        input_path = "user_voice.ogg"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".ogg") as temp_file:
+            input_path = temp_file.name
         await voice_file.download_to_drive(input_path)
         await status_msg.edit_text("🦜 *Transcribing...*", parse_mode="Markdown")
         user_msg = await get_transcription(input_path)
@@ -543,13 +657,16 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 with open(audio_path, "rb") as voice_data:
                     await update.message.reply_voice(voice=voice_data, caption=reply_text, parse_mode="Markdown")
                 await status_msg.delete()
-                if os.path.exists(input_path): os.remove(input_path)
-                if os.path.exists(audio_path): os.remove(audio_path)
                 return
         await status_msg.edit_text(reply_text, parse_mode="Markdown")
     except Exception as e:
         logger.error(f"Voice handler error: {e}")
         await status_msg.edit_text("🦜 Something disrupted the signal.")
+    finally:
+        if input_path and os.path.exists(input_path):
+            os.remove(input_path)
+        if audio_path and os.path.exists(audio_path):
+            os.remove(audio_path)
 
 async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
     logger.error(f"Error: {context.error}")
