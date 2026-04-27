@@ -29,7 +29,16 @@ def _get_env(*names: str) -> str:
 TELEGRAM_TOKEN = _get_env("TELEGRAM_BOT_TOKEN")
 GEMINI_API_KEY = _get_env("GEMINI_API_KEY", "GOOGLE_API_KEY")
 OPENROUTER_API_KEY = _get_env("OPENROUTER_API_KEY")
+OPENAI_API_KEY = _get_env("OPENAI_API_KEY")
 ELEVENLABS_API_KEY = _get_env("ELEVENLABS_API_KEY")
+AI_PROVIDER_ORDER = [
+    provider.strip().lower()
+    for provider in _get_env("AI_PROVIDER_ORDER").split(",")
+    if provider.strip()
+] or ["openrouter", "openai", "gemini"]
+OPENROUTER_MODEL = _get_env("OPENROUTER_MODEL") or _get_env("AI_MODEL") or "openai/gpt-4.1-mini"
+OPENAI_MODEL = _get_env("OPENAI_MODEL") or _get_env("AI_MODEL") or "gpt-4.1-mini"
+GEMINI_MODEL = _get_env("GEMINI_MODEL") or "gemini-2.0-flash"
 
 if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
@@ -72,44 +81,77 @@ SOUL = _build_system_prompt()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
 logger = logging.getLogger(__name__)
 
-# ── AI Reply Logic (Gemini + OpenRouter Fallback) ────────────────────────────────
+# ── AI Reply Logic ─────────────────────────────────────────────────────────────
+def _chat_via_openrouter(full_prompt: str, user_message: str) -> str:
+    if not OPENROUTER_API_KEY:
+        return None
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=OPENROUTER_API_KEY,
+    )
+    response = client.chat.completions.create(
+        model=OPENROUTER_MODEL,
+        messages=[
+            {"role": "system", "content": full_prompt},
+            {"role": "user", "content": user_message},
+        ],
+        max_tokens=1200,
+    )
+    return (response.choices[0].message.content or "").strip()
+
+
+def _chat_via_openai(full_prompt: str, user_message: str) -> str:
+    if not OPENAI_API_KEY:
+        return None
+    from openai import OpenAI
+
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    response = client.chat.completions.create(
+        model=OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": full_prompt},
+            {"role": "user", "content": user_message},
+        ],
+        max_tokens=1200,
+    )
+    return (response.choices[0].message.content or "").strip()
+
+
+def _chat_via_gemini(combined_prompt: str) -> str:
+    if not GEMINI_API_KEY:
+        return None
+    import google.generativeai as genai
+
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel(GEMINI_MODEL)
+    response = model.generate_content(combined_prompt)
+    return response.text.strip()
+
+
 def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -> str:
     full_prompt = SOUL
     if context:
         full_prompt += f"\n\n--- RELEVANT MEMORY ---\n{context}\n--- END MEMORY ---"
-        
+
     combined_prompt = f"{full_prompt}\n\nBaba says: {user_message}"
 
-    # 1. Try Gemini
-    if GEMINI_API_KEY:
+    providers = {
+        "openrouter": lambda: _chat_via_openrouter(full_prompt, user_message),
+        "openai": lambda: _chat_via_openai(full_prompt, user_message),
+        "gemini": lambda: _chat_via_gemini(combined_prompt),
+    }
+    for provider in AI_PROVIDER_ORDER:
+        handler = providers.get(provider)
+        if not handler:
+            continue
         try:
-            import google.generativeai as genai
-            genai.configure(api_key=GEMINI_API_KEY)
-            model = genai.GenerativeModel("gemini-2.0-flash")
-            response = model.generate_content(combined_prompt)
-            return response.text.strip()
+            reply = handler()
+            if reply:
+                return reply
         except Exception as e:
-            logger.error(f"Gemini error/exhausted: {e}. Falling back to OpenRouter...")
-
-    # 2. Try OpenRouter Fallback
-    if OPENROUTER_API_KEY:
-        try:
-            from openai import OpenAI
-            client = OpenAI(
-                base_url="https://openrouter.ai/api/v1",
-                api_key=OPENROUTER_API_KEY,
-            )
-            response = client.chat.completions.create(
-                model="google/gemini-2.5-flash", # Fallback model
-                messages=[
-                    {"role": "system", "content": full_prompt},
-                    {"role": "user", "content": user_message}
-                ],
-                max_tokens=1200,
-            )
-            return response.choices[0].message.content.strip()
-        except Exception as e:
-            logger.error(f"OpenRouter error: {e}")
+            logger.error("%s error: %s", provider, e)
 
     return None
 
@@ -123,7 +165,7 @@ def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
         import io
         
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel(GEMINI_MODEL)
         
         full_prompt = SOUL
         if context:
@@ -141,11 +183,14 @@ def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
 
 # ── Voice Processing ───────────────────────────────────────────────────────────
 async def get_transcription(file_path: str) -> str:
+    if not GEMINI_API_KEY:
+        logger.warning("Audio transcription unavailable: GEMINI_API_KEY not configured.")
+        return ""
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
         audio_file = genai.upload_file(path=file_path)
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel(GEMINI_MODEL)
         response = model.generate_content([
             "Please transcribe this audio message.",
             audio_file
@@ -271,6 +316,11 @@ try:
 except ImportError:
     pass
 
+try:
+    from agents.aragamago.rss3_tools import format_rss3_status_markdown
+except ImportError:
+    format_rss3_status_markdown = None
+
 # ── Handlers ───────────────────────────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -291,6 +341,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/help - This message\n"
         "/tasks - View tasks\n"
         "/calendar - View upcoming calendar events\n"
+        "/rss3status - Check RSS3 node health\n"
         "/memory <query> - Search brain\n"
         "/save <text> - Save to memory\n\n"
         "*Natural Language:*\n"
@@ -365,6 +416,19 @@ async def calendar_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         summary = event.get("summary", "Untitled")
         lines.append(f"• {summary} — `{start}`")
     await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+
+async def rss3status_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if format_rss3_status_markdown is None:
+        await update.message.reply_text("🦜 RSS3 diagnostics module is unavailable.")
+        return
+    try:
+        await update.message.reply_text(
+            format_rss3_status_markdown(),
+            parse_mode="Markdown",
+        )
+    except Exception as e:
+        logger.error(f"RSS3 status error: {e}")
+        await update.message.reply_text("🦜 RSS3 diagnostics could not complete.")
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name or "traveler"
@@ -441,14 +505,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if reply:
         save_interaction(chat_id, "assistant", reply)
-    
+
     if not reply:
         reply = (
             f"🦜 *Aragamago hears you, {user_name}.*\n\n"
             "AI is not responding right now. On Railway, check:\n"
-            "• `GEMINI_API_KEY` is present and valid\n"
-            "• Gemini quota/billing is available\n"
-            "• `OPENROUTER_API_KEY` is present with enough fallback credits\n"
+            "• `OPENROUTER_API_KEY` is present and the selected `OPENROUTER_MODEL` is available\n"
+            "• `OPENAI_API_KEY` is present if you want direct OpenAI fallback\n"
+            "• `GEMINI_API_KEY` is present only if you still want Gemini as a fallback or for image/voice features\n"
+            "• provider credits/quota are available\n"
             "• the service was redeployed after variable changes"
         )
     
@@ -464,12 +529,12 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await status_msg.edit_text("🦜 *Transcribing...*", parse_mode="Markdown")
         user_msg = await get_transcription(input_path)
         if not user_msg:
-            await status_msg.edit_text("🦜 I couldn't hear you clearly.")
+            await status_msg.edit_text("🦜 I couldn't transcribe that voice note. Voice transcription currently depends on Gemini being configured.")
             return
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
         reply_text = get_ai_reply(user_msg)
         if not reply_text:
-            await status_msg.edit_text("🦜 AI not configured (Missing Gemini or OpenRouter Key).")
+            await status_msg.edit_text("🦜 AI not configured or not responding. Check OpenRouter/OpenAI first, then Gemini if you want voice and image support.")
             return
         if ELEVENLABS_API_KEY:
             await status_msg.edit_text("🦜 *Speaking...*", parse_mode="Markdown")
@@ -493,11 +558,13 @@ async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     logger.info("🦜 Aragamago starting...")
     logger.info(
-        "Runtime config — Railway=%s Gemini=%s GeminiAlias=%s OpenRouter=%s ElevenLabs=%s",
+        "Runtime config — Railway=%s ProviderOrder=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s",
         bool(os.environ.get("RAILWAY_STATIC_URL")),
+        ",".join(AI_PROVIDER_ORDER),
+        bool(OPENROUTER_API_KEY),
+        bool(OPENAI_API_KEY),
         bool(GEMINI_API_KEY),
         bool(os.environ.get("GOOGLE_API_KEY")),
-        bool(OPENROUTER_API_KEY),
         bool(ELEVENLABS_API_KEY),
     )
     app = Application.builder().token(TELEGRAM_TOKEN).build()
@@ -508,6 +575,7 @@ def main():
     app.add_handler(CommandHandler("tasks", tasks_cmd))
     app.add_handler(CommandHandler("addtask", addtask_cmd))
     app.add_handler(CommandHandler("calendar", calendar_cmd))
+    app.add_handler(CommandHandler("rss3status", rss3status_cmd))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
