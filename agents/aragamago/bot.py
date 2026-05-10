@@ -14,7 +14,7 @@ from pathlib import Path
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-from runtime_env import load_local_env
+from runtime_env import clean_env_value, load_local_env
 
 # Locally load the canonical secrets file; on Railway rely on injected vars.
 load_local_env()
@@ -22,10 +22,14 @@ load_local_env()
 
 def _get_env(*names: str) -> str:
     for name in names:
-        value = os.environ.get(name, "").strip()
+        value = clean_env_value(os.environ.get(name, ""))
         if value:
             return value
     return ""
+
+
+def _has_direct_openai_key() -> bool:
+    return bool(OPENAI_API_KEY and not OPENAI_API_KEY.startswith("sk-or-"))
 
 
 TELEGRAM_TOKEN = _get_env("TELEGRAM_BOT_TOKEN")
@@ -106,7 +110,7 @@ def _chat_via_openrouter(full_prompt: str, user_message: str) -> str:
 
 
 def _chat_via_openai(full_prompt: str, user_message: str) -> str:
-    if not OPENAI_API_KEY:
+    if not _has_direct_openai_key():
         return None
     from openai import OpenAI
 
@@ -172,7 +176,7 @@ def _chat_image_via_openrouter(full_prompt: str, user_message: str, image_bytes)
 
 
 def _chat_image_via_openai(full_prompt: str, user_message: str, image_bytes) -> str:
-    if not OPENAI_API_KEY:
+    if not _has_direct_openai_key():
         return None
     from openai import OpenAI
 
@@ -281,7 +285,7 @@ def _build_image_unavailable_message() -> str:
     configured = []
     if OPENROUTER_API_KEY:
         configured.append(f"OpenRouter `{OPENROUTER_MODEL}`")
-    if OPENAI_API_KEY:
+    if _has_direct_openai_key():
         configured.append(f"OpenAI `{OPENAI_MODEL}`")
     if GEMINI_API_KEY:
         configured.append(f"Gemini `{GEMINI_MODEL}`")
@@ -676,12 +680,12 @@ def main():
     logger.info("🦜 Aragamago starting...")
     logger.info(
         "Runtime config — Railway=%s ProviderOrder=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s",
-        bool(os.environ.get("RAILWAY_STATIC_URL")),
+        bool(os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_STATIC_URL")),
         ",".join(AI_PROVIDER_ORDER),
         bool(OPENROUTER_API_KEY),
-        bool(OPENAI_API_KEY),
+        _has_direct_openai_key(),
         bool(GEMINI_API_KEY),
-        bool(os.environ.get("GOOGLE_API_KEY")),
+        bool(_get_env("GOOGLE_API_KEY")),
         bool(ELEVENLABS_API_KEY),
     )
     app = Application.builder().token(TELEGRAM_TOKEN).build()
