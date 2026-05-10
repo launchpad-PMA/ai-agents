@@ -21,7 +21,15 @@ LOCAL_ONLY_SKIP_KEYS = {
 
 
 def is_railway() -> bool:
-    return bool(os.environ.get("RAILWAY_STATIC_URL"))
+    return any(
+        os.environ.get(name)
+        for name in (
+            "RAILWAY_ENVIRONMENT",
+            "RAILWAY_PROJECT_ID",
+            "RAILWAY_SERVICE_ID",
+            "RAILWAY_STATIC_URL",
+        )
+    )
 
 
 def clean_env_value(value: str) -> str:
