@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.ssh_known_hosts
+.cursor/
+.agents/
+node_modules/
+telos/
+skills-lock.json

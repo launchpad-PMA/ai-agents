@@ -1,0 +1,8 @@
+# Optional RSS3-style webhook metadata (not used by Express directly).
+# The comm agent receives POST /api/events; path and headers are defined in code.
+webhook:
+  path: /api/events
+  method: POST
+  description: "Webhook for processing and indexing broadcasts"
+  headers:
+    Content-Type: application/json
