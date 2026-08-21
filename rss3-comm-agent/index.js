@@ -295,7 +295,7 @@ app.get('/api/site-config', (req, res) => {
   res.json({
     brand: 'Adbongo',
     tagline:
-      'Consulting for AI agents, web3 interfaces, and product design—with room for Launchpad when the fit is right.',
+      'Nearly twenty years of consulting across industries. We help founders and operators upgrade the legal, social, financial, and technical layers of their organizations—especially digital and decentralized ones.',
     /** Public site hostname (static landing + same host as RSS3 stack on Linode) */
     marketingSiteUrl: (process.env.ADBONGO_SITE_URL || 'https://web3.adbongo.io').trim(),
     nodeAddress: NODE_ADDRESS,

@@ -3,48 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adbongo — AI agents & web3 design</title>
-  <meta name="description" content="Adbongo — consulting since 2007. AI agents, web3 interfaces, and product design. From legacy WordPress-era web to RSS3-indexed open activity and Launchpad." />
+  <title>Adbongo Group LLC — Advocacy Launchpad</title>
+  <meta name="description" content="Adbongo Group LLC — Advocacy Launchpad. Business systems consulting since 2007. Digital organizations, AI agents, and web3 infrastructure. Reinstated and open for client work." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300..700;1,300..700&family=Orbitron:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0c0a12;
-      --surface: #161222;
-      --border: rgba(167, 139, 250, 0.22);
-      --text: #f4f4f5;
-      --muted: #a1a1aa;
-      --primary: #a78bfa;
-      --primary-dim: #7c3aed;
-      --cta: #22c55e;
-      --cta-hover: #4ade80;
+      --bg: #f7faf6;
+      --bg-deep: #eef5eb;
+      --surface: #ffffff;
+      --border: rgba(27, 67, 40, 0.14);
+      --text: #14201a;
+      --muted: #4d5c54;
+      --primary: #1b7a3d;
+      --primary-dim: #145c2e;
+      --leaf: #2f9e4f;
+      --leaf-soft: #c8e6c0;
+      --accent: #c45c28;
+      --cta: #1b7a3d;
+      --cta-hover: #146332;
       --max: 72rem;
-      --radius: 12px;
-      --header-h: 4.25rem;
+      --radius: 14px;
+      --header-h: 4.5rem;
+      --shadow: 0 10px 30px rgba(20, 50, 30, 0.06);
     }
     html {
-      color-scheme: dark;
+      color-scheme: light;
       scroll-behavior: smooth;
       scroll-padding-top: calc(var(--header-h) + 0.75rem);
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-      .hero-matrix { display: none !important; }
+      .butterflies, .hero-leaves { display: none !important; }
     }
-
-    
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: "Exo 2", system-ui, sans-serif;
-      background: var(--bg);
+      font-family: Manrope, system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 70% 40% at 100% 0%, rgba(200, 230, 192, 0.55), transparent 55%),
+        radial-gradient(ellipse 50% 35% at 0% 20%, rgba(232, 245, 228, 0.9), transparent 50%),
+        var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.65;
       min-height: 100vh;
     }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.3;
+      background-image: url("/assets/brand/leaf-pattern.jpg");
+      background-size: 420px auto;
+      background-repeat: repeat;
+    }
     a { color: var(--primary); }
-    a:hover { color: var(--cta-hover); }
+    a:hover { color: var(--primary-dim); }
     .skip {
       position: absolute;
       left: -9999px;
@@ -59,19 +76,19 @@
       top: 1rem;
       width: auto;
       height: auto;
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.75rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
       z-index: 100;
     }
-    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; position: relative; z-index: 1; }
     header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(12, 10, 18, 0.88);
-      backdrop-filter: blur(10px);
+      background: rgba(247, 250, 246, 0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .nav {
@@ -79,34 +96,53 @@
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 1rem 0;
+      padding: 0.85rem 0;
       flex-wrap: wrap;
     }
     .logo {
-      font-family: Orbitron, sans-serif;
-      font-weight: 700;
-      font-size: 1.15rem;
-      letter-spacing: 0.06em;
-      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
       text-decoration: none;
-      transition: color 0.2s ease;
+      color: var(--text);
     }
     .logo:hover { color: var(--primary); }
+    .logo img {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--leaf-soft);
+      box-shadow: var(--shadow);
+    }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .logo-name {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 0.02em;
+    }
+    .logo-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 0.15rem;
+    }
     .nav-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.35rem 1.25rem;
+      gap: 0.35rem 1.05rem;
       align-items: center;
     }
     .nav-links a {
       color: var(--muted);
       text-decoration: none;
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: color 0.2s ease;
-      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.92rem;
     }
-    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover { color: var(--primary); }
     @media (max-width: 36rem) {
       .nav-links .nav-contact-dup { display: none; }
     }
@@ -115,9 +151,9 @@
       align-items: center;
       justify-content: center;
       gap: 0.35rem;
-      padding: 0.55rem 1.1rem;
+      padding: 0.6rem 1.15rem;
       border-radius: 999px;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.9rem;
       text-decoration: none;
       border: none;
@@ -130,17 +166,18 @@
     }
     .btn-primary {
       background: var(--cta);
-      color: #052e16;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(27, 122, 61, 0.22);
     }
-    .btn-primary:hover { background: var(--cta-hover); color: #052e16; }
+    .btn-primary:hover { background: var(--cta-hover); color: #fff; }
     .btn-ghost {
-      background: transparent;
+      background: var(--surface);
       color: var(--primary);
       border: 1px solid var(--border);
     }
     .btn-ghost:hover {
-      background: rgba(167, 139, 250, 0.08);
-      color: var(--text);
+      background: var(--bg-deep);
+      color: var(--primary-dim);
     }
     .btn-compact {
       font-size: 0.85rem;
@@ -149,212 +186,288 @@
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 4rem 0 3rem;
+      padding: 3.5rem 0 3.25rem;
       background:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.35), transparent),
-        var(--bg);
+        linear-gradient(180deg, rgba(255,255,255,0.55), rgba(247,250,246,0.2)),
+        radial-gradient(ellipse 60% 70% at 85% 30%, rgba(47, 158, 79, 0.12), transparent 60%);
     }
-    .hero-matrix {
+    .hero-leaves {
       position: absolute;
       inset: 0;
+      pointer-events: none;
       z-index: 0;
-      pointer-events: none;
-      opacity: 0.42;
-      mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 92%);
-      -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 92%);
+      opacity: 0.45;
+      background-image:
+        radial-gradient(circle at 12% 78%, rgba(47,158,79,0.14) 0 8%, transparent 9%),
+        radial-gradient(circle at 88% 18%, rgba(27,122,61,0.1) 0 10%, transparent 11%);
     }
-    .hero-matrix::after {
-      content: "";
+    .butterflies {
       position: absolute;
       inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0, 0, 0, 0.18) 3px,
-        rgba(0, 0, 0, 0.18) 4px
-      );
       pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
     }
-    .hero-matrix canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
+    .butterfly {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      opacity: 0.55;
+      animation: flutter 16s ease-in-out infinite;
+    }
+    .butterfly svg { width: 100%; height: 100%; display: block; }
+    .butterfly.b1 { top: 18%; left: 8%; animation-delay: 0s; }
+    .butterfly.b2 { top: 42%; right: 12%; animation-delay: -4s; width: 22px; height: 22px; }
+    .butterfly.b3 { bottom: 22%; left: 28%; animation-delay: -8s; width: 24px; height: 24px; }
+    .butterfly.b4 { top: 12%; right: 28%; animation-delay: -11s; width: 20px; height: 20px; opacity: 0.4; }
+    @keyframes flutter {
+      0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+      25% { transform: translate(18px, -22px) rotate(10deg); }
+      50% { transform: translate(-10px, -36px) rotate(-4deg); }
+      75% { transform: translate(24px, -14px) rotate(12deg); }
     }
     .hero .wrap {
       position: relative;
       z-index: 1;
+      display: grid;
+      gap: 2rem;
+      align-items: center;
+    }
+    @media (min-width: 56rem) {
+      .hero .wrap {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      }
+    }
+    .hero-brand {
+      display: flex;
+      justify-content: center;
+    }
+    .hero-brand img {
+      width: min(100%, 22rem);
+      height: auto;
+      border-radius: 50%;
+      box-shadow: 0 20px 50px rgba(20, 50, 30, 0.14);
+      border: 6px solid #fff;
+      background: #fff;
+    }
+    .eyebrow {
+      color: var(--primary);
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
     }
     .hero h1 {
-      font-family: Orbitron, sans-serif;
-      font-size: clamp(1.75rem, 4vw, 2.75rem);
-      font-weight: 600;
-      line-height: 1.15;
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(2rem, 4.2vw, 3rem);
+      font-weight: 700;
+      line-height: 1.12;
       margin-bottom: 1rem;
-      max-width: 20ch;
+      max-width: 16ch;
+      color: var(--text);
     }
     .hero p.lead {
       color: var(--muted);
-      font-size: 1.125rem;
-      max-width: 42rem;
-      margin-bottom: 1.75rem;
+      font-size: 1.08rem;
+      max-width: 38rem;
+      margin-bottom: 1.5rem;
     }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
-    .hero-podcast {
-      margin-top: 1.35rem;
-    }
-    section {
-      padding: 3rem 0;
-      border-top: 1px solid var(--border);
-      scroll-margin-top: calc(var(--header-h) + 0.5rem);
-    }
+    .hero-podcast { margin-top: 1.35rem; }
+    section { padding: 3rem 0; position: relative; z-index: 1; }
     section h2 {
-      font-family: Orbitron, sans-serif;
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1.25rem;
-      color: var(--primary);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text);
     }
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+      gap: 1rem;
+      margin-top: 1.25rem;
     }
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.35rem;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .card:hover {
-      border-color: rgba(167, 139, 250, 0.45);
-      box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.15);
+      padding: 1.25rem 1.35rem;
+      box-shadow: var(--shadow);
     }
     .card h3 {
+      font-family: Fraunces, Georgia, serif;
       font-size: 1.05rem;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.55rem;
     }
-    .card p { color: var(--muted); font-size: 0.95rem; }
-    .mono {
-      font-family: ui-monospace, "Cascadia Code", "Courier New", monospace;
-      font-size: 0.82rem;
-      word-break: break-all;
-      color: var(--text);
-      margin: 0.35rem 0 0;
-    }
+    .card p, .card li { color: var(--muted); font-size: 0.95rem; }
+    .card ul { margin: 0.5rem 0 0 1.1rem; }
+    .card li { margin-bottom: 0.35rem; }
     .strip {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(34, 197, 94, 0.06));
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.5rem 1.35rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--leaf);
     }
     .strip p { color: var(--muted); margin-bottom: 0.75rem; max-width: 48rem; }
+    .strip p:last-child { margin-bottom: 0; }
     .strip strong { color: var(--text); }
     .feed-meta {
       font-size: 0.85rem;
       color: var(--muted);
       margin-bottom: 1rem;
     }
-    .feed-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
-    .feed-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.85rem 1rem;
-      display: grid;
-      gap: 0.35rem;
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85rem;
+      word-break: break-all;
+      color: var(--text);
     }
-    .feed-item header-line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1rem;
-      align-items: baseline;
+    .feature {
+      display: grid;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (min-width: 56rem) {
+      .feature {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 2rem;
+      }
+    }
+    .feature-art {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .feature-art img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .feature-copy p {
+      color: var(--muted);
+      margin-bottom: 0.85rem;
+      max-width: 40rem;
+    }
+    .feature-copy p:last-child { margin-bottom: 0; }
+    .feature-copy strong { color: var(--text); }
+    .timeline {
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1.25rem;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 5.5rem 1fr;
+      gap: 0.85rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-year {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 0.95rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .timeline-body { color: var(--muted); font-size: 0.95rem; }
+    .timeline-body strong { color: var(--text); }
+    .testimonial-meta {
       font-size: 0.8rem;
       color: var(--muted);
+      margin-bottom: 0.65rem;
+      line-height: 1.45;
     }
-    .badge {
-      display: inline-block;
-      padding: 0.15rem 0.5rem;
-      border-radius: 6px;
-      background: rgba(124, 58, 237, 0.2);
-      color: var(--primary);
-      font-weight: 600;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .feed-item a.detail {
-      font-size: 0.9rem;
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .feed-item a.detail:hover { color: var(--primary); }
-    .feed-empty, .feed-error {
-      padding: 1rem;
-      border-radius: var(--radius);
-      border: 1px dashed var(--border);
+    .testimonial-quote {
+      font-style: italic;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      margin-bottom: 0;
     }
-    .feed-error { border-color: rgba(248, 113, 113, 0.4); color: #fecaca; }
-    footer {
-      padding: 2.5rem 0 2rem;
-      border-top: 1px solid var(--border);
+    #testimonials .cards {
+      grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    }
+    #testimonials .card:target {
+      outline: 2px solid var(--leaf);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 4px rgba(47, 158, 79, 0.18), var(--shadow);
+    }
+    .folio-intro {
+      max-width: 48rem;
+      margin-bottom: 1.5rem;
+    }
+    .folio-category {
       margin-top: 2rem;
     }
-    .footer-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: space-between;
-      align-items: center;
+    .folio-category:first-of-type { margin-top: 0.5rem; }
+    .folio-category h3 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--primary-dim);
     }
-    .social {
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    .social a {
-      display: inline-flex;
-      width: 2.5rem;
-      height: 2.5rem;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      border: 1px solid var(--border);
+    .folio-category > p {
       color: var(--muted);
-      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-      cursor: pointer;
+      font-size: 0.92rem;
+      margin-bottom: 1rem;
+      max-width: 42rem;
     }
-    .social a:hover {
-      color: var(--primary);
-      border-color: var(--primary);
-      background: rgba(167, 139, 250, 0.06);
+    .folio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+      gap: 1.15rem;
     }
-    .social a:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
+    .folio-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1rem 1.1rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
     }
-    .social svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
-    .footer-links {
+    .folio-item h4 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .folio-item .folio-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin: 0;
+    }
+    .folio-item .folio-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem 1.15rem;
-      align-items: center;
+      gap: 0.65rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
     }
-    .footer-links a {
-      font-size: 0.9rem;
-      padding: 0.35rem 0;
-      min-height: 2.5rem;
-      display: inline-flex;
-      align-items: center;
+    .folio-embed {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #f0f4ef;
+      line-height: 0;
+    }
+    .folio-embed iframe {
+      width: 100%;
+      max-width: 404px;
+      height: 316px;
+      border: 0;
+      display: block;
+      margin: 0 auto;
     }
     .podcast-badges {
       display: flex;
@@ -382,32 +495,101 @@
       height: 40px;
       width: auto;
     }
+    .feed-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .feed-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      display: grid;
+      gap: 0.35rem;
+      box-shadow: var(--shadow);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      background: rgba(47, 158, 79, 0.14);
+      color: var(--primary-dim);
+      margin-right: 0.5rem;
+    }
+    .feed-error, .feed-empty { color: var(--muted); font-size: 0.9rem; }
     .feed-details {
       margin-bottom: 1rem;
       max-width: 48rem;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 0.65rem 1rem 0.85rem;
-      background: rgba(22, 18, 34, 0.45);
+      background: var(--surface);
     }
     .feed-details summary {
       cursor: pointer;
       color: var(--muted);
       font-size: 0.9rem;
       list-style: none;
+      font-weight: 600;
     }
     .feed-details summary::-webkit-details-marker { display: none; }
-    .feed-details summary::after {
-      content: " ▾";
-      font-size: 0.75rem;
-      opacity: 0.7;
-    }
+    .feed-details summary::after { content: " ▾"; font-size: 0.75rem; opacity: 0.7; }
     .feed-details[open] summary::after { content: " ▴"; }
-    .feed-details summary:hover { color: var(--text); }
-    .feed-details p {
-      margin-top: 0.65rem;
-      margin-bottom: 0;
+    .feed-details summary:hover { color: var(--primary); }
+    .feed-details p { margin-top: 0.65rem; }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0 2.5rem;
+      margin-top: 1rem;
+      background: rgba(255,255,255,0.55);
+      position: relative;
+      z-index: 1;
+    }
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem 2rem;
+      justify-content: space-between;
+    }
+    .social { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+    .social a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-decoration: none;
+      background: #fff;
+    }
+    .social a:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: var(--bg-deep);
+    }
+    .social svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.15rem;
+      align-items: center;
+    }
+    .footer-links a {
       font-size: 0.9rem;
+      padding: 0.35rem 0;
+      min-height: 2.5rem;
+      display: inline-flex;
+      align-items: center;
+    }
+    .notice {
+      border-left: 3px solid var(--leaf);
+      padding-left: 0.9rem;
+      margin: 1rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 48rem;
     }
   </style>
 </head>
@@ -415,67 +597,103 @@
   <a class="skip" href="#main">Skip to content</a>
   <header>
     <div class="wrap nav">
-      <a class="logo" href="/">ADBONGO</a>
+      <a class="logo" href="/">
+        <img src="/assets/brand/adbongo-logo.png" width="96" height="94" alt="Adbongo logo" />
+        <span class="logo-text">
+          <span class="logo-name">ADBONGO</span>
+          <span class="logo-tag">Advocacy Launchpad</span>
+        </span>
+      </a>
       <nav class="nav-links" aria-label="Primary">
         <a href="#services">Services</a>
-        <a href="#writing">Writing</a>
+        <a href="#about">About</a>
+        <a href="#work">Folio</a>
+        <a href="/accelerator.html">Accelerator</a>
+        <a href="/ecosystem-mapping.html">DAO mapping</a>
+        <a href="#testimonials">Clients &amp; partners</a>
+        <a href="#blog">Blog</a>
         <a href="#podcast">Podcast</a>
-        <a href="#infrastructure">This host</a>
-        <a href="#activity">RSS3 activity</a>
-        <a class="btn btn-ghost btn-compact" href="/maxayauwi-dashboard.html">RSS3 dashboard</a>
-        <a href="/node.html">Node reference</a>
-        <a href="/agents-upgrade.html">Agent upgrades</a>
+        <a href="#infrastructure">RSS3 host</a>
+        <a class="btn btn-ghost btn-compact" href="/maxayauwi-dashboard.html">Node dashboard</a>
         <a id="contact-nav" class="nav-contact-dup" href="mailto:adbongorocks@gmail.com">Contact</a>
-        <a class="btn btn-primary" id="cta-contact" href="mailto:adbongorocks@gmail.com">Start a project</a>
+        <a class="btn btn-primary" id="cta-contact" href="mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry">Start a project</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
     <div class="hero">
-      <div class="hero-matrix" aria-hidden="true">
-        <canvas id="hero-matrix-canvas" width="160" height="90"></canvas>
+      <div class="hero-leaves" aria-hidden="true"></div>
+      <div class="butterflies" aria-hidden="true">
+        <span class="butterfly b1">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 34c2-8 10-14 16-16-2 10-8 16-16 20-8-4-14-10-16-20 6 2 14 8 16 16z" fill="#1b7a3d" opacity=".55"/><path d="M32 34c2 8 8 14 14 18-8 0-14-6-16-14-2 8-8 14-16 14 6-4 12-10 18-18z" fill="#2f9e4f" opacity=".7"/><circle cx="32" cy="33" r="2.2" fill="#145c2e"/></svg>
+        </span>
+        <span class="butterfly b2">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 34c2-8 10-14 16-16-2 10-8 16-16 20-8-4-14-10-16-20 6 2 14 8 16 16z" fill="#c45c28" opacity=".45"/><path d="M32 34c2 8 8 14 14 18-8 0-14-6-16-14-2 8-8 14-16 14 6-4 12-10 18-18z" fill="#1b7a3d" opacity=".55"/><circle cx="32" cy="33" r="2.2" fill="#145c2e"/></svg>
+        </span>
+        <span class="butterfly b3">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 34c2-8 10-14 16-16-2 10-8 16-16 20-8-4-14-10-16-20 6 2 14 8 16 16z" fill="#2f9e4f" opacity=".5"/><path d="M32 34c2 8 8 14 14 18-8 0-14-6-16-14-2 8-8 14-16 14 6-4 12-10 18-18z" fill="#145c2e" opacity=".45"/><circle cx="32" cy="33" r="2.2" fill="#145c2e"/></svg>
+        </span>
+        <span class="butterfly b4">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 34c2-8 10-14 16-16-2 10-8 16-16 20-8-4-14-10-16-20 6 2 14 8 16 16z" fill="#1b7a3d" opacity=".4"/><path d="M32 34c2 8 8 14 14 18-8 0-14-6-16-14-2 8-8 14-16 14 6-4 12-10 18-18z" fill="#c45c28" opacity=".35"/><circle cx="32" cy="33" r="2.2" fill="#145c2e"/></svg>
+        </span>
       </div>
       <div class="wrap">
-        <h1>AI agents, web3 surfaces, and design that ships.</h1>
-        <p class="lead" id="hero-tagline">
-          Consulting studio since 2007: agent systems, interfaces, and on-chain-adjacent product work—with a path toward Launchpad for projects that fit.
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" id="hero-cta" href="mailto:adbongorocks@gmail.com">Start a project</a>
-          <a class="btn btn-ghost" href="/maxayauwi-dashboard.html">RSS3 dashboard</a>
+        <div>
+          <p class="eyebrow">Adbongo Group LLC · since 2007</p>
+          <h1>Advocacy Launchpad for business systems that last.</h1>
+          <p class="lead" id="hero-tagline">
+            Nearly twenty years of consulting across industries. We help founders and operators upgrade the legal, social, financial, and technical layers of their organizations—especially digital and decentralized ones.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" id="hero-cta" href="mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry">Start a consulting engagement</a>
+            <a class="btn btn-ghost" href="#about">Our story</a>
+          </div>
+          <div class="hero-podcast podcast-badges">
+            <a
+              class="podcast-badge-link spotify-podcast-link"
+              href="https://open.spotify.com/show/003jiO8jmRfAk3GrKPy8C7"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Listen to Golden Age Gurus on Spotify"
+            >
+              <img
+                src="/assets/spotify/spotify-podcast-badge-blk-grn-330x80.png"
+                width="165"
+                height="40"
+                alt="Listen on Spotify — Golden Age Gurus"
+                loading="eager"
+              />
+            </a>
+          </div>
         </div>
-        <div class="hero-podcast podcast-badges">
-          <a
-            class="podcast-badge-link spotify-podcast-link"
-            href="https://open.spotify.com/show/003jiO8jmRfAk3GrKPy8C7"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Listen to Golden Age Gurus on Spotify"
-          >
-            <img
-              src="/assets/spotify/spotify-podcast-badge-wht-grn-330x80.png"
-              srcset="/assets/spotify/spotify-podcast-badge-wht-grn-165x40.png 165w, /assets/spotify/spotify-podcast-badge-wht-grn-330x80.png 330w"
-              sizes="165px"
-              width="165"
-              height="40"
-              alt="Listen on Spotify — Golden Age Gurus"
-              loading="eager"
-            />
-          </a>
+        <div class="hero-brand">
+          <img
+            src="/assets/brand/adbongo-logo.png"
+            width="606"
+            height="590"
+            alt="Adbongo emblem — monkey and snake among leaves"
+            loading="eager"
+          />
         </div>
       </div>
     </div>
 
-    <section id="evolution" aria-labelledby="evolution-heading">
+    <section id="now" aria-labelledby="now-heading">
       <div class="wrap">
-        <h2 id="evolution-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">From legacy web to open stack</h2>
+        <h2 id="now-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Now open</h2>
         <div class="strip">
           <p>
-            <strong>Legacy → now.</strong> Adbongo spent years on WordPress-class sites and traditional marketing tooling.
-            What you see here is the same brand on a deliberate upgrade path: <strong>static, fast surfaces</strong>,
-            <strong>RSS3-indexed</strong> open activity, <strong>AI-assisted</strong> workflows where they earn their place,
-            and infra you control—not a theme lock-in from fifteen years ago.
+            <strong>Reinstated and open for work.</strong> Adbongo Group LLC has been reinstated with the Secretary of State.
+            Managing partner Baba John completed a Juris Doctor through a partnership arrangement with the family firm
+            <a href="https://coyotelegal.com" target="_blank" rel="noopener noreferrer">coyotelegal.com</a>
+            and recently externed with <a href="https://ixian.tech" target="_blank" rel="noopener noreferrer">ixian.tech</a>,
+            an international legal engineering practice. While bar results are pending, Adbongo continues what it has always sold:
+            practical consulting to upgrade your business systems.
+          </p>
+          <p class="notice">
+            This site provides business and educational information only—not legal advice. No attorney-client relationship is formed by contacting us.
+            See our <a href="/disclaimer.html">website disclaimer</a>.
           </p>
         </div>
       </div>
@@ -483,65 +701,593 @@
 
     <section id="services" aria-labelledby="services-heading">
       <div class="wrap">
-        <h2 id="services-heading">Services</h2>
-        <div class="cards">
-          <article class="card">
-            <h3>AI agents</h3>
-            <p>Orchestration, tools, memory patterns, and Telegram or API-facing agents tailored to your workflow.</p>
-          </article>
-          <article class="card">
-            <h3>Web &amp; product design</h3>
-            <p>Interfaces for web3 and AI products—clear IA, accessible components, and deployable front ends.</p>
-          </article>
-          <article class="card">
-            <h3>RSS3 &amp; social graphs</h3>
-            <p>Hooks into open activity layers, explorers, and Farcaster-adjacent flows where your roadmap needs them.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="launchpad" aria-labelledby="launchpad-heading">
-      <div class="wrap">
-        <h2 id="launchpad-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Launchpad</h2>
-        <div class="strip">
-          <p><strong>Launchpad</strong> runs as a private membership accelerator. Projects that meet criteria can enter when they hold the right program NFT—separate from day-to-day consulting engagements.</p>
-          <a class="btn btn-ghost" href="mailto:adbongorocks@gmail.com?subject=Launchpad%20inquiry">Ask about Launchpad</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="writing" aria-labelledby="writing-heading">
-      <div class="wrap">
-        <h2 id="writing-heading">Writing</h2>
-        <p class="feed-meta" style="margin-bottom:1.25rem;max-width:48rem;">
-          Essays and advocacy—including company history and Launchpad framing—are published on
-          <strong style="color:var(--text)">Advocacy Launchpad PMA</strong> (Substack on
-          <strong style="color:var(--text)">adbongo.io</strong>).
+        <h2 id="services-heading">What we sell</h2>
+        <p class="feed-meta" style="max-width:48rem;">
+          Digital organizations have stacked layers—legal wrappers, social coordination, finance, and technology.
+          We help you design and improve those systems so they work together.
         </p>
         <div class="cards">
           <article class="card">
-            <h3>The Future of Adbongo</h3>
-            <p class="feed-meta" style="margin-bottom:0.75rem;">May 25, 2022 · Quantum Law and Golden Age Advocacy</p>
+            <h3>Business systems consulting</h3>
+            <p>Operations, advocacy campaigns, product and process upgrades for companies that need clarity without theme-park web fluff.</p>
+          </article>
+          <article class="card">
+            <h3>Digital organization design</h3>
+            <p>R&amp;D for DAOs and mission-driven entities: governance patterns, membership flows, and documentation that matches how you actually operate.</p>
+          </article>
+          <article class="card">
+            <h3>AI agents &amp; interfaces</h3>
+            <p>Agent workflows, web3-facing surfaces, and deployable front ends when your roadmap needs them—not hype for its own sake.</p>
+          </article>
+          <article class="card">
+            <h3>Open-activity infrastructure</h3>
+            <p>Hands-on experience running RSS3 / open-information tooling as social-layer R&amp;D for digital organizations.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" aria-labelledby="about-heading">
+      <div class="wrap">
+        <h2 id="about-heading">About Adbongo</h2>
+        <p class="feed-meta" style="max-width:48rem;margin-bottom:0;">
+          Tagline: <strong style="color:var(--text)">Advocacy Launchpad</strong>.
+          Clients across multiple industries and economic sectors. Benefit-minded structure, regenerative experiments, and long crypto / web3 practice.
+        </p>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-year">2007</div>
+            <div class="timeline-body"><strong>Founded</strong> as an advocacy and consulting practice (“Ad” as advertising)—nearly two decades of client work.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2011</div>
+            <div class="timeline-body">
+              <strong>Certified B Corp</strong> by B Lab—a third-party impact audit verifying social and environmental performance (community benefit beyond standard corporate requirements). Covered on CSRwire in Jan 2012.
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2017</div>
+            <div class="timeline-body"><strong>Smart dumpster</strong> R&amp;D—hardware and data concepts built around a <em>proof of recycle</em> thesis for resource economies.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2022+</div>
+            <div class="timeline-body"><strong>Impact DAO / Superfluid / Gnosis</strong> experiments and Golden Age Advocacy writing; Launchpad and digital-org tooling.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2024</div>
+            <div class="timeline-body">
+              <strong>Legal Technology Certificate</strong> — National Society for Legal Technology
+              (<a href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/linked_in_profile" target="_blank" rel="noopener noreferrer">Verify on Credly →</a>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2025–26</div>
+            <div class="timeline-body"><strong>Juris Doctor</strong>, ixian.tech externship, company reinstatement—consulting continues while bar results are pending.</div>
+          </div>
+        </div>
+        <div class="cards" style="margin-top:1.25rem;">
+          <article class="card">
+            <h3>B Corp certification · third-party verified</h3>
             <p>
-              Opens with founding Adbongo in 2007 (“Ad” as advertising), burnout and evolution, and certifying as a
-              benefit corporation in 2011 with a triple-bottom-line structure—full piece may require a Substack sign-in
-              or subscription.
+              In 2011 B Lab certified Adbongo after reviewing governance, workers, community, and environmental metrics.
+              That independent assessment confirmed practices aimed at benefiting people and planet—not only profit.
+              CSRwire published the announcement (Jan 3, 2012): Texas’ newest B Corporation, with a goal of helping more Texas businesses certify.
             </p>
-            <p style="margin-top:0.75rem;">
-              <a href="https://www.adbongo.io/p/the-future-of-adbongo" target="_blank" rel="noopener noreferrer">Read on adbongo.io →</a>
+            <figure class="feature-art" style="margin-top:0.85rem;">
+              <img
+                src="/assets/brand/bcorp-csrwire-2012.png"
+                width="1024"
+                height="825"
+                alt="CSRwire press release: Adbongo, Inc. Awarded B Corp Certification — B Lab certified Adbongo as Texas’ newest B corporation (published Jan 3, 2012)"
+                loading="lazy"
+              />
+            </figure>
+            <p class="feed-meta" style="margin-top:0.65rem;margin-bottom:0;">
+              Source: 3BL CSRwire · Sustainability · Submitted by Adbongo Inc.
             </p>
           </article>
           <article class="card">
-            <h3>Publication &amp; RSS</h3>
-            <p>Browse all posts, subscribe, and use the feed in readers or your own site.</p>
-            <p style="margin-top:0.75rem;">
-              <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Advocacy Launchpad PMA →</a>
+            <h3>Legal Technology Certificate</h3>
+            <p>
+              Issued by the National Society for Legal Technology (NSLT). Verified digital badge on Credly.
             </p>
-            <p style="margin-top:0.5rem;">
-              <a href="https://www.adbongo.io/feed" target="_blank" rel="noopener noreferrer">RSS / Atom feed</a>
+            <p style="margin-top:0.75rem;">
+              <a class="btn btn-ghost" href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/linked_in_profile" target="_blank" rel="noopener noreferrer">View Credly badge →</a>
             </p>
           </article>
+        </div>
+        <p style="margin-top:1.25rem;">
+          <a class="btn btn-ghost" href="https://www.adbongo.io/p/the-future-of-adbongo" target="_blank" rel="noopener noreferrer">Read The Future of Adbongo →</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="work" aria-labelledby="work-heading">
+      <div class="wrap">
+        <h2 id="work-heading">Creative folio</h2>
+        <p class="feed-meta folio-intro">
+          Showcase of creative work John produced as art director for legacy Adbongo—graphic design, branding kits,
+          partnership identity, training video production, event marketing, and university-partnered market research
+          (SMU / UNT / Presidio).
+          Full archive:
+          <a href="https://www.behance.net/johnbushe" target="_blank" rel="noopener noreferrer">behance.net/johnbushe</a>.
+          Client quotes live in
+          <a href="#testimonials">Clients &amp; partners</a>.
+        </p>
+
+        <div class="folio-category">
+          <h3>Art direction</h3>
+          <p>Sample of the creative systems and campaign craft from the legacy Adbongo studio.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Legacy Adbongo art direction</h4>
+              <p class="folio-meta">Studio showcase · type of creative work produced as art director</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/3011461?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Legacy Adbongo art direction showcase"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/3011461" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Graphic design</h3>
+          <p>Packaging and print systems for mission-driven clients.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Hands that Heal CD set</h4>
+              <p class="folio-meta">Client: Roy James, Hands that Heal</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/709311?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Hands that Heal CD set"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/709311/Hands-that-Heal" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Branding kits</h3>
+          <p>Identity systems and brand kits—linked to client recommendations on this site.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Accessible Home Design</h4>
+              <p class="folio-meta">Client: Pat Dicicco, Owner</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/700732?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Accessible Home Design branding"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="#testimonial-pat-dicicco">Pat Dicicco testimonial →</a>
+                <a href="https://www.behance.net/gallery/700732/Accesssible-Home-Design" target="_blank" rel="noopener noreferrer">Behance project →</a>
+              </p>
+            </article>
+            <article class="folio-item">
+              <h4>Coyote Legal</h4>
+              <p class="folio-meta">Client: Margaret Donnelly, P.C.</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/3742799?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Coyote Legal branding"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="#testimonial-margaret-donnelly">Margaret Donnelly testimonial →</a>
+                <a href="https://www.behance.net/gallery/3742799/Coyote-Legal" target="_blank" rel="noopener noreferrer">Behance project →</a>
+              </p>
+            </article>
+            <article class="folio-item">
+              <h4>Branding kit</h4>
+              <p class="folio-meta">Legacy Adbongo · brand kit &amp; identity system</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/3011199?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Branding kit"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/3011199" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Brand identity · logos</h3>
+          <p>Logo systems and mark development for client brands.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Logo identity</h4>
+              <p class="folio-meta">Legacy Adbongo · brand identity logos</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/5210721?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Brand identity logos"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/5210721" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Civic ecology</h3>
+          <p>Business ecosystems designed around communities and living systems—not extractive silos.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Civic ecology</h4>
+              <p class="folio-meta">Legacy Adbongo · civic ecology &amp; business ecosystems</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/1923923?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Civic ecology"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/1923923" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Partnership identity</h3>
+          <p>Creative partnership branding and event-facing identity.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Austin Art and Music Partnership</h4>
+              <p class="folio-meta">Arts &amp; music collaboration identity</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/746284?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Austin Art and Music Partnership"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/746284" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Video series · script &amp; production</h3>
+          <p>Insurance / wellness training videos for construction companies.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>17-Pt Wellness Video Training Series</h4>
+              <p class="folio-meta">The Health Bowl · training series for construction companies</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/694273?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: 17-Pt Wellness Video Training Series"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="#testimonial-steve-heussner">Steve Heussner testimonial →</a>
+                <a href="https://www.behance.net/gallery/694273/17-Pt-Wellness-Video-Training-Series-The-Health-Bowl" target="_blank" rel="noopener noreferrer">Behance project →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Event production &amp; marketing</h3>
+          <p>Event systems, land-based enterprise launches, and regenerative business development.</p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Mesa Ranch</h4>
+              <p class="folio-meta">Client: Lane Ray · organic / regenerative business development &amp; event marketing</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/746149?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Mesa Ranch event production and marketing"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/746149" target="_blank" rel="noopener noreferrer">Lane Ray / Mesa Ranch on Behance →</a>
+              </p>
+            </article>
+            <article class="folio-item">
+              <h4>Event production</h4>
+              <p class="folio-meta">Legacy Adbongo · event production &amp; marketing</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/3734575?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Event production"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/3734575" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category">
+          <h3>Market research · university programs</h3>
+          <p>
+            Cause marketing and audience research developed with university program partners—
+            <strong>SMU</strong>, <strong>UNT</strong>, and <strong>Presidio</strong>.
+          </p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Rock About Climbing</h4>
+              <p class="folio-meta">Cause marketing · university-partnered market research</p>
+              <div class="folio-embed">
+                <iframe
+                  src="https://www.behance.net/embed/project/56191089?ilo0=1"
+                  height="316"
+                  width="404"
+                  allowfullscreen
+                  loading="lazy"
+                  title="Behance: Rock About Climbing — Cause Marketing"
+                  allow="clipboard-write"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://www.behance.net/gallery/56191089/Cause-Marketing" target="_blank" rel="noopener noreferrer">Behance project →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="cards" style="margin-top:2rem;">
+          <article class="card">
+            <h3>Zero Waste Business Accelerator</h3>
+            <p>Adbongo’s accelerator for regenerative and zero-waste enterprises—strategy, branding, and market development.</p>
+            <p style="margin-top:0.75rem;">
+              <a class="btn btn-ghost" href="/accelerator.html">Start accelerator agreement →</a>
+            </p>
+          </article>
+          <article class="card">
+            <h3>DAO / digital org acceleration</h3>
+            <p>Web3 ecosystem mapping for new clients accelerating a DAO or digital organization—scope systems, advocacy, and launch support.</p>
+            <p style="margin-top:0.75rem;">
+              <a class="btn btn-ghost" href="/ecosystem-mapping.html">Start ecosystem mapping →</a>
+            </p>
+          </article>
+        </div>
+        <p style="margin-top:1.25rem;">
+          <a class="btn btn-ghost" href="https://www.behance.net/johnbushe" target="_blank" rel="noopener noreferrer">Open full Behance portfolio →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#testimonials">Jump to testimonials →</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="testimonials" aria-labelledby="testimonials-heading">
+      <div class="wrap">
+        <h2 id="testimonials-heading">What clients &amp; partners say</h2>
+        <p class="feed-meta" style="max-width:48rem;">
+          LinkedIn recommendations for Baba John / Adbongo — clients, collaborators, teammates, and partners.
+          Full profile:
+          <a href="https://www.linkedin.com/in/vibecoder" target="_blank" rel="noopener noreferrer">linkedin.com/in/vibecoder</a>
+        </p>
+        <div class="cards">
+          <article class="card">
+            <h3>Jake Perry</h3>
+            <p class="testimonial-meta">Branch Manager, Fairway Home Mortgage · Jan 20, 2021 · Managed John directly</p>
+            <p class="testimonial-quote">“What an amazing experience working with John. In just a few months, he has transformed our culture, upgraded our marketing collateral, recast our branding, and built our team to scale. If you give John the resources to market, he will accomplish all of your goals and bring your business success. Thanks!”</p>
+          </article>
+          <article class="card">
+            <h3>Justin Godsey</h3>
+            <p class="testimonial-meta">Director of Commissioning, Fractal EMS · Jan 5, 2016 · Client</p>
+            <p class="testimonial-quote">“If you are looking to achieve sustainability and enter the dimension of Zero Waste, John is a living example that can guide you through the portal. He has a vast knowledge base and is very understanding of the various components necessary to achieve Zero Waste goals. I would highly recommend him for any individual or business that is motivated to achieve a new standard in the way we live and do business.”</p>
+          </article>
+          <article class="card">
+            <h3>Joel Ausanka</h3>
+            <p class="testimonial-meta">CISSP, MATC · Apr 3, 2013 · Reported to John</p>
+            <p class="testimonial-quote">“John is passionate and driven by the goals of zero waste. A bright-eyed visionary who is definitely on a mission.”</p>
+          </article>
+          <article class="card">
+            <h3>Daniel Shane Cleary</h3>
+            <p class="testimonial-meta">Founder, Cleary Polysemy · Feb 18, 2012 · Reported to John</p>
+            <p class="testimonial-quote">“When you look at the human civilization in a timeline according to intelligent evolution John is ahead of his time. His language and inventions are vital to the new economy and preservation of this fantastic nation and all carbon foot print creators. With Johns ethics integrated into traditional business models sustainability and growth can be achieved.”</p>
+          </article>
+          <article class="card">
+            <h3>Mitch Fine</h3>
+            <p class="testimonial-meta">Entrepreneur &amp; Sustainability Catalyst · Jan 26, 2012 · Client</p>
+            <p class="testimonial-quote">“John has a process that is unique and effective to allow ‘cause-based’ businesses of all kinds to drive results to their ‘triple’ bottom line. He genuinely cares about your business and results and functions as if he has been an organic member of your team for years. He works with integrity and will be honest and direct with you, which is a far cry from ‘business as usual’. He is highly creative—at times, he seems to be an artist as well as a marketing guru. I hired him to support my marketing efforts with Morgan Stanley Smith Barney and his deliverables were of the highest quality. I feel that I received excellent value for my investment in him. His support and guidance allowed me to build an effective and resonating brand presence, which grew my business and overall success tremendously.”</p>
+          </article>
+          <article class="card">
+            <h3>Juan Carlos Cruz</h3>
+            <p class="testimonial-meta">Founder &amp; Broker, Texas Investment Properties · Jun 24, 2011 · Client</p>
+            <p class="testimonial-quote">“He is great to work with and his ideas make business sense and are good for the environment.”</p>
+          </article>
+          <article class="card">
+            <h3>Benjamin Neupert</h3>
+            <p class="testimonial-meta">Digital Consultant, edesen.com · Jul 12, 2010 · John was Benjamin’s client</p>
+            <p class="testimonial-quote">“John Bush is a good friend and a mentor. His knowledge of social media and marketing/advertising is truly remarkable. I highly recommend hiring John as a organic business development consultant.”</p>
+          </article>
+          <article class="card" id="testimonial-margaret-donnelly">
+            <h3>Margaret Donnelly</h3>
+            <p class="testimonial-meta">Immigration lawyer &amp; author · May 25, 2010 · Client</p>
+            <p class="testimonial-quote">“I've been using the services of Adbongo for several years, for web development, book design, and what is its forte, business development. We're going through an exciting developmental phase with research, strategic planning, and a focus of changing the world that is sober, creative, and extremely exciting. I highly recommend this new approach to assisting business owners make a difference in their community.”</p>
+          </article>
+          <article class="card">
+            <h3>Darren Minke</h3>
+            <p class="testimonial-meta">Freelance Artist · Mar 29, 2010 · Same team</p>
+            <p class="testimonial-quote">“John is an excellent leader and someone who can get any size project going. He likes to think outside of the box and offer fresh perspectives and ideas to his clients.”</p>
+          </article>
+          <article class="card">
+            <h3>Texana Lane</h3>
+            <p class="testimonial-meta">Bosslady at Texana Lane · Mar 25, 2010 · Client</p>
+            <p class="testimonial-quote">“John Bush is a generous, reliable, and inventive individual who gives more than 100% of his time and talents. I enjoyed working with John as he created out-of-the-box (and successful) ideas to promote our restaurant business. The Adbongo team digs deep to understand your products, service, budget, and timeframe.”</p>
+          </article>
+          <article class="card" id="testimonial-steve-heussner">
+            <h3>Steve Heussner</h3>
+            <p class="testimonial-meta">Principal, Alkeme Financial Services · Feb 4, 2010 · Client</p>
+            <p class="testimonial-quote">“John first worked for our firm as a graphic design student intern while he attended SMU and later as the owner of Adbongo. He has developed our website and has produced a variety of advertising and promotional material for us. He is great to work with, listens, understands and delivers a quality product on time and within budget.”</p>
+          </article>
+          <article class="card">
+            <h3>Michael Plaster</h3>
+            <p class="testimonial-meta">Filmmaker &amp; Creative Strategist · Oct 7, 2009 · Reported to John</p>
+            <p class="testimonial-quote">“John has great intuitive senses, creative, and is open to new ideas and collaborating with new people such as myself all the while presenting a structured company and work flow.”</p>
+          </article>
+          <article class="card">
+            <h3>Chris Brickler</h3>
+            <p class="testimonial-meta">CEO/co-Founder, Mynd Immersive · Mar 2, 2009 · Client</p>
+            <p class="testimonial-quote">“John has built two websites for me in the past two years. Both have been extremely well received in terms of functionality and creativity. His ability to integrate the latest web-based technologies is very impressive.”</p>
+          </article>
+          <article class="card">
+            <h3>Josh Elbaum</h3>
+            <p class="testimonial-meta">Creative Director · Feb 19, 2009 · Reported to John</p>
+            <p class="testimonial-quote">“John is a visionary with the creative ability and experience to communicate those ideas while remaining personable and professional. He also has the ability to maintain his vision despite time and budget restrictions, what can I say, the man gets things done!”</p>
+          </article>
+          <article class="card">
+            <h3>Antonio Limon</h3>
+            <p class="testimonial-meta">VP Marketing, Salons by JC · Feb 5, 2009 · Same team</p>
+            <p class="testimonial-quote">“John is one of the most creative people I know, who brings a fresh perspective and down to business results orientation, that's vital in today's struggling economy. His organization depicts everything an ad / marketing firm needs to be.”</p>
+          </article>
+          <article class="card">
+            <h3>Steve B. Golab</h3>
+            <p class="testimonial-meta">The Resolver · Jan 21, 2009 · Different companies</p>
+            <p class="testimonial-quote">“John is a class act with a great sense of humor, disciplined approach, and maturity to tackle complex challenges. I've seen John demonstrate leadership in very stressful situations, and I am very impressed with him. Also, he truly understands what it means to form a meaningful partnership. There is no doubt in my mind that time I have invested in building a relationship with John and the Adbongo team has paid off for my business, FG SQUARED Interactive Marketing.”</p>
+          </article>
+          <article class="card" id="testimonial-pat-dicicco">
+            <h3>Pat Dicicco</h3>
+            <p class="testimonial-meta">Owner, Accessible Home Design · Jan 21, 2009 · Client</p>
+            <p class="testimonial-quote">“Personally, I could not be where I am today without John's professional work ethics, creativity and prompt attention to my needs. Most importantly is his personal encouragement, that I am on the right path. I believe it is instinctual with him…. It's not just lip service. Guys out there, I don't think John is going to work with you unless he believes you are a cut above the average person.”</p>
+          </article>
+          <article class="card">
+            <h3>Josh Weatherspoon</h3>
+            <p class="testimonial-meta">Freelance · Dec 11, 2008 · Same team</p>
+            <p class="testimonial-quote">“John has a entrepreneurial spirit, if he wants something he will work hard to get it.”</p>
+          </article>
+          <article class="card">
+            <h3>Peter Anthony</h3>
+            <p class="testimonial-meta">Television Producer · Aug 29, 2008 · Client</p>
+            <p class="testimonial-quote">“John is one in a million. His knowledge and expertise coupled with amazing people skills sets him apart from those who I have worked with before. I have nothing but the best to say about John.”</p>
+          </article>
+          <article class="card">
+            <h3>Doug LaRue</h3>
+            <p class="testimonial-meta">Sr. Creative, Producer, CEO · Aug 19, 2008 · Reported to John</p>
+            <p class="testimonial-quote">“John is a highly energetic young man with a eclectic personality that demands to be the life of the party. He is not afraid of Grand Ideas or outside of the box thinking. He is a social networking monster with a long furry tail to swing from the tallest trees. He dances, he sings and he gets NOTICED! John is a motivator, he pushes people to succeed beyond expectations with the skill of a diplomat.”</p>
+          </article>
+        </div>
+        <p style="margin-top:1.25rem;">
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/vibecoder" target="_blank" rel="noopener noreferrer">View on LinkedIn →</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="blog" aria-labelledby="blog-heading">
+      <div class="wrap">
+        <h2 id="blog-heading">Blog</h2>
+        <div class="feature">
+          <figure class="feature-art">
+            <img
+              src="/assets/brand/digital-super-trusts.jpg"
+              width="576"
+              height="1024"
+              alt="Advocacy Launchpad cover: digital super trusts — www.adbongo.io"
+              loading="lazy"
+            />
+          </figure>
+          <div class="feature-copy">
+            <h3 style="font-family:Fraunces,Georgia,serif;font-size:1.15rem;margin-bottom:0.75rem;">From legacy wealth structures to digital “super trusts”</h3>
+            <p>
+              Durable capital allocation has always depended on layered structures—control, continuity, and mission.
+              Today’s digital organizations ask the same questions with new rails: smart contracts, membership tokens,
+              open activity graphs, and hybrid legal wrappers.
+            </p>
+            <p>
+              Adbongo’s Advocacy Launchpad work sits at that intersection: <strong>research and development for digital organizations</strong>,
+              pairing social infrastructure (including our RSS3 node experiments) with practical consulting so founders can upgrade
+              how their business systems actually run.
+            </p>
+            <p>
+              Long-form essays and program framing live on
+              <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">www.adbongo.io</a>
+              (Advocacy Launchpad PMA). Related ministry presence:
+              <a href="https://www.adbongo.io/s/temple-of-roots" target="_blank" rel="noopener noreferrer">Temple of Roots on Substack</a>
+              and the ministry site
+              <a href="https://templeofroots.com" target="_blank" rel="noopener noreferrer">templeofroots.com</a>.
+            </p>
+            <p style="margin-top:1rem;">
+              <a class="btn btn-primary" href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Read the blog on adbongo.io →</a>
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -551,12 +1297,10 @@
         <h2 id="podcast-heading">Podcast</h2>
         <p class="feed-meta" style="margin-bottom:1.25rem;max-width:48rem;">
           <strong style="color:var(--text)">Golden Age Gurus ✨</strong> — regenerative builders, healers, and Web3 explorers with Baba J.
-          Episodes on Spotify, Apple Podcasts, and <a href="https://www.adbongo.io/podcast" target="_blank" rel="noopener noreferrer">adbongo.io/podcast</a>.
         </p>
         <div class="cards">
           <article class="card">
             <h3>Listen on Spotify</h3>
-            <p>Subscribe on Spotify for new episodes. Use the official badge link below (Spotify brand guidelines).</p>
             <div class="podcast-badges">
               <a
                 class="podcast-badge-link spotify-podcast-link"
@@ -566,13 +1310,11 @@
                 aria-label="Listen to Golden Age Gurus on Spotify"
               >
                 <img
-                  src="/assets/spotify/spotify-podcast-badge-wht-grn-330x80.png"
-                  srcset="/assets/spotify/spotify-podcast-badge-wht-grn-165x40.png 165w, /assets/spotify/spotify-podcast-badge-wht-grn-330x80.png 330w"
-                  sizes="165px"
-                  width="165"
-                  height="40"
-                  alt="Listen on Spotify"
-                  loading="lazy"
+                src="/assets/spotify/spotify-podcast-badge-blk-grn-330x80.png"
+                width="165"
+                height="40"
+                alt="Listen on Spotify — Golden Age Gurus"
+                loading="lazy"
                 />
               </a>
             </div>
@@ -585,9 +1327,6 @@
             <p style="margin-top:0.5rem;">
               <a href="https://www.adbongo.io/podcast" target="_blank" rel="noopener noreferrer">All episodes on adbongo.io →</a>
             </p>
-            <p style="margin-top:0.5rem;">
-              <a href="https://api.substack.com/feed/podcast/587547.rss" target="_blank" rel="noopener noreferrer">Podcast RSS feed</a>
-            </p>
           </article>
         </div>
       </div>
@@ -595,10 +1334,20 @@
 
     <section id="infrastructure" aria-labelledby="infra-heading">
       <div class="wrap">
-        <h2 id="infra-heading">RSS3 on web3.adbongo.io</h2>
-        <p class="feed-meta" style="margin-bottom:1.25rem;">
-          Same stack as your Linode <strong style="color:var(--text)">rss3-node</strong> deploy: operator node, Maxayauwi comm agent path, and indexer-facing activity. Port <strong style="color:var(--text)">8080</strong> is the node HTTP API (may be blocked off-LAN).
-        </p>
+        <h2 id="infra-heading">This host · RSS3 node</h2>
+        <div class="strip" style="margin-bottom:1.25rem;">
+          <p>
+            <strong>Network change underway.</strong> RSS3 is migrating VSL toward Ethereum and integrating DSL into the broader
+            <strong>RSSHub</strong> stack over the coming weeks. Adbongo’s node on this host remains part of our digital-organization R&amp;D;
+            consulting engagements are independent of any single protocol’s roadmap.
+          </p>
+          <p>
+            Official announcement:
+            <a href="https://rss3.io/blog/the-next-stage-of-rss3.html" target="_blank" rel="noopener noreferrer">The Next Stage of RSS3</a>
+            · Asset portal:
+            <a href="https://rss3.io/migration/" target="_blank" rel="noopener noreferrer">rss3.io/migration</a>
+          </p>
+        </div>
         <div class="cards">
           <article class="card">
             <h3>Node address</h3>
@@ -606,65 +1355,54 @@
             <p style="margin-top:0.75rem;"><a id="link-explorer-card" href="https://explorer.rss3.io/nodes/0x0063951De34a75c25279cFe3C212F4855125Fd8f" target="_blank" rel="noopener noreferrer">RSS3 Explorer →</a></p>
           </article>
           <article class="card">
-            <h3>Node API (this host)</h3>
-            <p>Core / operators and worker routes served by the RSS3 node container.</p>
-            <p style="margin-top:0.75rem;"><a href="http://web3.adbongo.io:8080/operators" target="_blank" rel="noopener noreferrer">Operators endpoint</a></p>
-          </article>
-          <article class="card">
-            <h3>RSS3 dashboard</h3>
-            <p>Maxayauwi node view: status-style layout (purple theme) — same UX that used to be the default landing here.</p>
+            <h3>Operator dashboard</h3>
+            <p>Maxayauwi node view for this host (ops / status layout).</p>
             <p style="margin-top:0.85rem;">
               <a class="btn btn-primary" href="/maxayauwi-dashboard.html">Open RSS3 dashboard</a>
             </p>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="collect" aria-labelledby="collect-heading">
-      <div class="wrap">
-        <h2 id="collect-heading">Access NFTs</h2>
-        <div class="strip">
-          <p>Program NFTs can gate Launchpad eligibility. Mint paths may include Farcaster Frames where supported, with a stable web fallback for the long term.</p>
-          <span class="btn btn-ghost" style="opacity:0.65;cursor:default;pointer-events:none;">Mint — coming soon</span>
-        </div>
-      </div>
-    </section>
-
-    <section id="upgrades" aria-labelledby="upgrades-heading">
-      <div class="wrap">
-        <h2 id="upgrades-heading">Agent NFT upgrades</h2>
-        <p class="feed-meta" style="margin-bottom:1.25rem;max-width:48rem;">
-          Holders of Adbongo <strong style="color:var(--text)">AI agent NFTs</strong> get a dedicated flow to evolve
-          capabilities—wallet connect, verify ownership, then choose upgrade paths (tiers, tools, or contract-defined
-          mechanics). Interaction model similar to polished NFT upgrade UIs like
-          <a href="https://noahsark.ai" target="_blank" rel="noopener noreferrer">noahsark.ai</a>.
-        </p>
-        <div class="strip">
-          <p>
-            The upgrade web app will ship on its own URL when contracts and agent backends are live. Until then, this
-            site links to the holder page and a contact line for early NFT buyers.
-          </p>
-          <a class="btn btn-ghost" href="/agents-upgrade.html">Holder hub — upgrades</a>
+          <article class="card">
+            <h3>Access &amp; upgrades</h3>
+            <p>
+              Level 1 mint hub:
+              <a href="https://manifold.xyz/@divinedao" target="_blank" rel="noopener noreferrer">manifold.xyz/@divinedao</a>
+            </p>
+            <p style="margin-top:0.5rem;"><a href="/agents-upgrade.html">Agent NFT upgrades →</a></p>
+          </article>
         </div>
       </div>
     </section>
 
     <section id="activity" aria-labelledby="activity-heading">
       <div class="wrap">
-        <h2 id="activity-heading">RSS3 activity</h2>
+        <h2 id="activity-heading">Indexed activity</h2>
         <p class="feed-meta" style="margin-bottom:0.75rem;max-width:48rem;">
-          Public activity for the operator address, from the RSS3 Global Indexer when this page is static (no comm-agent APIs). Not the same as node health.
+          Public activity for the operator address via the RSS3 Global Indexer when available. Subject to network migration timelines.
         </p>
         <details class="feed-details">
-          <summary>Why not straight from the node?</summary>
+          <summary>Why this feed may change</summary>
           <p class="feed-meta">
-            The legacy Maxayauwi view never wired node → webhook → comm-agent end-to-end. This list uses <strong style="color:var(--text)">public DSL</strong> data so visitors still see indexed activity when it exists—separate from “everything on the node is green.”
+            As RSS3 shifts VSL → Ethereum and DSL → RSSHub, explorer and indexer URLs may change. This list is a convenience view, not a guarantee of node health.
           </p>
         </details>
         <p class="feed-meta" id="feed-account-line" aria-live="polite">Loading feed…</p>
         <div id="feed-status" role="status" aria-live="polite"></div>
         <ul class="feed-list" id="feed-list"></ul>
+      </div>
+    </section>
+
+    <section id="contact" aria-labelledby="contact-heading">
+      <div class="wrap">
+        <h2 id="contact-heading">Work with us</h2>
+        <div class="strip">
+          <p>
+            Ready to upgrade your business systems—or explore digital-organization design with someone who has lived both the advocacy stack and the crypto stack?
+          </p>
+          <a class="btn btn-primary" href="mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry">Email Adbongo</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="/accelerator.html">Accelerator agreement</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="/ecosystem-mapping.html">Web3 ecosystem mapping</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Read on adbongo.io</a>
+        </div>
       </div>
     </section>
   </main>
@@ -682,9 +1420,7 @@
             aria-label="Listen to Golden Age Gurus on Spotify"
           >
             <img
-              src="/assets/spotify/spotify-podcast-badge-wht-grn-330x80.png"
-              srcset="/assets/spotify/spotify-podcast-badge-wht-grn-165x40.png 165w, /assets/spotify/spotify-podcast-badge-wht-grn-330x80.png 330w"
-              sizes="165px"
+              src="/assets/spotify/spotify-podcast-badge-blk-grn-330x80.png"
               width="165"
               height="40"
               alt="Listen on Spotify — Golden Age Gurus"
@@ -694,18 +1430,24 @@
         </div>
         <div class="footer-links" style="margin-top:1rem;">
           <a id="link-explorer" href="#" target="_blank" rel="noopener noreferrer">RSS3 node explorer</a>
-          <a href="http://web3.adbongo.io:8080/operators" target="_blank" rel="noopener noreferrer">Operators API</a>
           <a class="btn btn-ghost btn-compact" href="/maxayauwi-dashboard.html">RSS3 dashboard</a>
-          <a href="https://docs.rss3.io" target="_blank" rel="noopener noreferrer">RSS3 docs</a>
+          <a href="https://rss3.io/blog/the-next-stage-of-rss3.html" target="_blank" rel="noopener noreferrer">RSS3 migration</a>
           <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Blog (adbongo.io)</a>
-          <a href="https://www.adbongo.io/podcast" target="_blank" rel="noopener noreferrer">Golden Age Gurus podcast</a>
-          <a href="https://www.adbongo.io/p/the-future-of-adbongo" target="_blank" rel="noopener noreferrer">Future of Adbongo</a>
-          <a href="/agents-upgrade.html">Agent NFT upgrades</a>
+          <a href="https://www.behance.net/johnbushe" target="_blank" rel="noopener noreferrer">Behance portfolio</a>
+          <a href="https://www.linkedin.com/in/vibecoder" target="_blank" rel="noopener noreferrer">LinkedIn (vibecoder)</a>
+          <a href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/linked_in_profile" target="_blank" rel="noopener noreferrer">Legal Tech Certificate (Credly)</a>
+          <a href="https://www.adbongo.io/podcast" target="_blank" rel="noopener noreferrer">Podcast</a>
+          <a href="https://www.adbongo.io/s/temple-of-roots" target="_blank" rel="noopener noreferrer">Temple of Roots (Substack)</a>
+          <a href="https://templeofroots.com" target="_blank" rel="noopener noreferrer">templeofroots.com</a>
+          <a href="https://manifold.xyz/@divinedao" target="_blank" rel="noopener noreferrer">Manifold mint</a>
+          <a href="/accelerator.html">Accelerator agreement</a>
+          <a href="/ecosystem-mapping.html">Web3 ecosystem mapping</a>
+          <a href="/agents-upgrade.html">Agent upgrades</a>
           <a href="/disclaimer.html">Disclaimer</a>
         </div>
       </div>
       <p id="footer-infra" style="color:var(--muted);font-size:0.85rem;max-width:36rem;">
-        This site and the RSS3 stack run on <strong style="color:var(--text);font-weight:600;">web3.adbongo.io</strong> (Linode).
+        Adbongo Group LLC · Advocacy Launchpad. Static site on <strong style="color:var(--text);font-weight:600;">web3.adbongo.io</strong> (Linode).
         <span style="display:block;margin-top:0.35rem;">Long-form writing: <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);">www.adbongo.io</a> (Substack).</span>
         <span style="display:block;margin-top:0.35rem;">Use of this site constitutes acceptance of our <a href="/disclaimer.html" style="color:var(--primary);">website disclaimer</a>.</span>
       </p>
@@ -715,21 +1457,13 @@
   <script>
     (function () {
       const $ = (id) => document.getElementById(id);
-
-      /** Defaults when this file is served as static HTML (no Express /api routes). */
-      const DEFAULT_FEED_ACCOUNT =
-        "0x0063951De34a75c25279cFe3C212F4855125Fd8f";
-      const DEFAULT_EXPLORER =
-        "https://explorer.rss3.io/nodes/" + DEFAULT_FEED_ACCOUNT;
+      const DEFAULT_FEED_ACCOUNT = "0x0063951De34a75c25279cFe3C212F4855125Fd8f";
+      const DEFAULT_EXPLORER = "https://explorer.rss3.io/nodes/" + DEFAULT_FEED_ACCOUNT;
 
       function fetchWithTimeout(url, ms) {
         const c = new AbortController();
-        const t = setTimeout(function () {
-          c.abort();
-        }, ms);
-        return fetch(url, { signal: c.signal }).finally(function () {
-          clearTimeout(t);
-        });
+        const t = setTimeout(function () { c.abort(); }, ms);
+        return fetch(url, { signal: c.signal }).finally(function () { clearTimeout(t); });
       }
 
       function iconX() {
@@ -737,10 +1471,7 @@
         s.setAttribute("viewBox", "0 0 24 24");
         s.setAttribute("aria-hidden", "true");
         const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        p.setAttribute(
-          "d",
-          "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-        );
+        p.setAttribute("d", "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z");
         s.appendChild(p);
         return s;
       }
@@ -749,10 +1480,7 @@
         s.setAttribute("viewBox", "0 0 24 24");
         s.setAttribute("aria-hidden", "true");
         const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        p.setAttribute(
-          "d",
-          "M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm6.93 9h-2.65a15.65 15.65 0 0 0-1.52-5.3A8.012 8.012 0 0 1 18.93 11zM12 4a14.12 14.12 0 0 1 1.54 5H10.46A14.12 14.12 0 0 1 12 4zm-6.93 7h2.65a15.65 15.65 0 0 0 1.52 5.3A8.012 8.012 0 0 1 5.07 11zm0-2a8.012 8.012 0 0 1 5.74-5.3A15.65 15.65 0 0 0 8.37 9H5.07zm7.86 0a15.65 15.65 0 0 0 1.52-5.3 8.012 8.012 0 0 1 5.74 5.3h-2.65a15.65 15.65 0 0 0-1.52 5.3A8.012 8.012 0 0 1 12.93 11zm-1.86 0H12.93a13.72 13.72 0 0 1-.93 4.22A13.72 13.72 0 0 1 11.07 11zm-2.14 0H8.07a13.72 13.72 0 0 1 .93-4.22A13.72 13.72 0 0 1 8.93 11zm1.07 9a14.12 14.12 0 0 1-1.54-5h6.16a14.12 14.12 0 0 1-1.54 5 8.012 8.012 0 0 1-3.08 0zm5.74-.7a15.65 15.65 0 0 0 1.52-5.3h2.65a8.012 8.012 0 0 1-5.74 5.3z"
-        );
+        p.setAttribute("d", "M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm6.93 9h-2.65a15.65 15.65 0 0 0-1.52-5.3A8.012 8.012 0 0 1 18.93 11zM12 4a14.12 14.12 0 0 1 1.54 5H10.46A14.12 14.12 0 0 1 12 4zm-6.93 7h2.65a15.65 15.65 0 0 0 1.52 5.3A8.012 8.012 0 0 1 5.07 11zm0-2a8.012 8.012 0 0 1 5.74-5.3A15.65 15.65 0 0 0 8.37 9H5.07zm7.86 0a15.65 15.65 0 0 0 1.52-5.3 8.012 8.012 0 0 1 5.74 5.3h-2.65a15.65 15.65 0 0 0-1.52 5.3A8.012 8.012 0 0 1 12.93 11zm-1.86 0H12.93a13.72 13.72 0 0 1-.93 4.22A13.72 13.72 0 0 1 11.07 11zm-2.14 0H8.07a13.72 13.72 0 0 1 .93-4.22A13.72 13.72 0 0 1 8.93 11zm1.07 9a14.12 14.12 0 0 1-1.54-5h6.16a14.12 14.12 0 0 1-1.54 5 8.012 8.012 0 0 1-3.08 0zm5.74-.7a15.65 15.65 0 0 0 1.52-5.3h2.65a8.012 8.012 0 0 1-5.74 5.3z");
         s.appendChild(p);
         return s;
       }
@@ -784,31 +1512,20 @@
         const status = $("feed-status");
         status.innerHTML = "";
         if (payload.error) {
-          status.innerHTML =
-            '<p class="feed-error" role="alert">' +
-            String(payload.error).replace(/</g, "&lt;") +
-            "</p>";
+          status.innerHTML = '<p class="feed-error" role="alert">' + String(payload.error).replace(/</g, "&lt;") + "</p>";
           return;
         }
         const items = payload.data || [];
         if (!items.length) {
-          status.innerHTML =
-            '<p class="feed-empty">No activities returned yet for this account. Check RSS3 indexer coverage or RSS3_FEED_ACCOUNT.</p>';
+          status.innerHTML = '<p class="feed-empty">No activities returned yet for this account. Indexer coverage may change during the RSS3 migration.</p>';
           return;
         }
         items.forEach(function (item) {
           const li = document.createElement("li");
           li.className = "feed-item";
           const head = document.createElement("div");
-          head.className = "feed-item-header-line";
-          head.style.cssText =
-            "display:flex;flex-wrap:wrap;gap:0.5rem 1rem;align-items:center;font-size:0.8rem;color:var(--muted);";
-          const parts = [
-            item.network || "—",
-            item.platform || "—",
-            item.tag || "",
-            item.type || "",
-          ].filter(Boolean);
+          head.style.cssText = "display:flex;flex-wrap:wrap;gap:0.5rem 1rem;align-items:center;font-size:0.8rem;color:var(--muted);";
+          const parts = [item.network || "—", item.platform || "—", item.tag || "", item.type || ""].filter(Boolean);
           head.textContent = parts.join(" · ");
           const badge = document.createElement("span");
           badge.className = "badge";
@@ -820,19 +1537,10 @@
 
           const action = (item.actions && item.actions[0]) || {};
           const meta = action.metadata || {};
-          const title =
-            meta.title ||
-            meta.name ||
-            meta.content ||
-            (item.id ? "Tx " + shortAddr(item.id) : "Activity");
-          const url =
-            (action.related_urls && action.related_urls[0]) ||
-            (item.id
-              ? "https://explorer.rss3.io/tx/" + encodeURIComponent(item.id)
-              : null);
+          const title = meta.title || meta.name || meta.content || (item.id ? "Tx " + shortAddr(item.id) : "Activity");
+          const url = (action.related_urls && action.related_urls[0]) || (item.id ? "https://explorer.rss3.io/tx/" + encodeURIComponent(item.id) : null);
 
           const a = document.createElement("a");
-          a.className = "detail";
           a.href = url || "#";
           if (!url) {
             a.removeAttribute("href");
@@ -842,12 +1550,7 @@
             a.target = "_blank";
             a.rel = "noopener noreferrer";
           }
-          a.textContent =
-            typeof title === "string"
-              ? title.length > 160
-                ? title.slice(0, 157) + "…"
-                : title
-              : "View activity";
+          a.textContent = typeof title === "string" ? (title.length > 160 ? title.slice(0, 157) + "…" : title) : "View activity";
 
           const time = document.createElement("div");
           time.style.fontSize = "0.8rem";
@@ -875,8 +1578,12 @@
           feedAccount: DEFAULT_FEED_ACCOUNT,
           nodeAddress: DEFAULT_FEED_ACCOUNT,
           explorerNodeUrl: DEFAULT_EXPLORER,
-          contactHref: "mailto:adbongorocks@gmail.com",
+          contactHref: "mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry",
           social: {},
+          podcast: {
+            spotifyUrl: "https://open.spotify.com/show/003jiO8jmRfAk3GrKPy8C7",
+            appleUrl: "https://podcasts.apple.com/us/podcast/golden-age-gurus/id1591599337",
+          },
         };
       }
 
@@ -888,15 +1595,10 @@
             if (!j.error) return { payload: j, source: "same-origin" };
           }
         } catch (e) {}
-        const giUrl =
-          "https://gi.rss3.io/decentralized/" +
-          encodeURIComponent(account) +
-          "?limit=20&action_limit=8";
+        const giUrl = "https://gi.rss3.io/decentralized/" + encodeURIComponent(account) + "?limit=20&action_limit=8";
         const r2 = await fetchWithTimeout(giUrl, 15000);
         if (!r2.ok) {
-          const errText = await r2.text().catch(function () {
-            return r2.statusText;
-          });
+          const errText = await r2.text().catch(function () { return r2.statusText; });
           throw new Error(errText || "RSS3 indexer error");
         }
         return { payload: await r2.json(), source: "gi.rss3.io" };
@@ -912,13 +1614,14 @@
             feedAccount: DEFAULT_FEED_ACCOUNT,
             nodeAddress: DEFAULT_FEED_ACCOUNT,
             explorerNodeUrl: DEFAULT_EXPLORER,
-            contactHref: "mailto:adbongorocks@gmail.com",
+            contactHref: "mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry",
             social: {},
+            podcast: {},
           };
         }
 
         if (cfg.tagline) $("hero-tagline").textContent = cfg.tagline;
-        const contact = cfg.contactHref || "mailto:adbongorocks@gmail.com";
+        const contact = cfg.contactHref || "mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry";
         $("contact-nav").href = contact;
         $("cta-contact").href = contact;
         $("hero-cta").href = contact;
@@ -932,25 +1635,9 @@
         if (appleEl && podcast.appleUrl) appleEl.href = podcast.appleUrl;
 
         var addrLine = $("infra-node-addr");
-        if (addrLine) {
-          addrLine.textContent = cfg.nodeAddress || DEFAULT_FEED_ACCOUNT;
-        }
+        if (addrLine) addrLine.textContent = cfg.nodeAddress || DEFAULT_FEED_ACCOUNT;
         var explorerCard = $("link-explorer-card");
-        if (explorerCard) {
-          explorerCard.href = cfg.explorerNodeUrl || DEFAULT_EXPLORER;
-        }
-
-        var infraEl = $("footer-infra");
-        if (infraEl && cfg.marketingSiteUrl) {
-          var m = String(cfg.marketingSiteUrl).replace(/^https?:\/\//i, "");
-          m = m.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-          infraEl.innerHTML =
-            'This site and the RSS3 stack run on <strong style="color:var(--text);font-weight:600;">' +
-            m +
-            '</strong> (Linode).' +
-            '<span style="display:block;margin-top:0.35rem;">Long-form writing: <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);">www.adbongo.io</a> (Substack).</span>' +
-            '<span style="display:block;margin-top:0.35rem;">Use of this site constitutes acceptance of our <a href="/disclaimer.html" style="color:var(--primary);">website disclaimer</a>.</span>';
-        }
+        if (explorerCard) explorerCard.href = cfg.explorerNodeUrl || DEFAULT_EXPLORER;
 
         const row = $("social-row");
         row.innerHTML = "";
@@ -958,96 +1645,24 @@
         if (social.warpcast) addSocialLink(social.warpcast, "Warpcast", iconGlobe());
         if (social.farcaster) addSocialLink(social.farcaster, "Farcaster profile", iconGlobe());
         if (social.x) addSocialLink(social.x, "X", iconX());
-        if (social.youtube) addSocialLink(social.youtube, "YouTube", iconGlobe());
 
         const acc = cfg.feedAccount || cfg.nodeAddress || DEFAULT_FEED_ACCOUNT;
-        $("feed-account-line").textContent =
-          "Account indexed in RSS3 DSL: " + acc;
+        $("feed-account-line").textContent = "Account indexed in RSS3 DSL: " + acc;
 
         const feedList = $("feed-list");
         feedList.setAttribute("aria-busy", "true");
         try {
           const { payload, source } = await loadFeedPayload(acc);
           if (source === "gi.rss3.io") {
-            $("feed-account-line").textContent +=
-              " · feed loaded via RSS3 Global Indexer (static site mode)";
+            $("feed-account-line").textContent += " · feed via RSS3 Global Indexer (static site mode)";
           }
           renderFeedItems(payload);
         } catch (e) {
-          $("feed-status").innerHTML =
-            '<p class="feed-error" role="alert">Could not load activity feed. If you expected same-origin APIs, run the comm agent behind this host or open port 8080 only on a trusted network.</p>';
+          $("feed-status").innerHTML = '<p class="feed-error" role="alert">Could not load activity feed (indexer may be changing during migration).</p>';
         } finally {
           feedList.removeAttribute("aria-busy");
         }
       })();
-    })();
-  </script>
-  <script>
-    (function () {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      var canvas = document.getElementById("hero-matrix-canvas");
-      var hero = document.querySelector(".hero");
-      if (!canvas || !hero) return;
-      var ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.imageSmoothingEnabled = false;
-
-      var CELL = 4;
-      var drops = [];
-      var lowW = 0;
-      var lowH = 0;
-      var raf = 0;
-
-      function layout() {
-        var w = hero.offsetWidth;
-        var h = hero.offsetHeight;
-        if (w < 1 || h < 1) return;
-        lowW = Math.max(32, Math.ceil(w / CELL));
-        lowH = Math.max(24, Math.ceil(h / CELL));
-        canvas.width = lowW;
-        canvas.height = lowH;
-        canvas.style.width = w + "px";
-        canvas.style.height = h + "px";
-        while (drops.length < lowW) drops.push(Math.random() * -lowH);
-        drops.length = lowW;
-      }
-
-      function tick() {
-        ctx.fillStyle = "rgba(12, 10, 18, 0.35)";
-        ctx.fillRect(0, 0, lowW, lowH);
-
-        for (var col = 0; col < lowW; col++) {
-          var y = drops[col];
-          var yi = Math.floor(y);
-          var len = 5 + ((col * 7) % 9);
-          for (var dy = 0; dy < len; dy++) {
-            var row = yi - dy;
-            if (row < 0 || row >= lowH) continue;
-            var head = dy === 0;
-            var a = head ? 0.92 : Math.max(0, 0.55 - dy * 0.07);
-            if (head && Math.random() < 0.08) {
-              ctx.fillStyle = "rgba(190, 255, 210, " + a + ")";
-            } else {
-              ctx.fillStyle = "rgba(34, 220, 100, " + a + ")";
-            }
-            ctx.fillRect(col, row, 1, 1);
-          }
-          if (y > lowH + len && Math.random() > 0.975) drops[col] = Math.random() * -8;
-          drops[col] += 0.35 + (col % 5) * 0.04;
-        }
-
-        raf = requestAnimationFrame(tick);
-      }
-
-      layout();
-      if (lowW > 0) tick();
-
-      var ro = new ResizeObserver(function () {
-        cancelAnimationFrame(raf);
-        layout();
-        if (lowW > 0) tick();
-      });
-      ro.observe(hero);
     })();
   </script>
 </body>
