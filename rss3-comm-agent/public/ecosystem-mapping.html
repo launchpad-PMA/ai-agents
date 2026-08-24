@@ -134,6 +134,46 @@
       font-size: 0.85rem;
       color: var(--muted);
     }
+  
+    .alliances {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(0,0,0,0.12);
+      text-align: center;
+    }
+    .alliances-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4d5c54;
+      margin-bottom: 0.85rem;
+    }
+    .alliances-logos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.15rem 1.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .alliances-logos a, .alliances-logos .alliance-mark {
+      display: block;
+      line-height: 0;
+      text-decoration: none;
+    }
+    .alliances-logos img {
+      height: 4.5rem;
+      width: auto;
+      max-width: 7.5rem;
+      object-fit: contain;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 8px;
+      display: block;
+      padding: 0.25rem;
+    }
+
   </style>
 </head>
 <body>
@@ -179,9 +219,41 @@
       <a href="https://tally.so/r/mDaYzq" target="_blank" rel="noopener noreferrer">Open on Tally →</a>
     </p>
 
+    <h2 style="font-family:Fraunces,Georgia,serif;font-size:1.25rem;margin:2rem 0 0.5rem;">Next: schedule</h2>
+    <p class="lede" style="margin-bottom:0.85rem;">
+      After you submit the form, book a consult on Calendly.
+    </p>
+    <p style="margin-bottom:1rem;">
+      <a class="btn" style="display:inline-flex;padding:0.6rem 1.1rem;border-radius:999px;background:#1b7a3d;color:#fff;text-decoration:none;font-weight:700;" href="https://calendly.com/ondemandcmo/regenerate" target="_blank" rel="noopener noreferrer">Open Calendly →</a>
+    </p>
+    <div style="border:1px solid rgba(27,67,40,0.14);border-radius:14px;overflow:hidden;background:#fff;min-height:700px;">
+      <iframe
+        src="https://calendly.com/ondemandcmo/regenerate?embed_domain=web3.adbongo.io&embed_type=Inline"
+        title="Schedule with Adbongo on Calendly"
+        width="100%"
+        height="700"
+        style="border:0;display:block;"
+        loading="lazy"
+      ></iframe>
+    </div>
+
     <footer>
       Adbongo Group LLC · <a href="/disclaimer.html">Disclaimer</a> ·
-      <a href="mailto:adbongorocks@gmail.com?subject=DAO%20accelerator%20inquiry">Email</a>
+      <a href="mailto:baba@adbongo.io?subject=DAO%20accelerator%20inquiry">baba@adbongo.io</a>
+      · <a href="tel:+19033765299">903.376.5299</a>
+    
+<div class="alliances" aria-label="Strategic alliances">
+  <p class="alliances-label">Strategic alliances</p>
+  <div class="alliances-logos">
+    <a href="/#service-research" title="LexClinic — 508(c)(1)(a) research alliance">
+      <img src="/assets/brand/lexclinic-logo.jpg" width="1024" height="1024" alt="LexClinic" loading="lazy" />
+    </a>
+    <span class="alliance-mark" title="DAO Universe">
+      <img src="/assets/brand/dao-universe-logo.jpg" width="934" height="1024" alt="DAO Universe" loading="lazy" />
+    </span>
+  </div>
+</div>
+
     </footer>
   </div>
   <script>

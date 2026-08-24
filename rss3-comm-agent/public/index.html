@@ -7,616 +7,1048 @@
   <meta name="description" content="Adbongo Group LLC — Advocacy Launchpad. Business systems consulting since 2007. Digital organizations, AI agents, and web3 infrastructure. Reinstated and open for client work." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
   <style>
+
     :root {
-      --bg: #f7faf6;
-      --bg-deep: #eef5eb;
-      --surface: #ffffff;
-      --border: rgba(27, 67, 40, 0.14);
-      --text: #14201a;
-      --muted: #4d5c54;
-      --primary: #1b7a3d;
-      --primary-dim: #145c2e;
-      --leaf: #2f9e4f;
-      --leaf-soft: #c8e6c0;
-      --accent: #c45c28;
-      --cta: #1b7a3d;
-      --cta-hover: #146332;
+      --bg: #0f380f;
+      --bg-deep: #0a2a0a;
+      --surface: #306230;
+      --surface-2: #8bac0f;
+      --border: #9bbc0f;
+      --text: #e0f8d0;
+      --muted: #9bbc0f;
+      --primary: #9bbc0f;
+      --primary-dim: #8bac0f;
+      --leaf: #8bac0f;
+      --leaf-soft: #306230;
+      --accent: #f7d51d;
+      --cta: #e40058;
+      --cta-hover: #c41e6a;
       --max: 72rem;
-      --radius: 14px;
-      --header-h: 4.5rem;
-      --shadow: 0 10px 30px rgba(20, 50, 30, 0.06);
+      --radius: 0;
+      --header-h: 5.5rem;
+      --shadow: 4px 4px 0 #000000;
+      --pixel: 4px;
+      --font-pixel: "Press Start 2P", monospace;
+      --font-body: VT323, "Courier New", monospace;
     }
     html {
-      color-scheme: light;
+      color-scheme: dark;
       scroll-behavior: smooth;
       scroll-padding-top: calc(var(--header-h) + 0.75rem);
+      image-rendering: pixelated;
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-      .butterflies, .hero-leaves { display: none !important; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .butterflies, .hero-leaves, .scanlines, .rocket-field { display: none !important; }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Manrope, system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 70% 40% at 100% 0%, rgba(200, 230, 192, 0.55), transparent 55%),
-        radial-gradient(ellipse 50% 35% at 0% 20%, rgba(232, 245, 228, 0.9), transparent 50%),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      min-height: 100vh;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.3;
-      background-image: url("/assets/brand/leaf-pattern.jpg");
-      background-size: 420px auto;
+      font-family: var(--font-body);
+      font-size: 1.35rem;
+      background-color: #123a12;
+      background-image:
+        linear-gradient(rgba(15, 56, 15, 0.55), rgba(10, 42, 10, 0.62)),
+        url("/assets/brand/leaf-pattern.jpg");
+      background-size: auto, 220px auto;
       background-repeat: repeat;
-    }
-    a { color: var(--primary); }
-    a:hover { color: var(--primary-dim); }
-    .skip {
-      position: absolute;
-      left: -9999px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-    }
-    .skip:focus {
-      position: fixed;
-      left: 1rem;
-      top: 1rem;
-      width: auto;
-      height: auto;
-      padding: 0.5rem 0.75rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      z-index: 100;
-    }
-    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; position: relative; z-index: 1; }
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(247, 250, 246, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 0.85rem 0;
-      flex-wrap: wrap;
-    }
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
+      background-attachment: fixed;
       color: var(--text);
-    }
-    .logo:hover { color: var(--primary); }
-    .logo img {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--leaf-soft);
-      box-shadow: var(--shadow);
-    }
-    .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
-    .logo-name {
-      font-family: Fraunces, Georgia, serif;
-      font-weight: 700;
-      font-size: 1.2rem;
+      line-height: 1.45;
+      min-height: 100vh;
       letter-spacing: 0.02em;
     }
+    body::before { display: none; }
+    .scanlines {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.08) 0px,
+        rgba(0,0,0,0.08) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      mix-blend-mode: multiply;
+      opacity: 0.22;
+    }
+    .rocket-field {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .pixel-rocket {
+      position: absolute;
+      width: 28px;
+      height: 56px;
+      image-rendering: pixelated;
+      opacity: 0.72;
+      animation: rocket-lift linear infinite;
+    }
+    .pixel-rocket svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      shape-rendering: crispEdges;
+    }
+    .pixel-rocket .smoke {
+      position: absolute;
+      left: 50%;
+      top: 88%;
+      width: 6px;
+      height: 6px;
+      margin-left: -3px;
+      background: #c8d0c0;
+      box-shadow:
+        2px 4px 0 #9aa490,
+        -3px 7px 0 #7a8470,
+        4px 10px 0 #5a6458,
+        -2px 14px 0 #3a4438,
+        1px 18px 0 #2a3228;
+      opacity: 0.85;
+      animation: smoke-puff 0.9s steps(4) infinite;
+    }
+    .pixel-rocket .smoke.s2 {
+      animation-delay: 0.3s;
+      left: 42%;
+    }
+    .pixel-rocket .smoke.s3 {
+      animation-delay: 0.55s;
+      left: 58%;
+    }
+    .pixel-rocket.r1 { left: 6%; bottom: -80px; animation-duration: 18s; animation-delay: 0s; --s: 1.1; }
+    .pixel-rocket.r2 { left: 18%; bottom: -80px; animation-duration: 22s; animation-delay: -4s; --s: 0.85; opacity: 0.55; }
+    .pixel-rocket.r3 { left: 72%; bottom: -80px; animation-duration: 16s; animation-delay: -8s; --s: 1.25; }
+    .pixel-rocket.r4 { left: 88%; bottom: -80px; animation-duration: 24s; animation-delay: -2s; --s: 0.75; opacity: 0.5; }
+    .pixel-rocket.r5 { left: 42%; bottom: -80px; animation-duration: 20s; animation-delay: -11s; --s: 0.95; opacity: 0.6; }
+    .pixel-rocket.r6 { left: 58%; bottom: -80px; animation-duration: 26s; animation-delay: -15s; --s: 0.7; opacity: 0.45; }
+    @keyframes rocket-lift {
+      0% { transform: translate3d(0, 0, 0) rotate(-2deg) scale(var(--s, 1)); }
+      25% { transform: translate3d(8px, -30vh, 0) rotate(2deg) scale(var(--s, 1)); }
+      50% { transform: translate3d(-6px, -60vh, 0) rotate(-1deg) scale(var(--s, 1)); }
+      75% { transform: translate3d(10px, -90vh, 0) rotate(2deg) scale(var(--s, 1)); }
+      100% { transform: translate3d(0, -130vh, 0) rotate(0deg) scale(var(--s, 1)); }
+    }
+    @keyframes smoke-puff {
+      0% { opacity: 0.9; transform: translateY(0) scale(1); }
+      50% { opacity: 0.55; transform: translateY(8px) scale(1.35); }
+      100% { opacity: 0; transform: translateY(18px) scale(1.7); }
+    }
+    @keyframes flame-flicker {
+      0%, 100% { fill: #f7d51d; }
+      50% { fill: #e40058; }
+    }
+    .pixel-rocket .flame { animation: flame-flicker 0.35s steps(2) infinite; }
+    a { color: var(--accent); text-decoration-thickness: 2px; }
+    a:hover { color: #fff; }
+    .skip {
+      position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip:focus {
+      position: fixed; left: 1rem; top: 1rem; width: auto; height: auto;
+      padding: 0.65rem 0.85rem; z-index: 10000;
+      background: var(--surface-2); color: #0f380f;
+      border: 4px solid #000; box-shadow: var(--shadow);
+      font-family: var(--font-pixel); font-size: 0.65rem;
+    }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1rem; position: relative; z-index: 1; }
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: #0a2a0a;
+      border-bottom: 4px solid #000;
+      box-shadow: 0 4px 0 var(--border);
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 0.75rem 0; flex-wrap: wrap;
+    }
+    .logo {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      text-decoration: none; color: var(--text);
+    }
+    .logo:hover { color: var(--accent); }
+    .logo-mark {
+      flex-shrink: 0;
+      display: block;
+      line-height: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .logo-mark svg {
+      width: 3.25rem;
+      height: auto;
+      display: block;
+      image-rendering: pixelated;
+      shape-rendering: crispEdges;
+    }
+    .logo-mark .flame {
+      animation: flame-flicker 0.35s steps(2) infinite;
+    }
+    .logo img {
+      width: 3rem; height: 3rem; border-radius: 0;
+      object-fit: cover; image-rendering: pixelated;
+      border: 4px solid #000; box-shadow: 3px 3px 0 var(--border);
+      background: var(--surface);
+    }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.2; gap: 0.25rem; }
+    .logo-name {
+      font-family: var(--font-pixel);
+      font-weight: 400;
+      font-size: 0.58rem;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      line-height: 1.35;
+    }
     .logo-tag {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
       color: var(--muted);
       text-transform: uppercase;
-      margin-top: 0.15rem;
     }
     .nav-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem 1.05rem;
-      align-items: center;
+      display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem; align-items: center;
     }
-    .nav-links a {
-      color: var(--muted);
+    .nav-links > a:not(.btn),
+    .nav-drop > summary {
+      color: var(--text);
       text-decoration: none;
-      font-weight: 600;
-      font-size: 0.92rem;
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      padding: 0.45rem 0.2rem;
+      min-height: 2.25rem;
+      display: inline-flex; align-items: center;
+      cursor: pointer; list-style: none;
+      text-transform: uppercase;
     }
-    .nav-links a:hover { color: var(--primary); }
-    @media (max-width: 36rem) {
-      .nav-links .nav-contact-dup { display: none; }
+    .nav-links > a:not(.btn):hover,
+    .nav-drop > summary:hover,
+    .nav-drop[open] > summary { color: var(--accent); }
+    .nav-drop { position: relative; }
+    .nav-drop > summary::-webkit-details-marker { display: none; }
+    .nav-drop > summary::after { content: " v"; font-size: 0.5rem; opacity: 0.8; }
+    .nav-drop-menu {
+      position: absolute; right: 0; top: calc(100% + 0.35rem);
+      min-width: 13rem;
+      background: var(--bg-deep);
+      border: 4px solid #000;
+      box-shadow: var(--shadow);
+      padding: 0.35rem;
+      z-index: 60;
+      display: grid; gap: 0.15rem;
+      border-radius: 0;
+    }
+    .nav-drop-menu a {
+      display: block; padding: 0.55rem 0.65rem;
+      color: var(--text); text-decoration: none;
+      font-family: var(--font-pixel); font-size: 0.5rem;
+      border: 2px solid transparent;
+    }
+    .nav-drop-menu a:hover {
+      background: var(--surface); border-color: var(--border); color: var(--accent);
+    }
+    @media (max-width: 900px) {
+      .nav-drop-menu { position: static; box-shadow: none; }
+      .nav-links > a:not(.btn), .nav-drop > summary { font-size: 0.48rem; }
     }
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
       gap: 0.35rem;
-      padding: 0.6rem 1.15rem;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.9rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0;
+      font-family: var(--font-pixel);
+      font-weight: 400;
+      font-size: 0.58rem;
+      line-height: 1.35;
       text-decoration: none;
-      border: none;
+      border: 4px solid #000;
       cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0 #000;
+      image-rendering: pixelated;
+      transition: transform 0.05s steps(2), box-shadow 0.05s steps(2);
+    }
+    .btn:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 #000;
     }
     .btn:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
     }
     .btn-primary {
       background: var(--cta);
       color: #fff;
-      box-shadow: 0 6px 16px rgba(27, 122, 61, 0.22);
     }
     .btn-primary:hover { background: var(--cta-hover); color: #fff; }
     .btn-ghost {
-      background: var(--surface);
-      color: var(--primary);
-      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: #0f380f;
     }
-    .btn-ghost:hover {
-      background: var(--bg-deep);
-      color: var(--primary-dim);
-    }
-    .btn-compact {
-      font-size: 0.85rem;
-      padding: 0.45rem 0.95rem;
+    .btn-ghost:hover { background: var(--accent); color: #0f380f; }
+    .btn-compact { padding: 0.5rem 0.7rem; font-size: 0.5rem; }
+    .eyebrow {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.85rem;
     }
     .hero {
       position: relative;
+      padding: 2.25rem 0 2.75rem;
       overflow: hidden;
-      padding: 3.5rem 0 3.25rem;
+      border-bottom: 4px solid #000;
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.55), rgba(247,250,246,0.2)),
-        radial-gradient(ellipse 60% 70% at 85% 30%, rgba(47, 158, 79, 0.12), transparent 60%);
+        linear-gradient(180deg, rgba(15, 56, 15, 0.35), rgba(10, 42, 10, 0.55)),
+        url("/assets/brand/leaf-pattern.jpg");
+      background-size: auto, 200px auto;
+      background-repeat: repeat;
     }
-    .hero-leaves {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.45;
-      background-image:
-        radial-gradient(circle at 12% 78%, rgba(47,158,79,0.14) 0 8%, transparent 9%),
-        radial-gradient(circle at 88% 18%, rgba(27,122,61,0.1) 0 10%, transparent 11%);
-    }
-    .butterflies {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .butterfly {
-      position: absolute;
-      width: 28px;
-      height: 28px;
-      opacity: 0.55;
-      animation: flutter 16s ease-in-out infinite;
-    }
-    .butterfly svg { width: 100%; height: 100%; display: block; }
-    .butterfly.b1 { top: 18%; left: 8%; animation-delay: 0s; }
-    .butterfly.b2 { top: 42%; right: 12%; animation-delay: -4s; width: 22px; height: 22px; }
-    .butterfly.b3 { bottom: 22%; left: 28%; animation-delay: -8s; width: 24px; height: 24px; }
-    .butterfly.b4 { top: 12%; right: 28%; animation-delay: -11s; width: 20px; height: 20px; opacity: 0.4; }
-    @keyframes flutter {
-      0%, 100% { transform: translate(0, 0) rotate(-8deg); }
-      25% { transform: translate(18px, -22px) rotate(10deg); }
-      50% { transform: translate(-10px, -36px) rotate(-4deg); }
-      75% { transform: translate(24px, -14px) rotate(12deg); }
-    }
+    .hero-leaves { display: none; }
+    .butterflies { display: none; }
     .hero .wrap {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      gap: 2rem;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-    }
-    @media (min-width: 56rem) {
-      .hero .wrap {
-        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-      }
+      text-align: center;
+      gap: 1.1rem;
+      max-width: 46rem;
+      margin: 0 auto;
     }
     .hero-brand {
+      order: -1;
+      width: 100%;
+    }
+    .hero-brand img {
+      width: min(78vw, 18rem);
+      height: auto;
+      display: block;
+      margin: 0 auto 0.35rem;
+      image-rendering: pixelated;
+      border: 4px solid #000;
+      box-shadow: 6px 6px 0 #000, 6px 6px 0 4px var(--border);
+      background: var(--surface);
+    }
+    .hero-copy { width: 100%; }
+    .hero h1 {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.95rem, 2.4vw, 1.35rem);
+      line-height: 1.55;
+      color: #fff;
+      text-shadow: 3px 3px 0 #000;
+      margin: 0 auto 0.85rem;
+      max-width: 22ch;
+    }
+    .hero p.lead {
+      font-family: var(--font-body);
+      font-size: 1.45rem;
+      color: var(--text);
+      max-width: 36rem;
+      margin: 0 auto 1.15rem;
+    }
+    .hero-actions {
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      align-items: center; justify-content: center;
+    }
+    .hero-podcast {
+      margin-top: 1rem;
       display: flex;
       justify-content: center;
     }
-    .hero-brand img {
-      width: min(100%, 22rem);
-      height: auto;
-      border-radius: 50%;
-      box-shadow: 0 20px 50px rgba(20, 50, 30, 0.14);
-      border: 6px solid #fff;
-      background: #fff;
+    .eyebrow, .hp-bar { display: block; text-align: center; }
+    section { padding: 2.25rem 0; border-bottom: 4px solid rgba(0,0,0,0.45); }
+    section h2, .babalog-hero h2 {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      line-height: 1.5;
+      color: var(--accent);
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 0.85rem;
     }
-    .eyebrow {
-      color: var(--primary);
-      font-size: 0.82rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-    .hero h1 {
-      font-family: Fraunces, Georgia, serif;
-      font-size: clamp(2rem, 4.2vw, 3rem);
-      font-weight: 700;
-      line-height: 1.12;
-      margin-bottom: 1rem;
-      max-width: 16ch;
-      color: var(--text);
-    }
-    .hero p.lead {
+    .feed-meta, .lede, .testimonial-meta, .folio-meta, .open-tab {
+      font-family: var(--font-body);
       color: var(--muted);
-      font-size: 1.08rem;
-      max-width: 38rem;
-      margin-bottom: 1.5rem;
+      font-size: 1.25rem;
     }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
-    .hero-podcast { margin-top: 1.35rem; }
-    section { padding: 3rem 0; position: relative; z-index: 1; }
-    section h2 {
-      font-family: Fraunces, Georgia, serif;
-      font-size: clamp(1.4rem, 2.5vw, 1.85rem);
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: var(--text);
-    }
+    .feed-meta strong, .feature-copy strong, .about-bio-copy strong { color: var(--accent); }
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
       gap: 1rem;
-      margin-top: 1.25rem;
-    }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.35rem;
-      box-shadow: var(--shadow);
-    }
-    .card h3 {
-      font-family: Fraunces, Georgia, serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 0.55rem;
-    }
-    .card p, .card li { color: var(--muted); font-size: 0.95rem; }
-    .card ul { margin: 0.5rem 0 0 1.1rem; }
-    .card li { margin-bottom: 0.35rem; }
-    .strip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem 1.35rem;
-      box-shadow: var(--shadow);
-      border-left: 4px solid var(--leaf);
-    }
-    .strip p { color: var(--muted); margin-bottom: 0.75rem; max-width: 48rem; }
-    .strip p:last-child { margin-bottom: 0; }
-    .strip strong { color: var(--text); }
-    .feed-meta {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-    .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.85rem;
-      word-break: break-all;
-      color: var(--text);
-    }
-    .feature {
-      display: grid;
-      gap: 1.5rem;
-      align-items: start;
-    }
-    @media (min-width: 56rem) {
-      .feature {
-        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-        gap: 2rem;
-      }
-    }
-    .feature-art {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: #fff;
-      box-shadow: var(--shadow);
-    }
-    .feature-art img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-    .feature-copy p {
-      color: var(--muted);
-      margin-bottom: 0.85rem;
-      max-width: 40rem;
-    }
-    .feature-copy p:last-child { margin-bottom: 0; }
-    .feature-copy strong { color: var(--text); }
-    .timeline {
-      display: grid;
-      gap: 0.85rem;
-      margin-top: 1.25rem;
-    }
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 5.5rem 1fr;
-      gap: 0.85rem;
-      padding: 0.85rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .timeline-item:last-child { border-bottom: none; }
-    .timeline-year {
-      font-family: Fraunces, Georgia, serif;
-      font-size: 0.95rem;
-      color: var(--primary);
-      font-weight: 700;
-    }
-    .timeline-body { color: var(--muted); font-size: 0.95rem; }
-    .timeline-body strong { color: var(--text); }
-    .testimonial-meta {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-bottom: 0.65rem;
-      line-height: 1.45;
-    }
-    .testimonial-quote {
-      font-style: italic;
-      color: var(--muted);
-      font-size: 0.92rem;
-      margin-bottom: 0;
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+      margin-top: 1rem;
     }
     #testimonials .cards {
-      grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+      grid-template-columns: 1fr;
+      max-width: 72rem;
+      margin-left: auto;
+      margin-right: auto;
     }
-    #testimonials .card:target {
-      outline: 2px solid var(--leaf);
-      outline-offset: 3px;
-      box-shadow: 0 0 0 4px rgba(47, 158, 79, 0.18), var(--shadow);
+    @media (min-width: 700px) {
+      #testimonials .cards { grid-template-columns: repeat(2, 1fr); }
     }
-    .folio-intro {
-      max-width: 48rem;
-      margin-bottom: 1.5rem;
+    @media (min-width: 980px) {
+      #testimonials .cards { grid-template-columns: repeat(3, 1fr); }
     }
-    .folio-category {
-      margin-top: 2rem;
-    }
-    .folio-category:first-of-type { margin-top: 0.5rem; }
-    .folio-category h3 {
-      font-family: Fraunces, Georgia, serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.35rem;
-      color: var(--primary-dim);
-    }
-    .folio-category > p {
-      color: var(--muted);
-      font-size: 0.92rem;
-      margin-bottom: 1rem;
-      max-width: 42rem;
-    }
-    .folio-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-      gap: 1.15rem;
-    }
-    .folio-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1rem 1rem 1.1rem;
-      box-shadow: var(--shadow);
+    section > .wrap {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      align-items: center;
     }
-    .folio-item h4 {
-      font-family: Fraunces, Georgia, serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      line-height: 1.3;
-    }
-    .folio-item .folio-meta {
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.45;
-      margin: 0;
-    }
-    .folio-item .folio-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem 1rem;
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-    .folio-embed {
+    section > .wrap > h2,
+    section > .wrap > .feed-meta,
+    section > .wrap > .strip,
+    section > .wrap > .timeline,
+    section > .wrap > .cards,
+    section > .wrap > .about-bio,
+    section > .wrap > .nft-grid,
+    section > .wrap > .contact-grid,
+    section > .wrap > .calendly-frame,
+    section > .wrap > .folio-intro,
+    section > .wrap > p {
       width: 100%;
-      overflow: hidden;
-      border-radius: 10px;
-      background: #f0f4ef;
+      max-width: 72rem;
+    }
+    section > .wrap > h2,
+    section > .wrap > .feed-meta {
+      text-align: center;
+    }
+    section > .wrap > .feed-meta {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .strip {
+      text-align: center;
+    }
+    .strip .btn { margin: 0.25rem; }
+    .hero-actions .btn { margin: 0; }
+    .card, .folio-item, .strip, .seat-callout, .babalog-hero,
+    .podcast-episode.is-highlight, .blog-subscribe-frame,
+    .podcast-episode-frame, .calendly-frame, .contact-card,
+    .feed-item, .feed-details, .form-shell, .notice {
+      background: var(--surface);
+      border: 4px solid #000;
+      border-radius: 0;
+      box-shadow: var(--shadow);
+    }
+    .card, .folio-item { padding: 1rem 1rem 1.1rem; }
+    .card h3, .folio-item h4, .contact-card h3, .about-bio-copy h3,
+    .blog-subscribe h3, .blog-post-embed h3, .podcast-episode h3,
+    .folio-category h3 {
+      font-family: var(--font-pixel);
+      font-size: 0.72rem;
+      line-height: 1.45;
+      color: #fff;
+      margin-bottom: 0.55rem;
+      text-shadow: 2px 2px 0 #000;
+    }
+    .card p, .folio-item p, .feature-copy p, .about-bio-copy p,
+    .strip p, .service-secret p, .contact-card p, .contact-card address {
+      font-family: var(--font-body);
+      font-size: 1.28rem;
+      color: var(--text);
+    }
+    .strip {
+      padding: 1rem 1.1rem;
+      display: grid; gap: 0.85rem;
+    }
+    .timeline { display: grid; gap: 0.65rem; margin-top: 1.25rem; }
+    .timeline-item {
+      display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.75rem;
+      padding: 0.75rem; border: 3px solid #000; background: var(--bg-deep);
+      box-shadow: 3px 3px 0 var(--border);
+    }
+    .timeline-year {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--accent);
+      line-height: 1.4;
+    }
+    .timeline-body {
+      font-family: var(--font-body);
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+    .timeline-body strong { color: #fff; }
+    .about-bio {
+      display: grid; gap: 1.25rem; grid-template-columns: 1fr;
+      margin-top: 1rem; align-items: start;
+      max-width: 48rem;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    @media (min-width: 720px) {
+      .about-bio {
+        grid-template-columns: 10rem 1fr;
+        gap: 1.5rem;
+        text-align: left;
+      }
+    }
+    .about-bio-pic {
+      width: 10rem;
+      height: 10rem;
+      max-width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 0;
+      border: 4px solid #000;
+      box-shadow: var(--shadow);
+      image-rendering: auto;
+      background: var(--bg-deep);
+      margin: 0 auto;
+      display: block;
+    }
+    .credly-badge {
+      display: inline-block;
+      margin-top: 0.85rem;
+      border: 4px solid #000;
+      box-shadow: var(--shadow);
+      background: #fff;
       line-height: 0;
     }
-    .folio-embed iframe {
+    .credly-badge img {
+      display: block;
+      width: 7.5rem;
+      height: 7.5rem;
+      object-fit: contain;
+      background: #fff;
+    }
+    .heygen-frame {
       width: 100%;
-      max-width: 404px;
-      height: 316px;
+      max-width: 36rem;
+      margin: 0 auto 1.35rem;
+      border: 4px solid #000;
+      box-shadow: var(--shadow);
+      background: #000;
+      line-height: 0;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+    }
+    .heygen-frame iframe {
+      width: 100%;
+      height: 100%;
       border: 0;
       display: block;
+    }
+    .about-bio-copy .role {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
+    }
+    .seat-callout, .babalog-hero {
+      margin-top: 1.15rem; padding: 1rem 1.1rem;
+      background: var(--bg-deep);
+    }
+    .seat-callout strong, .service-secret-label, .eyebrow-tag {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .service-icon { color: var(--accent); width: 2.5rem; height: 2.5rem; margin-bottom: 0.75rem; }
+    .service-icon svg { width: 100%; height: 100%; display: block; }
+    .service-secret {
+      margin-top: 0.85rem;
+      position: relative;
+      display: grid;
+      grid-template-columns: 4.6rem 1fr;
+      align-items: stretch;
+      width: 100%;
+      min-height: 5.25rem;
+      aspect-ratio: 3.35 / 1;
+      max-height: 7.5rem;
+      padding: 0;
+      overflow: hidden;
+      background: #f7d51d;
+      color: #0f380f;
+      border: 4px solid #000;
+      box-shadow: 4px 4px 0 #000;
+      image-rendering: pixelated;
+    }
+    .service-secret::before,
+    .service-secret::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      bottom: -4px;
+      width: 10px;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0 7px,
+        var(--surface) 7px 14px
+      );
+      z-index: 2;
+    }
+    .service-secret::before { left: -5px; }
+    .service-secret::after { right: -5px; }
+    .ticket-stub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.35rem 0.2rem;
+      border-right: 4px dashed #000;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: var(--font-pixel);
+      font-size: 0.48rem;
+      letter-spacing: 0.08em;
+      color: #0f380f;
+      text-transform: uppercase;
+      background: repeating-linear-gradient(
+        to bottom,
+        #f7d51d 0 6px,
+        #e8c41a 6px 8px
+      );
+    }
+    .ticket-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0.45rem 0.75rem 0.45rem 0.7rem;
+      text-align: left;
+    }
+    .service-secret-label { display: none; }
+    .service-secret strong {
+      color: #0f380f;
+      display: block;
+      margin: 0 0 0.2rem;
+      font-family: var(--font-pixel);
+      font-size: 0.58rem;
+      line-height: 1.35;
+      text-shadow: none;
+    }
+    .service-secret p {
+      color: #145c2e;
+      font-size: 1.05rem;
+      margin: 0;
+      line-height: 1.25;
+    }
+    .feature {
+      display: grid; gap: 1.25rem;
+    }
+    @media (min-width: 800px) {
+      .feature { grid-template-columns: 0.9fr 1.1fr; align-items: start; }
+    }
+    .feature-art img {
+      width: 100%; height: auto; display: block;
+      border: 4px solid #000; box-shadow: var(--shadow);
+      image-rendering: auto;
+    }
+    .folio-intro { max-width: 48rem; margin-bottom: 1.25rem; }
+    .folio-category { margin-top: 1.75rem; }
+    .folio-category:first-of-type { margin-top: 0.5rem; }
+    .folio-category > p { color: var(--muted); margin-bottom: 0.85rem; font-size: 1.2rem; }
+    .folio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      gap: 1rem;
+    }
+    .folio-viewer {
+      width: 100%; height: 22rem; max-height: 60vh;
+      overflow-x: hidden; overflow-y: auto;
+      border: 3px solid #000; background: #0a2a0a;
+      image-rendering: auto;
+    }
+    .folio-viewer::-webkit-scrollbar { width: 10px; }
+    .folio-viewer::-webkit-scrollbar-thumb { background: var(--border); border: 2px solid #000; }
+    .folio-viewer-inner { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; }
+    .folio-viewer img { display: block; width: 100%; height: auto; border: 2px solid #000; }
+    .folio-viewer-status, .folio-viewer-hint {
+      font-family: var(--font-pixel); font-size: 0.5rem; color: var(--muted);
+      padding: 0.75rem; line-height: 1.5;
+    }
+    .folio-links {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 0.85rem;
+      font-family: var(--font-pixel); font-size: 0.5rem;
+    }
+    .testimonial-quote {
+      font-style: normal; color: var(--text); font-size: 1.2rem;
+    }
+    #testimonials .card:target {
+      outline: 4px solid var(--accent); outline-offset: 2px;
+    }
+    .blog-subscribe, .blog-post-embed, .podcast-episode {
+      margin-top: 1.5rem;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 40rem;
+      text-align: center;
+    }
+    .blog-subscribe > p,
+    .podcast-episode > p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .blog-subscribe-frame,
+    .podcast-episode-frame {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 480px;
+      text-align: left;
+    }
+    .blog-subscribe-frame iframe,
+    .podcast-episode-frame iframe {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: #fff;
       margin: 0 auto;
     }
-    .podcast-badges {
+    .blog-subscribe-frame iframe { height: 320px; }
+    .podcast-episode-frame iframe { height: 200px; }
+    .podcast-episode.is-highlight { padding: 1rem; background: var(--bg-deep); }
+    #babalog .wrap,
+    #podcast .wrap {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.85rem 1rem;
+      flex-direction: column;
       align-items: center;
-      margin-top: 0.85rem;
     }
-    .podcast-badge-link {
-      display: inline-flex;
-      line-height: 0;
-      border-radius: 6px;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+    #babalog .babalog-hero,
+    #babalog .feature,
+    #babalog .feed-meta,
+    #podcast .feed-meta,
+    #podcast .cards {
+      width: 100%;
+      max-width: 48rem;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
     }
-    .podcast-badge-link:hover {
-      opacity: 0.92;
-      transform: translateY(-1px);
+    #babalog .feature {
+      text-align: left;
     }
-    .podcast-badge-link:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 3px;
+    #babalog .feature-copy {
+      text-align: center;
     }
+    #babalog .feature-art {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 22rem;
+    }
+    #babalog h2,
+    #podcast h2,
+    #babalog .babalog-hero h2 {
+      text-align: center;
+      width: 100%;
+    }
+    #podcast .cards {
+      text-align: left;
+    }
+    #babalog .blog-post-embed .substack-post-embed {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .podcast-badges { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.65rem; }
     .podcast-badge-link img {
-      display: block;
-      height: 40px;
-      width: auto;
+      display: block; height: 40px; width: auto;
+      border: 3px solid #000; box-shadow: 3px 3px 0 #000;
     }
-    .feed-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
-    .feed-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.85rem 1rem;
-      display: grid;
-      gap: 0.35rem;
-      box-shadow: var(--shadow);
+    .contact-grid {
+      display: grid; gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      margin-top: 1rem;
+    }
+    .calendly-frame { margin-top: 1.25rem; min-height: 700px; overflow: hidden; background: #fff; }
+    .calendly-frame iframe { width: 100%; height: 700px; border: 0; display: block; }
+    .social { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .social a {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 2.6rem; height: 2.6rem; padding: 0 0.45rem;
+      border: 3px solid #000; box-shadow: 3px 3px 0 #000;
+      background: var(--surface-2); color: #0f380f;
+      text-decoration: none; font-family: var(--font-pixel); font-size: 0.45rem;
+    }
+    .social a:hover { background: var(--accent); color: #0f380f; }
+    .social svg { width: 1rem; height: 1rem; fill: currentColor; }
+    footer {
+      border-top: 4px solid #000;
+      padding: 2rem 0 2.5rem;
+      background: #0a2a0a;
+      position: relative; z-index: 1;
+    }
+    .footer-row {
+      display: flex; flex-wrap: wrap; gap: 1.25rem 2rem;
+      justify-content: space-between;
+    }
+    .footer-links {
+      display: flex; flex-wrap: wrap; gap: 0.55rem 1rem; align-items: center;
+    }
+    .footer-links a {
+      font-family: var(--font-pixel);
+      font-size: 0.48rem;
+      line-height: 1.5;
+      color: var(--muted);
+      text-decoration: none;
+      min-height: 2.25rem;
+      display: inline-flex; align-items: center;
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .notice {
+      border-left: none;
+      padding: 0.75rem 0.9rem;
+      margin: 1rem 0 0;
+      color: var(--text);
+      font-size: 1.15rem;
+      max-width: 48rem;
+      background: var(--bg-deep);
     }
     .badge {
       display: inline-block;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      padding: 0.2rem 0.45rem;
-      border-radius: 6px;
-      background: rgba(47, 158, 79, 0.14);
-      color: var(--primary-dim);
-      margin-right: 0.5rem;
+      font-family: var(--font-pixel);
+      font-size: 0.45rem;
+      padding: 0.25rem 0.4rem;
+      border: 2px solid #000;
+      background: var(--accent);
+      color: #0f380f;
+      margin-right: 0.4rem;
     }
-    .feed-error, .feed-empty { color: var(--muted); font-size: 0.9rem; }
-    .feed-details {
-      margin-bottom: 1rem;
-      max-width: 48rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.65rem 1rem 0.85rem;
-      background: var(--surface);
-    }
+    .feed-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .feed-item { padding: 0.75rem 0.9rem; display: grid; gap: 0.35rem; }
+    .feed-details { padding: 0.65rem 0.9rem; margin-bottom: 1rem; max-width: 48rem; }
     .feed-details summary {
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 0.9rem;
+      cursor: pointer; color: var(--accent);
+      font-family: var(--font-pixel); font-size: 0.55rem;
       list-style: none;
-      font-weight: 600;
     }
     .feed-details summary::-webkit-details-marker { display: none; }
-    .feed-details summary::after { content: " ▾"; font-size: 0.75rem; opacity: 0.7; }
-    .feed-details[open] summary::after { content: " ▴"; }
-    .feed-details summary:hover { color: var(--primary); }
-    .feed-details p { margin-top: 0.65rem; }
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 2rem 0 2.5rem;
+    .hp-bar {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-family: var(--font-pixel);
+      font-size: 0.5rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .nft-grid {
+      display: grid;
+      gap: 1.15rem;
+      grid-template-columns: 1fr;
       margin-top: 1rem;
-      background: rgba(255,255,255,0.55);
-      position: relative;
-      z-index: 1;
+      align-items: start;
     }
-    .footer-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem 2rem;
-      justify-content: space-between;
+    @media (min-width: 720px) {
+      .nft-grid { grid-template-columns: 0.9fr 1.1fr; }
     }
-    .social { display: flex; flex-wrap: wrap; gap: 0.65rem; }
-    .social a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.4rem;
-      height: 2.4rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      text-decoration: none;
+    .nft-art {
+      border: 4px solid #000;
+      box-shadow: var(--shadow);
       background: #fff;
+      padding: 0.5rem;
     }
-    .social a:hover {
-      color: var(--primary);
-      border-color: var(--primary);
-      background: var(--bg-deep);
+    .nft-art img {
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
     }
-    .social svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
-    .footer-links {
+    .nft-copy h3 {
+      font-family: var(--font-pixel);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: #fff;
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 0.65rem;
+    }
+    .nft-copy p {
+      font-family: var(--font-body);
+      font-size: 1.28rem;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .nft-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem 1.15rem;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+    .alliances {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 4px solid #000;
+      text-align: center;
+    }
+    .alliances-label {
+      font-family: var(--font-pixel);
+      font-size: 0.55rem;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 0.85rem;
+    }
+    .alliances-logos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.15rem 1.5rem;
+      justify-content: center;
       align-items: center;
     }
-    .footer-links a {
-      font-size: 0.9rem;
-      padding: 0.35rem 0;
-      min-height: 2.5rem;
-      display: inline-flex;
-      align-items: center;
+    .alliances-logos a {
+      display: block;
+      line-height: 0;
+      text-decoration: none;
     }
-    .notice {
-      border-left: 3px solid var(--leaf);
-      padding-left: 0.9rem;
-      margin: 1rem 0 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-      max-width: 48rem;
+    .alliances-logos img {
+      height: 4.75rem;
+      width: auto;
+      max-width: 7.5rem;
+      object-fit: contain;
+      background: #fff;
+      border: 3px solid #000;
+      box-shadow: 3px 3px 0 #000;
+      display: block;
     }
+
   </style>
 </head>
 <body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="rocket-field" aria-hidden="true">
+    <div class="pixel-rocket r1">
+      <svg viewBox="0 0 16 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="6" y="0" width="4" height="2" fill="#f7d51d"/>
+        <rect x="5" y="2" width="6" height="10" fill="#e0f8d0"/>
+        <rect x="6" y="4" width="4" height="3" fill="#306230"/>
+        <rect x="4" y="12" width="8" height="6" fill="#9bbc0f"/>
+        <rect x="3" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect x="10" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect class="flame" x="6" y="18" width="4" height="5" fill="#f7d51d"/>
+        <rect class="flame" x="7" y="23" width="2" height="3" fill="#e40058"/>
+      </svg>
+      <span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span>
+    </div>
+    <div class="pixel-rocket r2">
+      <svg viewBox="0 0 16 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="6" y="0" width="4" height="2" fill="#fff"/>
+        <rect x="5" y="2" width="6" height="10" fill="#9bbc0f"/>
+        <rect x="6" y="4" width="4" height="3" fill="#0f380f"/>
+        <rect x="4" y="12" width="8" height="6" fill="#f7d51d"/>
+        <rect x="3" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect x="10" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect class="flame" x="6" y="18" width="4" height="5" fill="#f7d51d"/>
+        <rect class="flame" x="7" y="23" width="2" height="3" fill="#e40058"/>
+      </svg>
+      <span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span>
+    </div>
+    <div class="pixel-rocket r3">
+      <svg viewBox="0 0 16 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="6" y="0" width="4" height="2" fill="#e40058"/>
+        <rect x="5" y="2" width="6" height="10" fill="#e0f8d0"/>
+        <rect x="6" y="4" width="4" height="3" fill="#306230"/>
+        <rect x="4" y="12" width="8" height="6" fill="#9bbc0f"/>
+        <rect x="3" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect x="10" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect class="flame" x="6" y="18" width="4" height="5" fill="#f7d51d"/>
+        <rect class="flame" x="7" y="23" width="2" height="3" fill="#e40058"/>
+      </svg>
+      <span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span>
+    </div>
+    <div class="pixel-rocket r4">
+      <svg viewBox="0 0 16 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="6" y="0" width="4" height="2" fill="#f7d51d"/>
+        <rect x="5" y="2" width="6" height="10" fill="#9bbc0f"/>
+        <rect x="6" y="4" width="4" height="3" fill="#0f380f"/>
+        <rect x="4" y="12" width="8" height="6" fill="#e0f8d0"/>
+        <rect x="3" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect x="10" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect class="flame" x="6" y="18" width="4" height="5" fill="#f7d51d"/>
+        <rect class="flame" x="7" y="23" width="2" height="3" fill="#e40058"/>
+      </svg>
+      <span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span>
+    </div>
+    <div class="pixel-rocket r5">
+      <svg viewBox="0 0 16 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="6" y="0" width="4" height="2" fill="#fff"/>
+        <rect x="5" y="2" width="6" height="10" fill="#e0f8d0"/>
+        <rect x="6" y="4" width="4" height="3" fill="#306230"/>
+        <rect x="4" y="12" width="8" height="6" fill="#f7d51d"/>
+        <rect x="3" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect x="10" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect class="flame" x="6" y="18" width="4" height="5" fill="#f7d51d"/>
+        <rect class="flame" x="7" y="23" width="2" height="3" fill="#e40058"/>
+      </svg>
+      <span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span>
+    </div>
+    <div class="pixel-rocket r6">
+      <svg viewBox="0 0 16 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="6" y="0" width="4" height="2" fill="#9bbc0f"/>
+        <rect x="5" y="2" width="6" height="10" fill="#e0f8d0"/>
+        <rect x="6" y="4" width="4" height="3" fill="#0f380f"/>
+        <rect x="4" y="12" width="8" height="6" fill="#e40058"/>
+        <rect x="3" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect x="10" y="18" width="3" height="4" fill="#8bac0f"/>
+        <rect class="flame" x="6" y="18" width="4" height="5" fill="#f7d51d"/>
+        <rect class="flame" x="7" y="23" width="2" height="3" fill="#e40058"/>
+      </svg>
+      <span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span>
+    </div>
+  </div>
   <a class="skip" href="#main">Skip to content</a>
   <header>
     <div class="wrap nav">
-      <a class="logo" href="/">
-        <img src="/assets/brand/adbongo-logo.png" width="96" height="94" alt="Adbongo logo" />
+      <a class="logo" href="/" aria-label="Adbongo Advocacy Launchpad home">
+        <span class="logo-mark" aria-hidden="true" title="Advocacy Launchpad">
+          <svg viewBox="0 0 16 28" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="0" width="4" height="2" fill="#f7d51d"/>
+            <rect x="5" y="2" width="6" height="10" fill="#e0f8d0"/>
+            <rect x="6" y="4" width="4" height="3" fill="#306230"/>
+            <rect x="4" y="12" width="8" height="6" fill="#9bbc0f"/>
+            <rect x="3" y="18" width="3" height="4" fill="#8bac0f"/>
+            <rect x="10" y="18" width="3" height="4" fill="#8bac0f"/>
+            <rect class="flame" x="6" y="18" width="4" height="5" fill="#f7d51d"/>
+            <rect class="flame" x="7" y="23" width="2" height="3" fill="#e40058"/>
+          </svg>
+        </span>
         <span class="logo-text">
-          <span class="logo-name">ADBONGO</span>
+          <span class="logo-name">Adbongo · Web3</span>
           <span class="logo-tag">Advocacy Launchpad</span>
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary">
-        <a href="#services">Services</a>
         <a href="#about">About</a>
-        <a href="#work">Folio</a>
-        <a href="/accelerator.html">Accelerator</a>
-        <a href="/ecosystem-mapping.html">DAO mapping</a>
-        <a href="#testimonials">Clients &amp; partners</a>
-        <a href="#blog">Blog</a>
+        <details class="nav-drop">
+          <summary>Services</summary>
+          <div class="nav-drop-menu">
+            <a href="#service-research">Research</a>
+            <a href="#service-design">Design</a>
+            <a href="#consult">Consult</a>
+          </div>
+        </details>
+        <details class="nav-drop">
+          <summary>Launchpad Lab</summary>
+          <div class="nav-drop-menu">
+            <a href="#launchpad-lab">Overview</a>
+            <a href="#rss3">RSS3</a>
+            <a href="#daomaker">DAO Maker</a>
+            <a href="#nft-agents">NFT Agents</a>
+            <a href="#lab-lexclinic">LexClinic</a>
+            <a href="#lab-legacy">Legacy lab video</a>
+          </div>
+        </details>
+        <a href="#babalog"><strong>Babalog</strong></a>
         <a href="#podcast">Podcast</a>
-        <a href="#infrastructure">RSS3 host</a>
-        <a class="btn btn-ghost btn-compact" href="/maxayauwi-dashboard.html">Node dashboard</a>
-        <a id="contact-nav" class="nav-contact-dup" href="mailto:adbongorocks@gmail.com">Contact</a>
-        <a class="btn btn-primary" id="cta-contact" href="mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry">Start a project</a>
+        <a class="btn btn-ghost btn-compact" href="https://templeofroots.com" target="_blank" rel="noopener noreferrer">Temple</a>
+        <a href="#contact">Contact</a>
+        <a class="btn btn-primary" id="cta-contact" href="#consult">Consult</a>
       </nav>
     </div>
   </header>
@@ -639,15 +1071,29 @@
         </span>
       </div>
       <div class="wrap">
-        <div>
-          <p class="eyebrow">Adbongo Group LLC · since 2007</p>
+        <div class="hero-brand">
+          <img
+            src="/assets/brand/adbongo-logo.png"
+            width="606"
+            height="590"
+            alt="Adbongo web3 monkey emblem — Launchpad vibe"
+            loading="eager"
+          />
+        </div>
+        <div class="hero-copy">
+          <p class="eyebrow">Player 1 · Advocacy Launchpad · Est. 2007</p>
           <h1>Advocacy Launchpad for business systems that last.</h1>
           <p class="lead" id="hero-tagline">
-            Nearly twenty years of consulting across industries. We help founders and operators upgrade the legal, social, financial, and technical layers of their organizations—especially digital and decentralized ones.
+            Adbongo is a strategic advisory for innovators navigating disruption. We combine blue ocean strategy, ethical AI, Bitcoin, Web3, governance, and regenerative systems to help organizations design, adapt, and build what comes next.
           </p>
+          <p class="feed-meta" style="max-width:36rem;margin:0 auto 1rem;">
+            Nearly twenty years of consulting across industries—upgrading the legal, social, financial, and technical layers of organizations, especially digital and decentralized ones.
+          </p>
+          <p class="hp-bar" aria-hidden="true">HP ████████░░ Quest: Reinstated</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" id="hero-cta" href="mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry">Start a consulting engagement</a>
-            <a class="btn btn-ghost" href="#about">Our story</a>
+            <a class="btn btn-primary" id="hero-cta" href="#consult">Consult</a>
+            <a class="btn btn-ghost" href="#daomaker">DAO Maker seats</a>
+            <a class="btn btn-ghost" href="#babalog">Babalog</a>
           </div>
           <div class="hero-podcast podcast-badges">
             <a
@@ -667,152 +1113,466 @@
             </a>
           </div>
         </div>
-        <div class="hero-brand">
-          <img
-            src="/assets/brand/adbongo-logo.png"
-            width="606"
-            height="590"
-            alt="Adbongo emblem — monkey and snake among leaves"
-            loading="eager"
-          />
-        </div>
       </div>
     </div>
 
-    <section id="now" aria-labelledby="now-heading">
+        <section id="about" aria-labelledby="about-heading">
       <div class="wrap">
-        <h2 id="now-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Now open</h2>
-        <div class="strip">
-          <p>
-            <strong>Reinstated and open for work.</strong> Adbongo Group LLC has been reinstated with the Secretary of State.
-            Managing partner Baba John completed a Juris Doctor through a partnership arrangement with the family firm
-            <a href="https://coyotelegal.com" target="_blank" rel="noopener noreferrer">coyotelegal.com</a>
-            and recently externed with <a href="https://ixian.tech" target="_blank" rel="noopener noreferrer">ixian.tech</a>,
-            an international legal engineering practice. While bar results are pending, Adbongo continues what it has always sold:
-            practical consulting to upgrade your business systems.
-          </p>
-          <p class="notice">
-            This site provides business and educational information only—not legal advice. No attorney-client relationship is formed by contacting us.
-            See our <a href="/disclaimer.html">website disclaimer</a>.
-          </p>
+        <h2 id="about-heading">About</h2>
+        <div class="heygen-frame">
+          <iframe
+            src="https://app.heygen.com/embeds/ee6fabfa6eef43eab6244b711761b209"
+            title="HeyGen AI introduction video"
+            allow="encrypted-media; fullscreen"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>
+        <div class="about-bio">
+          <img
+            class="about-bio-pic"
+            src="/assets/brand/adbongo-logo.png"
+            width="220"
+            height="220"
+            alt="Portrait placeholder for Baba John — replace with photo"
+            loading="eager"
+          />
+          <div class="about-bio-copy">
+            <h3>Baba John (John Bush)</h3>
+            <p class="role">Managing Partner · Adbongo Group LLC · Advocacy Launchpad</p>
+            <p>
+              Nearly twenty years building advocacy, brand, and business systems for clients across industries.
+              John completed a Juris Doctor through a partnership path with the family firm
+              <a href="https://coyotelegal.com" target="_blank" rel="noopener noreferrer">coyotelegal.com</a>,
+              externed with international legal-engineering practice
+              <a href="https://ixian.tech" target="_blank" rel="noopener noreferrer">ixian.tech</a>,
+              and holds a
+              <a href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/linked_in_profile" target="_blank" rel="noopener noreferrer">Legal Technology Certificate (Credly)</a>.
+            </p>
+            <p style="margin-top:0.75rem;">
+              <strong>Adbongo Group LLC was reinstated in August 2026</strong> with the Texas Secretary of State after the managing partner completed law school and the Texas bar exam.
+              A Texas Comptroller tax clearance letter dated <strong>August 11, 2026</strong> confirmed franchise-tax eligibility for reinstatement (SOS file 0802717683).
+              While we wait on bar results, we are offering a limited number of <a href="#daomaker">DAO Maker seats</a>—legal-engineering support for digital organizations (not legal advice; no attorney-client relationship from this site).
+            </p>
+            <div class="seat-callout">
+              <strong>DAO Maker seats open</strong>
+              <p style="margin:0.35rem 0 0.75rem;color:var(--muted);">
+                Map your stack, plan governance, and accelerate a DAO / digital org while bar results are pending.
+              </p>
+              <a class="btn btn-primary" href="/ecosystem-mapping.html">Start ecosystem mapping →</a>
+            </div>
+            <p class="notice" style="margin-top:1rem;">
+              Business and educational information only—not legal advice.
+              See our <a href="/disclaimer.html">website disclaimer</a>.
+            </p>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-year">2007</div>
+            <div class="timeline-body"><strong>Founded</strong> as an advocacy and consulting practice—nearly two decades of client work.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2011</div>
+            <div class="timeline-body">
+              <strong>Certified B Corp</strong> by B Lab (CSRwire, Jan 2012).
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2017</div>
+            <div class="timeline-body">
+              <strong>Hackathon win · 2nd place, Collidathon</strong> (Collide Village, Addison)—
+              smart-dumpster / sensor system during Zero Waste beta.
+              <a href="https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/How-to-win-at-an-IoT-hackathon" target="_blank" rel="noopener noreferrer">TheServerSide article →</a>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">Aug 11, 2026</div>
+            <div class="timeline-body"><strong>Tax clearance for reinstatement</strong> filed path with Texas SOS (file 0802717683); DAO Maker seats while bar results pending.</div>
+          </div>
+        </div>
+        <div class="cards" style="margin-top:1.25rem;">
+          <article class="card">
+            <h3>B Corp · third-party verified</h3>
+            <p>B Lab certified Adbongo in 2011. CSRwire published the announcement Jan 3, 2012.</p>
+            <figure class="feature-art" style="margin-top:0.85rem;">
+              <img src="/assets/brand/bcorp-csrwire-2012.png" width="1024" height="825" alt="CSRwire: Adbongo B Corp certification, Jan 2012" loading="lazy" />
+            </figure>
+          </article>
+          <article class="card">
+            <h3>Hackathon win · Collidathon 2017</h3>
+            <p>
+              2nd place at Collide Village’s IoT hackathon (Addison)—Zero Waste Advocacy’s smart-dumpster / sensor MVP during Zero Waste beta.
+              Covered on TheServerSide right after the B Corp era of public proof.
+            </p>
+            <p style="margin-top:0.75rem;">
+              <a class="btn btn-primary" href="https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/How-to-win-at-an-IoT-hackathon" target="_blank" rel="noopener noreferrer">How to win at an IoT hackathon →</a>
+            </p>
+          </article>
+          <article class="card" style="text-align:center;">
+            <h3>Legal Technology Certificate</h3>
+            <p>National Society for Legal Technology — verified on Credly.</p>
+            <a class="credly-badge" href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/public_url" target="_blank" rel="noopener noreferrer" aria-label="View Legal Technology Certificate on Credly">
+              <img src="/assets/brand/legal-tech-credly.png" width="600" height="600" alt="Credly Legal Technology Certificate badge" loading="lazy" />
+            </a>
+            <p style="margin-top:0.75rem;">
+              <a class="btn btn-ghost" href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/public_url" target="_blank" rel="noopener noreferrer">View on Credly →</a>
+            </p>
+          </article>
         </div>
       </div>
     </section>
 
     <section id="services" aria-labelledby="services-heading">
       <div class="wrap">
-        <h2 id="services-heading">What we sell</h2>
+        <h2 id="services-heading">Services</h2>
         <p class="feed-meta" style="max-width:48rem;">
-          Digital organizations have stacked layers—legal wrappers, social coordination, finance, and technology.
-          We help you design and improve those systems so they work together.
+          DAO Maker, research, design, and consult—practical layers for digital and regenerative organizations.
         </p>
         <div class="cards">
-          <article class="card">
-            <h3>Business systems consulting</h3>
-            <p>Operations, advocacy campaigns, product and process upgrades for companies that need clarity without theme-park web fluff.</p>
-          </article>
-          <article class="card">
-            <h3>Digital organization design</h3>
-            <p>R&amp;D for DAOs and mission-driven entities: governance patterns, membership flows, and documentation that matches how you actually operate.</p>
-          </article>
-          <article class="card">
-            <h3>AI agents &amp; interfaces</h3>
-            <p>Agent workflows, web3-facing surfaces, and deployable front ends when your roadmap needs them—not hype for its own sake.</p>
-          </article>
-          <article class="card">
-            <h3>Open-activity infrastructure</h3>
-            <p>Hands-on experience running RSS3 / open-information tooling as social-layer R&amp;D for digital organizations.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" aria-labelledby="about-heading">
-      <div class="wrap">
-        <h2 id="about-heading">About Adbongo</h2>
-        <p class="feed-meta" style="max-width:48rem;margin-bottom:0;">
-          Tagline: <strong style="color:var(--text)">Advocacy Launchpad</strong>.
-          Clients across multiple industries and economic sectors. Benefit-minded structure, regenerative experiments, and long crypto / web3 practice.
-        </p>
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-year">2007</div>
-            <div class="timeline-body"><strong>Founded</strong> as an advocacy and consulting practice (“Ad” as advertising)—nearly two decades of client work.</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2011</div>
-            <div class="timeline-body">
-              <strong>Certified B Corp</strong> by B Lab—a third-party impact audit verifying social and environmental performance (community benefit beyond standard corporate requirements). Covered on CSRwire in Jan 2012.
+          <article class="card" id="service-daomaker">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 8l14 8v16l-14 8-14-8V16l14-8z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 22v14M17 18l14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2017</div>
-            <div class="timeline-body"><strong>Smart dumpster</strong> R&amp;D—hardware and data concepts built around a <em>proof of recycle</em> thesis for resource economies.</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2022+</div>
-            <div class="timeline-body"><strong>Impact DAO / Superfluid / Gnosis</strong> experiments and Golden Age Advocacy writing; Launchpad and digital-org tooling.</div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2024</div>
-            <div class="timeline-body">
-              <strong>Legal Technology Certificate</strong> — National Society for Legal Technology
-              (<a href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/linked_in_profile" target="_blank" rel="noopener noreferrer">Verify on Credly →</a>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-year">2025–26</div>
-            <div class="timeline-body"><strong>Juris Doctor</strong>, ixian.tech externship, company reinstatement—consulting continues while bar results are pending.</div>
-          </div>
-        </div>
-        <div class="cards" style="margin-top:1.25rem;">
-          <article class="card">
-            <h3>B Corp certification · third-party verified</h3>
+            <h3>DAO Maker</h3>
             <p>
-              In 2011 B Lab certified Adbongo after reviewing governance, workers, community, and environmental metrics.
-              That independent assessment confirmed practices aimed at benefiting people and planet—not only profit.
-              CSRwire published the announcement (Jan 3, 2012): Texas’ newest B Corporation, with a goal of helping more Texas businesses certify.
+              Legal engineering for DAOs and digital orgs. Paths include
+              <a href="https://medium.com/decentralist-com/legal-game-changer-kali-dao-97fbf48376c5?sharedUserId=babaj" target="_blank" rel="noopener noreferrer">Kali DAO</a>
+              for legal-aware formation and our forked
+              <a href="https://zfi.wei.is/dao" target="_blank" rel="noopener noreferrer">ZFI / Moloch summoner</a>;
+              the Raid Guild–era maker was the earlier sandcastle.
             </p>
-            <figure class="feature-art" style="margin-top:0.85rem;">
+            <p style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <a class="btn btn-ghost" href="#daomaker">DAO Maker story →</a>
+              <a class="btn btn-ghost" href="https://zfi.wei.is/dao" target="_blank" rel="noopener noreferrer">Summon on ZFI →</a>
+              <a class="btn btn-ghost" href="/ecosystem-mapping.html">DAO mapping form →</a>
+            </p>
+          </article>
+          <article class="card" id="service-research">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="11" stroke="currentColor" stroke-width="2.5"/><path d="M28.5 28.5L38 38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Research</h3>
+            <figure class="feature-art" style="margin:0.35rem 0 0.85rem;">
               <img
-                src="/assets/brand/bcorp-csrwire-2012.png"
+                src="/assets/brand/lexclinic-logo.jpg"
                 width="1024"
-                height="825"
-                alt="CSRwire press release: Adbongo, Inc. Awarded B Corp Certification — B Lab certified Adbongo as Texas’ newest B corporation (published Jan 3, 2012)"
+                height="1024"
+                alt="LexClinic logo — LEX DeLorean time-circuit lab mark"
                 loading="lazy"
               />
             </figure>
-            <p class="feed-meta" style="margin-top:0.65rem;margin-bottom:0;">
-              Source: 3BL CSRwire · Sustainability · Submitted by Adbongo Inc.
+            <p>
+              <strong>LexClinic</strong> is a strategic alliance research offering under Advocacy Launchpad—
+              structured with a <strong>508(c)(1)(a)</strong> pathway for education / ministry-aligned clinic work.
+            </p>
+            <p style="margin-top:0.65rem;font-family:var(--font-pixel);font-size:0.55rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.04em;">
+              Current offer
+            </p>
+            <div class="folio-video" style="margin-top:0.35rem;border:3px solid #000;box-shadow:3px 3px 0 var(--border);line-height:0;aspect-ratio:16/9;background:#000;">
+              <iframe
+                src="https://www.youtube.com/embed/cZCQ9Q3-o-A?si=xJWOJCYVDsbqpUQV"
+                title="LexClinic — current research offer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                loading="lazy"
+                style="width:100%;height:100%;border:0;display:block;"
+              ></iframe>
+            </div>
+            <p style="margin-top:0.65rem;">
+              University Brand Camp still harnesses program partners (<strong>SMU / UNT / Presidio</strong>)—
+              flagship case study <strong>Rock About Climbing</strong>.
+              Legacy Brand Camp: sustainability / going-green; next round: <strong>DAO-ification</strong> via DAO Maker.
+              Prior LexClinic season is in the folio / Launchpad Lab.
+            </p>
+            <p style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <a class="btn btn-primary" href="https://youtu.be/cZCQ9Q3-o-A" target="_blank" rel="noopener noreferrer">Current LexClinic →</a>
+              <a class="btn btn-ghost" href="#lexclinic">Prior season →</a>
+              <a class="btn btn-ghost" href="https://www.behance.net/gallery/56191089/Cause-Marketing" target="_blank" rel="noopener noreferrer">Rock About →</a>
+              <a class="btn btn-ghost" href="https://docs.google.com/document/d/1cy8S3LQw8Vs80UHHa2WeGwGGj8-402jU--vR5cbUBok/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Legacy Brand Camp →</a>
             </p>
           </article>
-          <article class="card">
-            <h3>Legal Technology Certificate</h3>
-            <p>
-              Issued by the National Society for Legal Technology (NSLT). Verified digital badge on Credly.
-            </p>
-            <p style="margin-top:0.75rem;">
-              <a class="btn btn-ghost" href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/linked_in_profile" target="_blank" rel="noopener noreferrer">View Credly badge →</a>
+          <article class="card" id="service-design">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 12l8 8-14 14H16v-8L30 12z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Design</h3>
+            <p>Brand and systems design—see the creative <a href="#work">folio</a>. Certified permaculture design (PRI) informs regenerative and zero-waste work.</p>
+            <p style="margin-top:0.75rem;"><a class="btn btn-ghost" href="#work">Open folio →</a></p>
+          </article>
+          <article class="card" id="consult">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 30c0-6.6 5.4-12 12-12h0c6.6 0 12 5.4 12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="16" r="4" stroke="currentColor" stroke-width="2.5"/><circle cx="30" cy="16" r="4" stroke="currentColor" stroke-width="2.5"/></svg>
+            </div>
+            <h3>Consult</h3>
+            <p>Big-ticket legal engineering and business-systems consulting. Credentials: JD path, Texas bar pending, Legal Tech Certificate.</p>
+            <a class="credly-badge" href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/public_url" target="_blank" rel="noopener noreferrer" aria-label="Legal Technology Certificate on Credly">
+              <img src="/assets/brand/legal-tech-credly.png" width="600" height="600" alt="Credly Legal Technology Certificate badge" loading="lazy" />
+            </a>
+            <div class="service-secret" role="note" aria-label="Big ticket: Legal engineering">
+              <span class="ticket-stub">Big ticket</span>
+              <div class="ticket-body">
+                <strong>Legal engineering</strong>
+                <p>Map your ecosystem, then book time on Calendly.</p>
+              </div>
+            </div>
+            <p style="margin-top:0.85rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <a class="btn btn-primary" href="/ecosystem-mapping.html">Fill mapping form →</a>
+              <a class="btn btn-ghost" href="https://calendly.com/ondemandcmo/regenerate" target="_blank" rel="noopener noreferrer">Schedule on Calendly →</a>
             </p>
           </article>
         </div>
-        <p style="margin-top:1.25rem;">
-          <a class="btn btn-ghost" href="https://www.adbongo.io/p/the-future-of-adbongo" target="_blank" rel="noopener noreferrer">Read The Future of Adbongo →</a>
-        </p>
       </div>
     </section>
 
-    <section id="work" aria-labelledby="work-heading">
+    <section id="launchpad-lab" aria-labelledby="launchpad-lab-heading">
+      <!-- legacy anchors -->
+      <span id="web3" hidden></span>
+      <div class="wrap">
+        <h2 id="launchpad-lab-heading">Launchpad Lab</h2>
+        <p class="feed-meta" style="max-width:48rem;">
+          Hands-on web3 lab for digital orgs—RSS3 social layer, DAO Maker seats, NFT agents, and
+          <strong>LexClinic</strong> research (new season underway).
+        </p>
+        <div class="strip" style="margin-top:1rem;">
+          <p>
+            We’re hands-on with cool web3 work—including <strong>RSS3</strong> as a social layer—to help you choose a tech stack, plan governance, and ship.
+            Node dashboards come and go with network migrations; the useful next step is the same:
+          </p>
+          <a class="btn btn-primary" href="/ecosystem-mapping.html">Fill the DAO ecosystem form →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#rss3">RSS3 →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#daomaker">DAO Maker →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#nft-agents">NFT Agents →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#lab-lexclinic">LexClinic →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#lab-legacy">Legacy lab →</a>
+        </div>
+
+        <article class="card" id="lab-lexclinic" style="margin-top:1.25rem;max-width:48rem;width:100%;text-align:left;">
+          <h3>LexClinic</h3>
+          <p>
+            Research offering in the Launchpad Lab—strategic alliance with a <strong>508(c)(1)(a)</strong> pathway.
+            <strong>Current offer</strong> is embedded under Services → Research; prior-season clinic below.
+          </p>
+          <div class="folio-video" style="margin-top:0.85rem;border:3px solid #000;box-shadow:3px 3px 0 var(--border);line-height:0;aspect-ratio:16/9;background:#000;">
+            <iframe
+              src="https://www.youtube.com/embed/gi6x2MW9y0Y"
+              title="LexClinic — prior season research offering"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+              style="width:100%;height:100%;border:0;display:block;"
+            ></iframe>
+          </div>
+          <p style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+            <a class="btn btn-primary" href="#service-research">Current offer (Research) →</a>
+            <a class="btn btn-ghost" href="https://youtu.be/gi6x2MW9y0Y" target="_blank" rel="noopener noreferrer">Prior season →</a>
+            <a class="btn btn-ghost" href="#lexclinic">Folio entry →</a>
+          </p>
+        </article>
+
+        <article class="card" id="lab-legacy" style="margin-top:1.25rem;max-width:48rem;width:100%;text-align:left;">
+          <h3>Legacy lab video</h3>
+          <p>
+            Earlier Launchpad Lab / Advocacy Launchpad tape—kept for context next to LexClinic and the DAO Maker stack.
+          </p>
+          <div class="folio-video" style="margin-top:0.85rem;border:3px solid #000;box-shadow:3px 3px 0 var(--border);line-height:0;aspect-ratio:16/9;background:#000;">
+            <iframe
+              src="https://www.youtube.com/embed/22LQbpl-tu0"
+              title="Launchpad Lab — legacy video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+              style="width:100%;height:100%;border:0;display:block;"
+            ></iframe>
+          </div>
+          <p style="margin-top:0.75rem;">
+            <a class="btn btn-ghost" href="https://youtu.be/22LQbpl-tu0" target="_blank" rel="noopener noreferrer">Watch on YouTube →</a>
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="rss3" aria-labelledby="rss3-heading">
+      <span id="activity" hidden></span>
+      <div class="wrap">
+        <h2 id="rss3-heading">RSS3</h2>
+        <p class="feed-meta" style="max-width:48rem;">
+          Open social-layer experiments on the RSS3 stack—migration notes, indexed activity, and node-adjacent agents like Max.
+        </p>
+        <div class="strip" style="margin-top:1rem;">
+          <p>
+            As RSS3 shifts VSL → Ethereum and DSL → RSSHub, explorer and indexer URLs may change.
+            This lab view is a convenience surface, not a guarantee of node health.
+          </p>
+          <a class="btn btn-primary" href="https://rss3.io/blog/the-next-stage-of-rss3.html" target="_blank" rel="noopener noreferrer">RSS3 migration note →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#nft-agents">NFT Agents (Max) →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="/maxayauwi-dashboard.html">Maxayauwi dashboard →</a>
+        </div>
+        <h3 style="margin-top:1.5rem;font-family:var(--font-pixel);font-size:0.72rem;color:#fff;text-shadow:2px 2px 0 #000;">Indexed activity</h3>
+        <p class="feed-meta" style="margin-bottom:0.75rem;max-width:48rem;">
+          Public activity for the operator address via the RSS3 Global Indexer when available.
+        </p>
+        <details class="feed-details">
+          <summary>Why this feed may change</summary>
+          <p class="feed-meta">
+            Network migration timelines can move explorer and indexer URLs. Treat this list as a snapshot, not uptime proof.
+          </p>
+        </details>
+        <p class="feed-meta" id="feed-account-line" aria-live="polite">Loading feed…</p>
+        <div id="feed-status" role="status" aria-live="polite"></div>
+        <ul class="feed-list" id="feed-list"></ul>
+      </div>
+    </section>
+
+    <section id="daomaker" aria-labelledby="daomaker-heading">
+      <div class="wrap">
+        <h2 id="daomaker-heading">DAO Maker</h2>
+        <p class="feed-meta" style="max-width:48rem;">
+          Legal engineering seats for digital organizations—plus what we learned building our own stack, and what we recommend now.
+        </p>
+
+        <article class="card" style="margin-top:1rem;max-width:48rem;width:100%;text-align:left;">
+          <h3>What we recommend now · Kali DAO</h3>
+          <p>
+            For founders who need legal-aware DAO formation without reinventing the sandcastle,
+            we point people to <strong>Kali DAO</strong>—launch DAOs with legal benefits in seconds
+            (LLC pathways, voting, tokenization templates). Read this Decentralist primer:
+          </p>
+          <p style="margin-top:0.75rem;">
+            <a class="btn btn-primary" href="https://medium.com/decentralist-com/legal-game-changer-kali-dao-97fbf48376c5?sharedUserId=babaj" target="_blank" rel="noopener noreferrer">Legal Game Changer… Kali DAO →</a>
+          </p>
+          <p class="notice" style="margin-top:0.85rem;">
+            Not legal advice. DYOR and talk to counsel licensed in your jurisdiction.
+          </p>
+        </article>
+
+        <article class="card" style="margin-top:1rem;max-width:48rem;width:100%;text-align:left;">
+          <h3>Hands-on summon · Moloch / ZFI DAO</h3>
+          <p>
+            Another way through DAO Maker: summon and run a Moloch-style DAO (treasury, proposals, ragequit, tributes)
+            via the <strong>ZFI DAO</strong> app—Adbongo forked this stack on GitHub for our Launchpad path.
+          </p>
+          <p style="margin-top:0.75rem;">
+            <a class="btn btn-primary" href="https://zfi.wei.is/dao" target="_blank" rel="noopener noreferrer">Open ZFI DAO summoner →</a>
+          </p>
+        </article>
+
+        <article class="card" style="margin-top:1rem;max-width:48rem;width:100%;text-align:left;">
+          <h3>Our sandcastle · Raid Guild fork → Adbongo DAO Maker</h3>
+          <p>
+            Earlier we forked <strong>Raid Guild</strong> (DAOhaus lineage) and built our own
+            <strong>DAO Maker</strong>—a working house for digital orgs until the underlying stack updated
+            and <em>the sandcastle got kicked over</em>. The tooling broke with the tech wave;
+            the craft (legal engineering, ecosystem mapping, advocacy) did not.
+          </p>
+          <p style="margin-top:0.65rem;">
+            Today we still run DAO Maker seats for coordination and counsel-adjacent systems design,
+            demonstrate on Hypha
+            (<a href="https://app.hypha.earth/en/dho/divine-adaptable-organization/overview" target="_blank" rel="noopener noreferrer">Divine Adaptable Organization</a>),
+            gather via <a href="https://luma.com/rnyoopeg" target="_blank" rel="noopener noreferrer">Luma</a>,
+            and for turnkey legal-structured formation we recommend <strong>Kali</strong> above.
+          </p>
+          <p style="margin-top:0.75rem;">
+            Legacy design notes from that era:
+            <a href="https://medium.com/coinmonks/categories-of-web3-dao-design-e00fe5144249?sharedUserId=babaj" target="_blank" rel="noopener noreferrer">Categories of Web3 DAO Design</a>
+            (Coinmonks).
+          </p>
+          <p style="margin-top:0.65rem;">
+            <a class="btn btn-ghost" href="https://medium.com/coinmonks/categories-of-web3-dao-design-e00fe5144249?sharedUserId=babaj" target="_blank" rel="noopener noreferrer">Legacy blog · Categories of Web3 DAO Design →</a>
+          </p>
+        </article>
+
+        <div class="strip" style="margin-top:1rem;">
+          <p>Ready to accelerate your DAO / digital org? Map the ecosystem, then book a consult.</p>
+          <a class="btn btn-primary" href="/ecosystem-mapping.html">Web3 ecosystem mapping →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="https://zfi.wei.is/dao" target="_blank" rel="noopener noreferrer">ZFI DAO summoner →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="https://medium.com/decentralist-com/legal-game-changer-kali-dao-97fbf48376c5?sharedUserId=babaj" target="_blank" rel="noopener noreferrer">Kali DAO essay →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="https://medium.com/coinmonks/categories-of-web3-dao-design-e00fe5144249?sharedUserId=babaj" target="_blank" rel="noopener noreferrer">DAO design categories →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="https://app.hypha.earth/en/dho/divine-adaptable-organization/overview" target="_blank" rel="noopener noreferrer">See Hypha DHO →</a>
+          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="https://calendly.com/ondemandcmo/regenerate" target="_blank" rel="noopener noreferrer">Calendly →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="nft-agents" aria-labelledby="nft-agents-heading">
+      <span id="nft" hidden></span>
+      <div class="wrap">
+        <h2 id="nft-agents-heading">NFT Agents</h2>
+        <p class="feed-meta" style="max-width:48rem;">
+          Collectible agents on the Launchpad stack—starting with Max (Maxayauwi), plus carbon-negative NFT work from the Golden Age Gurus / ReVesture thread.
+        </p>
+        <div class="nft-grid">
+          <figure class="nft-art">
+            <img
+              src="/assets/brand/maxayauwi-ascii.png"
+              width="752"
+              height="1024"
+              alt="Maxayauwi ASCII deer — Max NFT agent artwork"
+              loading="lazy"
+            />
+          </figure>
+          <div class="nft-copy card" style="padding:1rem;">
+            <h3>Agent: Max (Maxayauwi)</h3>
+            <p>
+              8-bit spirit deer for the Launchpad era—an AI digital NFT agent tied to Adbongo’s open-activity / RSS3 stack, not just a JPEG flex.
+            </p>
+            <p>
+              Mint via Manifold (<strong>@divinedao</strong>). Ops / node view stays on the Maxayauwi dashboard when the indexer path is healthy.
+            </p>
+            <div class="nft-actions">
+              <a class="btn btn-primary" href="https://manifold.xyz/@divinedao" target="_blank" rel="noopener noreferrer">Buy / mint on Manifold →</a>
+              <a class="btn btn-ghost" href="/maxayauwi-dashboard.html">Maxayauwi dashboard →</a>
+              <a class="btn btn-ghost" href="#rss3">RSS3 →</a>
+            </div>
+            <p class="notice" style="margin-top:1rem;">
+              NFTs are experimental collectibles—not investment advice. DYOR.
+            </p>
+          </div>
+        </div>
+        <div class="nft-grid">
+          <figure class="nft-art">
+            <img
+              src="/assets/brand/tommy-comma-musashi-nft.jpg"
+              width="800"
+              height="1000"
+              alt="Tommy Comma and Musashi 13, Carbon Negative NFTs — Golden Age Gurus / adbongo.io"
+              loading="lazy"
+            />
+          </figure>
+          <div class="nft-copy card" style="padding:1rem;">
+            <h3>Tommy Comma &amp; Musashi 13 · carbon-negative NFTs</h3>
+            <p>
+              ReVesture came out of the Planet Positive NFT Hackathon (ReFiDAO)—a marketplace for MetaVerse NFTs (avatars, wearables, even worlds) tied to carbon credits and regen fundraising.
+            </p>
+            <p>
+              Golden Age Gurus episode + essay from May 2022. Same thread as the podcast highlight.
+            </p>
+            <div class="nft-actions">
+              <a class="btn btn-primary" href="https://goldena.substack.com/p/tommy-comma-and-musashi-13-carbon-db8" target="_blank" rel="noopener noreferrer">Read the Substack →</a>
+              <a class="btn btn-ghost" href="#podcast">Podcast →</a>
+            </div>
+            <p class="notice" style="margin-top:1rem;">
+              NFTs are experimental collectibles—not investment advice. DYOR.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<section id="work" aria-labelledby="work-heading">
       <div class="wrap">
         <h2 id="work-heading">Creative folio</h2>
         <p class="feed-meta folio-intro">
           Showcase of creative work John produced as art director for legacy Adbongo—graphic design, branding kits,
           partnership identity, training video production, event marketing, and university-partnered market research
-          (SMU / UNT / Presidio).
+          (SMU / UNT / Presidio). Each frame is the same size; <strong>scroll inside</strong> to see the project images without leaving this page.
           Full archive:
           <a href="https://www.behance.net/johnbushe" target="_blank" rel="noopener noreferrer">behance.net/johnbushe</a>.
           Client quotes live in
           <a href="#testimonials">Clients &amp; partners</a>.
+          Join the room:
+          <a href="https://discord.gg/p26h9ExkGs" target="_blank" rel="noopener noreferrer">Discord folio hangout →</a>
         </p>
 
         <div class="folio-category">
@@ -822,17 +1582,9 @@
             <article class="folio-item">
               <h4>Legacy Adbongo art direction</h4>
               <p class="folio-meta">Studio showcase · type of creative work produced as art director</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/3011461?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Legacy Adbongo art direction showcase"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="3011461" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/3011461" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
@@ -848,17 +1600,9 @@
             <article class="folio-item">
               <h4>Hands that Heal CD set</h4>
               <p class="folio-meta">Client: Roy James, Hands that Heal</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/709311?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Hands that Heal CD set"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="709311" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/709311/Hands-that-Heal" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
@@ -874,17 +1618,9 @@
             <article class="folio-item">
               <h4>Accessible Home Design</h4>
               <p class="folio-meta">Client: Pat Dicicco, Owner</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/700732?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Accessible Home Design branding"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="700732" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="#testimonial-pat-dicicco">Pat Dicicco testimonial →</a>
@@ -893,20 +1629,28 @@
             </article>
             <article class="folio-item">
               <h4>Coyote Legal</h4>
-              <p class="folio-meta">Client: Margaret Donnelly, P.C.</p>
-              <div class="folio-embed">
+              <p class="folio-meta">
+                Client: Margaret Donnelly, P.C. · brand, website, and Spanish-language AI marketing agent
+                (clone of Baba John speaking español for
+                <a href="https://coyotelegal.com" target="_blank" rel="noopener noreferrer">coyotelegal.com</a>).
+              </p>
+              <p class="folio-viewer-hint">Scroll to view the brand work</p>
+              <div class="folio-viewer" data-folio-id="3742799" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
+              </div>
+              <div class="folio-video" style="margin-top:0.75rem;border:3px solid #000;box-shadow:3px 3px 0 var(--border);line-height:0;aspect-ratio:16/9;background:#000;">
                 <iframe
-                  src="https://www.behance.net/embed/project/3742799?ilo0=1"
-                  height="316"
-                  width="404"
+                  src="https://www.youtube.com/embed/XWlUVuT4p9Q"
+                  title="Coyote Legal Spanish AI agent — Baba John clone"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowfullscreen
                   loading="lazy"
-                  title="Behance: Coyote Legal branding"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
+                  style="width:100%;height:100%;border:0;display:block;"
                 ></iframe>
               </div>
               <p class="folio-links">
+                <a href="https://youtu.be/XWlUVuT4p9Q" target="_blank" rel="noopener noreferrer">Spanish AI agent (YouTube) →</a>
+                <a href="https://coyotelegal.com" target="_blank" rel="noopener noreferrer">coyotelegal.com →</a>
                 <a href="#testimonial-margaret-donnelly">Margaret Donnelly testimonial →</a>
                 <a href="https://www.behance.net/gallery/3742799/Coyote-Legal" target="_blank" rel="noopener noreferrer">Behance project →</a>
               </p>
@@ -914,17 +1658,9 @@
             <article class="folio-item">
               <h4>Branding kit</h4>
               <p class="folio-meta">Legacy Adbongo · brand kit &amp; identity system</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/3011199?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Branding kit"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="3011199" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/3011199" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
@@ -940,17 +1676,9 @@
             <article class="folio-item">
               <h4>Logo identity</h4>
               <p class="folio-meta">Legacy Adbongo · brand identity logos</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/5210721?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Brand identity logos"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="5210721" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/5210721" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
@@ -966,20 +1694,31 @@
             <article class="folio-item">
               <h4>Civic ecology</h4>
               <p class="folio-meta">Legacy Adbongo · civic ecology &amp; business ecosystems</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/1923923?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Civic ecology"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="1923923" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/1923923" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category" id="advocacy">
+          <h3>Advocacy · Zero Waste legislation</h3>
+          <p>
+            Legacy Zero Waste Advocacy press and Capitol work—petitions, statewide goals, and TCEQ standards.
+          </p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>Local Advocacy Group Petitions Texas State House</h4>
+              <p class="folio-meta">
+                Golden Age Advocacy / Medium · Oct 21, 2017 (republished from Jan 2015)—
+                Zero Waste Advocacy Group petition for a statewide Zero Waste goal.
+              </p>
+              <p class="folio-links">
+                <a href="https://medium.com/zero-waste-advocacy-iot/local-advocacy-group-petitions-texas-state-house-of-representatives-484fb776f8a2?sharedUserId=babaj" target="_blank" rel="noopener noreferrer">Read the advocacy article →</a>
               </p>
             </article>
           </div>
@@ -992,17 +1731,9 @@
             <article class="folio-item">
               <h4>Austin Art and Music Partnership</h4>
               <p class="folio-meta">Arts &amp; music collaboration identity</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/746284?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Austin Art and Music Partnership"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="746284" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/746284" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
@@ -1018,17 +1749,9 @@
             <article class="folio-item">
               <h4>17-Pt Wellness Video Training Series</h4>
               <p class="folio-meta">The Health Bowl · training series for construction companies</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/694273?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: 17-Pt Wellness Video Training Series"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="694273" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="#testimonial-steve-heussner">Steve Heussner testimonial →</a>
@@ -1045,17 +1768,9 @@
             <article class="folio-item">
               <h4>Mesa Ranch</h4>
               <p class="folio-meta">Client: Lane Ray · organic / regenerative business development &amp; event marketing</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/746149?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Mesa Ranch event production and marketing"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="746149" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/746149" target="_blank" rel="noopener noreferrer">Lane Ray / Mesa Ranch on Behance →</a>
@@ -1064,17 +1779,9 @@
             <article class="folio-item">
               <h4>Event production</h4>
               <p class="folio-meta">Legacy Adbongo · event production &amp; marketing</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/3734575?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Event production"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="3734575" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
                 <a href="https://www.behance.net/gallery/3734575" target="_blank" rel="noopener noreferrer">Open on Behance →</a>
@@ -1083,30 +1790,54 @@
           </div>
         </div>
 
-        <div class="folio-category">
-          <h3>Market research · university programs</h3>
+        <div class="folio-category" id="lexclinic">
+          <h3>LexClinic · research offering</h3>
           <p>
-            Cause marketing and audience research developed with university program partners—
+            Strategic alliance research under Advocacy Launchpad with a <strong>508(c)(1)(a)</strong> pathway.
+            Season below is from last year; <strong>new season in progress</strong>.
+          </p>
+          <div class="folio-grid">
+            <article class="folio-item">
+              <h4>LexClinic (prior season)</h4>
+              <p class="folio-meta">Research offering · clinic video · new season coming</p>
+              <div class="folio-video" style="margin-top:0.35rem;border:3px solid #000;box-shadow:3px 3px 0 var(--border);line-height:0;aspect-ratio:16/9;background:#000;">
+                <iframe
+                  src="https://www.youtube.com/embed/gi6x2MW9y0Y"
+                  title="LexClinic — prior season research offering"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                  loading="lazy"
+                  style="width:100%;height:100%;border:0;display:block;"
+                ></iframe>
+              </div>
+              <p class="folio-links">
+                <a href="https://youtu.be/gi6x2MW9y0Y" target="_blank" rel="noopener noreferrer">Watch on YouTube →</a>
+                <a href="#service-research">Research services →</a>
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <div class="folio-category" id="brand-camp">
+          <h3>Market research · university Brand Camp</h3>
+          <p>
+            University-partnered cause marketing and audience research with
             <strong>SMU</strong>, <strong>UNT</strong>, and <strong>Presidio</strong>.
+            Lead case study: <strong>Rock About Climbing</strong>.
+            Legacy Brand Camp offer (sustainability / going-green marketing) is linked below;
+            the next cohort shifts to web3 <strong>DAO-ification</strong> via DAO Maker.
           </p>
           <div class="folio-grid">
             <article class="folio-item">
               <h4>Rock About Climbing</h4>
-              <p class="folio-meta">Cause marketing · university-partnered market research</p>
-              <div class="folio-embed">
-                <iframe
-                  src="https://www.behance.net/embed/project/56191089?ilo0=1"
-                  height="316"
-                  width="404"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Behance: Rock About Climbing — Cause Marketing"
-                  allow="clipboard-write"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                ></iframe>
+              <p class="folio-meta">University case study · cause marketing · audience research</p>
+              <p class="folio-viewer-hint">Scroll to view the work</p>
+              <div class="folio-viewer" data-folio-id="56191089" aria-label="Project image gallery">
+                <p class="folio-viewer-status">Loading project…</p>
               </div>
               <p class="folio-links">
-                <a href="https://www.behance.net/gallery/56191089/Cause-Marketing" target="_blank" rel="noopener noreferrer">Behance project →</a>
+                <a href="https://www.behance.net/gallery/56191089/Cause-Marketing" target="_blank" rel="noopener noreferrer">Rock About on Behance →</a>
+                <a href="https://docs.google.com/document/d/1cy8S3LQw8Vs80UHHa2WeGwGGj8-402jU--vR5cbUBok/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Legacy Brand Camp offer (Google Doc) →</a>
               </p>
             </article>
           </div>
@@ -1114,9 +1845,37 @@
 
         <div class="cards" style="margin-top:2rem;">
           <article class="card">
+            <h3>LexClinic</h3>
+            <p>
+              Research offering / strategic alliance—<strong>508(c)(1)(a)</strong> pathway.
+              Current-season offer is embedded under Services → Research; prior season stays in the folio.
+            </p>
+            <p style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <a class="btn btn-primary" href="#service-research">Current offer →</a>
+              <a class="btn btn-ghost" href="https://youtu.be/gi6x2MW9y0Y" target="_blank" rel="noopener noreferrer">Prior season video →</a>
+            </p>
+          </article>
+          <article class="card">
+            <h3>University Brand Camp</h3>
+            <p>
+              Research service built on university program partners. Proof point:
+              <strong>Rock About Climbing</strong>. Previous offer centered on Momentum-style sustainability marketing;
+              next offer = digitizing orgs with DAO Maker (DAO-ification).
+            </p>
+            <p style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <a class="btn btn-primary" href="https://www.behance.net/gallery/56191089/Cause-Marketing" target="_blank" rel="noopener noreferrer">Rock About case study →</a>
+              <a class="btn btn-ghost" href="https://docs.google.com/document/d/1cy8S3LQw8Vs80UHHa2WeGwGGj8-402jU--vR5cbUBok/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Legacy offer doc →</a>
+            </p>
+          </article>
+          <article class="card">
             <h3>Zero Waste Business Accelerator</h3>
-            <p>Adbongo’s accelerator for regenerative and zero-waste enterprises—strategy, branding, and market development.</p>
-            <p style="margin-top:0.75rem;">
+            <p>
+              Adbongo’s accelerator for regenerative and zero-waste enterprises—strategy, branding, and market development.
+              Legacy proof: <strong>2nd place</strong> at the Collidathon IoT hackathon with a smart-dumpster / sensor MVP
+              (Zero Waste Advocacy · Zero Waste beta).
+            </p>
+            <p style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <a class="btn btn-primary" href="https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/How-to-win-at-an-IoT-hackathon" target="_blank" rel="noopener noreferrer">IoT hackathon article →</a>
               <a class="btn btn-ghost" href="/accelerator.html">Start accelerator agreement →</a>
             </p>
           </article>
@@ -1128,9 +1887,10 @@
             </p>
           </article>
         </div>
-        <p style="margin-top:1.25rem;">
+        <p style="margin-top:1.25rem;display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;">
+          <a class="btn btn-primary" href="https://discord.gg/p26h9ExkGs" target="_blank" rel="noopener noreferrer">Join Discord →</a>
           <a class="btn btn-ghost" href="https://www.behance.net/johnbushe" target="_blank" rel="noopener noreferrer">Open full Behance portfolio →</a>
-          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="#testimonials">Jump to testimonials →</a>
+          <a class="btn btn-ghost" href="#testimonials">Jump to testimonials →</a>
         </p>
       </div>
     </section>
@@ -1173,11 +1933,6 @@
             <h3>Juan Carlos Cruz</h3>
             <p class="testimonial-meta">Founder &amp; Broker, Texas Investment Properties · Jun 24, 2011 · Client</p>
             <p class="testimonial-quote">“He is great to work with and his ideas make business sense and are good for the environment.”</p>
-          </article>
-          <article class="card">
-            <h3>Benjamin Neupert</h3>
-            <p class="testimonial-meta">Digital Consultant, edesen.com · Jul 12, 2010 · John was Benjamin’s client</p>
-            <p class="testimonial-quote">“John Bush is a good friend and a mentor. His knowledge of social media and marketing/advertising is truly remarkable. I highly recommend hiring John as a organic business development consultant.”</p>
           </article>
           <article class="card" id="testimonial-margaret-donnelly">
             <h3>Margaret Donnelly</h3>
@@ -1230,11 +1985,6 @@
             <p class="testimonial-quote">“Personally, I could not be where I am today without John's professional work ethics, creativity and prompt attention to my needs. Most importantly is his personal encouragement, that I am on the right path. I believe it is instinctual with him…. It's not just lip service. Guys out there, I don't think John is going to work with you unless he believes you are a cut above the average person.”</p>
           </article>
           <article class="card">
-            <h3>Josh Weatherspoon</h3>
-            <p class="testimonial-meta">Freelance · Dec 11, 2008 · Same team</p>
-            <p class="testimonial-quote">“John has a entrepreneurial spirit, if he wants something he will work hard to get it.”</p>
-          </article>
-          <article class="card">
             <h3>Peter Anthony</h3>
             <p class="testimonial-meta">Television Producer · Aug 29, 2008 · Client</p>
             <p class="testimonial-quote">“John is one in a million. His knowledge and expertise coupled with amazing people skills sets him apart from those who I have worked with before. I have nothing but the best to say about John.”</p>
@@ -1251,9 +2001,22 @@
       </div>
     </section>
 
-    <section id="blog" aria-labelledby="blog-heading">
+    <section id="babalog" aria-labelledby="babalog-heading">
       <div class="wrap">
-        <h2 id="blog-heading">Blog</h2>
+        <h2 id="babalog-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;">Babalog</h2>
+        <div class="babalog-hero">
+          <img
+            src="/assets/brand/adbongo-logo.png"
+            width="120"
+            height="117"
+            alt=""
+            style="width:5.5rem;height:5.5rem;display:block;margin:0 auto 0.75rem;border:4px solid #000;box-shadow:4px 4px 0 #000;image-rendering:pixelated;background:var(--surface);"
+            loading="lazy"
+          />
+          <h2>Babalog</h2>
+          <p style="color:var(--muted);max-width:40rem;margin:0;">Long-form writing on Substack—essays, program framing, and the Advocacy Launchpad. Almost a site of its own.</p>
+          <p style="margin-top:0.85rem;"><a class="btn btn-primary" href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Open www.adbongo.io →</a></p>
+        </div>
         <div class="feature">
           <figure class="feature-art">
             <img
@@ -1265,7 +2028,7 @@
             />
           </figure>
           <div class="feature-copy">
-            <h3 style="font-family:Fraunces,Georgia,serif;font-size:1.15rem;margin-bottom:0.75rem;">From legacy wealth structures to digital “super trusts”</h3>
+            <h3 style="font-family:var(--font-pixel);font-size:1.15rem;margin-bottom:0.75rem;">From legacy wealth structures to digital “super trusts”</h3>
             <p>
               Durable capital allocation has always depended on layered structures—control, continuity, and mission.
               Today’s digital organizations ask the same questions with new rails: smart contracts, membership tokens,
@@ -1282,11 +2045,33 @@
               (Advocacy Launchpad PMA). Related ministry presence:
               <a href="https://www.adbongo.io/s/temple-of-roots" target="_blank" rel="noopener noreferrer">Temple of Roots on Substack</a>
               and the ministry site
-              <a href="https://templeofroots.com" target="_blank" rel="noopener noreferrer">templeofroots.com</a>.
+              <a class="btn btn-ghost btn-compact" href="https://templeofroots.com" target="_blank" rel="noopener noreferrer">temple</a>.
             </p>
             <p style="margin-top:1rem;">
               <a class="btn btn-primary" href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Read the blog on adbongo.io →</a>
             </p>
+          </div>
+        </div>
+        <div class="blog-post-embed">
+          <h3>Featured essay</h3>
+          <div class="substack-post-embed">
+            <p lang="en">CEO's pay heed! by Adbongo Group LLC</p>
+            <p>How Age-Old Wisdom Guides Today's Leaders</p>
+            <a data-post-link href="https://www.adbongo.io/p/from-ancient-oracles-to-modern-diviners">Read on Substack</a>
+          </div>
+        </div>
+        <div class="blog-subscribe" id="subscribe">
+          <h3>Subscribe to the blog</h3>
+          <p>Get Advocacy Launchpad essays and updates from www.adbongo.io.</p>
+          <div class="blog-subscribe-frame">
+            <iframe
+              src="https://www.adbongo.io/embed"
+              width="480"
+              height="320"
+              title="Subscribe to the Adbongo blog on Substack"
+              loading="lazy"
+              scrolling="no"
+            ></iframe>
           </div>
         </div>
       </div>
@@ -1295,9 +2080,44 @@
     <section id="podcast" aria-labelledby="podcast-heading">
       <div class="wrap">
         <h2 id="podcast-heading">Podcast</h2>
-        <p class="feed-meta" style="margin-bottom:1.25rem;max-width:48rem;">
+        <p class="feed-meta" style="margin-bottom:1.25rem;max-width:48rem;margin-left:auto;margin-right:auto;text-align:center;">
           <strong style="color:var(--text)">Golden Age Gurus ✨</strong> — regenerative builders, healers, and Web3 explorers with Baba J.
         </p>
+        <div class="podcast-episode is-highlight">
+          <span class="eyebrow-tag">Highlighted episode</span>
+          <h3>Tommy Comma &amp; Musashi — 13 Carbon</h3>
+          <p>Featured from Babalog / Golden Age Gurus.</p>
+          <div class="podcast-episode-frame">
+            <iframe
+              src="https://www.adbongo.io/embed/podcast/tommy-comma-and-musashi-13-carbon-db8"
+              width="100%"
+              height="200"
+              title="Podcast: Tommy Comma and Musashi 13 Carbon"
+              loading="lazy"
+              allow="autoplay"
+            ></iframe>
+          </div>
+          <p style="margin-top:0.75rem;">
+            <a href="https://www.adbongo.io/p/tommy-comma-and-musashi-13-carbon-db8" target="_blank" rel="noopener noreferrer">Open episode on Babalog →</a>
+          </p>
+        </div>
+        <div class="podcast-episode" style="margin-top:1.25rem;">
+          <h3>Also listen · Ferananda Ibarra</h3>
+          <p>Digital currency design, collective intelligence, and organizational architecture.</p>
+          <div class="podcast-episode-frame">
+            <iframe
+              src="https://www.adbongo.io/embed/podcast/ferananda-ibarra-digital-currency-20c"
+              width="100%"
+              height="200"
+              title="Podcast: Ferananda Ibarra, Digital Currency Design"
+              loading="lazy"
+              allow="autoplay"
+            ></iframe>
+          </div>
+          <p style="margin-top:0.75rem;">
+            <a href="https://www.adbongo.io/p/ferananda-ibarra-digital-currency-20c" target="_blank" rel="noopener noreferrer">Open episode on the blog →</a>
+          </p>
+        </div>
         <div class="cards">
           <article class="card">
             <h3>Listen on Spotify</h3>
@@ -1332,76 +2152,54 @@
       </div>
     </section>
 
-    <section id="infrastructure" aria-labelledby="infra-heading">
-      <div class="wrap">
-        <h2 id="infra-heading">This host · RSS3 node</h2>
-        <div class="strip" style="margin-bottom:1.25rem;">
-          <p>
-            <strong>Network change underway.</strong> RSS3 is migrating VSL toward Ethereum and integrating DSL into the broader
-            <strong>RSSHub</strong> stack over the coming weeks. Adbongo’s node on this host remains part of our digital-organization R&amp;D;
-            consulting engagements are independent of any single protocol’s roadmap.
-          </p>
-          <p>
-            Official announcement:
-            <a href="https://rss3.io/blog/the-next-stage-of-rss3.html" target="_blank" rel="noopener noreferrer">The Next Stage of RSS3</a>
-            · Asset portal:
-            <a href="https://rss3.io/migration/" target="_blank" rel="noopener noreferrer">rss3.io/migration</a>
-          </p>
-        </div>
-        <div class="cards">
-          <article class="card">
-            <h3>Node address</h3>
-            <p class="mono" id="infra-node-addr">0x0063951De34a75c25279cFe3C212F4855125Fd8f</p>
-            <p style="margin-top:0.75rem;"><a id="link-explorer-card" href="https://explorer.rss3.io/nodes/0x0063951De34a75c25279cFe3C212F4855125Fd8f" target="_blank" rel="noopener noreferrer">RSS3 Explorer →</a></p>
-          </article>
-          <article class="card">
-            <h3>Operator dashboard</h3>
-            <p>Maxayauwi node view for this host (ops / status layout).</p>
-            <p style="margin-top:0.85rem;">
-              <a class="btn btn-primary" href="/maxayauwi-dashboard.html">Open RSS3 dashboard</a>
-            </p>
-          </article>
-          <article class="card">
-            <h3>Access &amp; upgrades</h3>
-            <p>
-              Level 1 mint hub:
-              <a href="https://manifold.xyz/@divinedao" target="_blank" rel="noopener noreferrer">manifold.xyz/@divinedao</a>
-            </p>
-            <p style="margin-top:0.5rem;"><a href="/agents-upgrade.html">Agent NFT upgrades →</a></p>
-          </article>
-        </div>
-      </div>
-    </section>
 
-    <section id="activity" aria-labelledby="activity-heading">
-      <div class="wrap">
-        <h2 id="activity-heading">Indexed activity</h2>
-        <p class="feed-meta" style="margin-bottom:0.75rem;max-width:48rem;">
-          Public activity for the operator address via the RSS3 Global Indexer when available. Subject to network migration timelines.
-        </p>
-        <details class="feed-details">
-          <summary>Why this feed may change</summary>
-          <p class="feed-meta">
-            As RSS3 shifts VSL → Ethereum and DSL → RSSHub, explorer and indexer URLs may change. This list is a convenience view, not a guarantee of node health.
-          </p>
-        </details>
-        <p class="feed-meta" id="feed-account-line" aria-live="polite">Loading feed…</p>
-        <div id="feed-status" role="status" aria-live="polite"></div>
-        <ul class="feed-list" id="feed-list"></ul>
-      </div>
-    </section>
+
 
     <section id="contact" aria-labelledby="contact-heading">
       <div class="wrap">
-        <h2 id="contact-heading">Work with us</h2>
-        <div class="strip">
-          <p>
-            Ready to upgrade your business systems—or explore digital-organization design with someone who has lived both the advocacy stack and the crypto stack?
-          </p>
-          <a class="btn btn-primary" href="mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry">Email Adbongo</a>
-          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="/accelerator.html">Accelerator agreement</a>
-          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="/ecosystem-mapping.html">Web3 ecosystem mapping</a>
-          <a class="btn btn-ghost" style="margin-left:0.5rem;" href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Read on adbongo.io</a>
+        <h2 id="contact-heading">Contact</h2>
+        <p class="feed-meta" style="max-width:48rem;">
+          Schedule a consult after mapping your ecosystem—or reach us directly.
+        </p>
+        <div class="contact-grid">
+          <article class="card contact-card">
+            <h3>Office</h3>
+            <address>
+              2626 Valley View Lane Ste 11<br />
+              Farmers Branch, TX 75234-6274
+            </address>
+            <p style="margin-top:0.75rem;">
+              <a href="mailto:baba@adbongo.io">baba@adbongo.io</a><br />
+              <a href="tel:+19033765299">903.376.5299</a>
+            </p>
+          </article>
+          <article class="card contact-card">
+            <h3>Start here</h3>
+            <p>DAO / digital-org intake, then book time.</p>
+            <p style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <a class="btn btn-primary" href="/ecosystem-mapping.html">Ecosystem mapping form</a>
+              <a class="btn btn-ghost" href="https://calendly.com/ondemandcmo/regenerate" target="_blank" rel="noopener noreferrer">Calendly</a>
+            </p>
+          </article>
+          <article class="card contact-card">
+            <h3>Social</h3>
+            <div class="social" style="margin-top:0.35rem;" aria-label="Social links">
+              <a href="https://www.linkedin.com/in/vibecoder" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+              <a href="https://www.tiktok.com/@adbongo" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TT</a>
+              <a href="https://www.behance.net/johnbushe" target="_blank" rel="noopener noreferrer" aria-label="Behance">Be</a>
+              <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer" aria-label="Babalog">Blog</a>
+              <a href="https://templeofroots.com" target="_blank" rel="noopener noreferrer" aria-label="Temple">Temple</a>
+              <a href="https://open.spotify.com/show/003jiO8jmRfAk3GrKPy8C7" target="_blank" rel="noopener noreferrer" aria-label="Spotify">Spotify</a>
+            </div>
+            <p class="feed-meta" style="margin-top:0.75rem;margin-bottom:0;">TikTok handle can be updated if @adbongo is not the live account.</p>
+          </article>
+        </div>
+        <div class="calendly-frame" style="margin-top:1.5rem;">
+          <iframe
+            src="https://calendly.com/ondemandcmo/regenerate?embed_domain=web3.adbongo.io&embed_type=Inline"
+            title="Schedule with Adbongo on Calendly"
+            loading="lazy"
+          ></iframe>
         </div>
       </div>
     </section>
@@ -1432,13 +2230,13 @@
           <a id="link-explorer" href="#" target="_blank" rel="noopener noreferrer">RSS3 node explorer</a>
           <a class="btn btn-ghost btn-compact" href="/maxayauwi-dashboard.html">RSS3 dashboard</a>
           <a href="https://rss3.io/blog/the-next-stage-of-rss3.html" target="_blank" rel="noopener noreferrer">RSS3 migration</a>
-          <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Blog (adbongo.io)</a>
+          <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer">Babalog (adbongo.io)</a>
           <a href="https://www.behance.net/johnbushe" target="_blank" rel="noopener noreferrer">Behance portfolio</a>
           <a href="https://www.linkedin.com/in/vibecoder" target="_blank" rel="noopener noreferrer">LinkedIn (vibecoder)</a>
           <a href="https://www.credly.com/badges/bfcd7322-2650-4d43-a874-b1e19bf698d3/linked_in_profile" target="_blank" rel="noopener noreferrer">Legal Tech Certificate (Credly)</a>
           <a href="https://www.adbongo.io/podcast" target="_blank" rel="noopener noreferrer">Podcast</a>
           <a href="https://www.adbongo.io/s/temple-of-roots" target="_blank" rel="noopener noreferrer">Temple of Roots (Substack)</a>
-          <a href="https://templeofroots.com" target="_blank" rel="noopener noreferrer">templeofroots.com</a>
+          <a class="btn btn-ghost btn-compact" href="https://templeofroots.com" target="_blank" rel="noopener noreferrer">temple</a>
           <a href="https://manifold.xyz/@divinedao" target="_blank" rel="noopener noreferrer">Manifold mint</a>
           <a href="/accelerator.html">Accelerator agreement</a>
           <a href="/ecosystem-mapping.html">Web3 ecosystem mapping</a>
@@ -1451,6 +2249,17 @@
         <span style="display:block;margin-top:0.35rem;">Long-form writing: <a href="https://www.adbongo.io/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);">www.adbongo.io</a> (Substack).</span>
         <span style="display:block;margin-top:0.35rem;">Use of this site constitutes acceptance of our <a href="/disclaimer.html" style="color:var(--primary);">website disclaimer</a>.</span>
       </p>
+    </div>
+    <div class="wrap alliances" aria-label="Strategic alliances">
+      <p class="alliances-label">Strategic alliances</p>
+      <div class="alliances-logos">
+        <a href="#service-research" title="LexClinic — 508(c)(1)(a) research alliance">
+          <img src="/assets/brand/lexclinic-logo.jpg" width="1024" height="1024" alt="LexClinic" loading="lazy" />
+        </a>
+        <span class="alliance-mark" title="DAO Universe">
+          <img src="/assets/brand/dao-universe-logo.jpg" width="934" height="1024" alt="DAO Universe" loading="lazy" />
+        </span>
+      </div>
     </div>
   </footer>
 
@@ -1578,7 +2387,7 @@
           feedAccount: DEFAULT_FEED_ACCOUNT,
           nodeAddress: DEFAULT_FEED_ACCOUNT,
           explorerNodeUrl: DEFAULT_EXPLORER,
-          contactHref: "mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry",
+          contactHref: "#consult",
           social: {},
           podcast: {
             spotifyUrl: "https://open.spotify.com/show/003jiO8jmRfAk3GrKPy8C7",
@@ -1614,18 +2423,17 @@
             feedAccount: DEFAULT_FEED_ACCOUNT,
             nodeAddress: DEFAULT_FEED_ACCOUNT,
             explorerNodeUrl: DEFAULT_EXPLORER,
-            contactHref: "mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry",
+            contactHref: "#consult",
             social: {},
             podcast: {},
           };
         }
 
         if (cfg.tagline) $("hero-tagline").textContent = cfg.tagline;
-        const contact = cfg.contactHref || "mailto:adbongorocks@gmail.com?subject=Consulting%20inquiry";
-        $("contact-nav").href = contact;
-        $("cta-contact").href = contact;
-        $("hero-cta").href = contact;
-        $("link-explorer").href = cfg.explorerNodeUrl || DEFAULT_EXPLORER;
+        const contact = cfg.contactHref || "#consult";
+        if ($("cta-contact")) $("cta-contact").href = contact;
+        if ($("hero-cta")) $("hero-cta").href = contact;
+        if ($("link-explorer")) $("link-explorer").href = cfg.explorerNodeUrl || DEFAULT_EXPLORER;
 
         var podcast = cfg.podcast || {};
         document.querySelectorAll(".spotify-podcast-link").forEach(function (el) {
@@ -1665,5 +2473,49 @@
       })();
     })();
   </script>
+
+  <script>
+    (function () {
+      const viewers = document.querySelectorAll(".folio-viewer[data-folio-id]");
+      if (!viewers.length) return;
+      fetch("/assets/folio/projects.json", { credentials: "same-origin" })
+        .then(function (r) { if (!r.ok) throw new Error("folio catalog missing"); return r.json(); })
+        .then(function (projects) {
+          const byId = {};
+          (projects || []).forEach(function (p) { byId[String(p.id)] = p; });
+          viewers.forEach(function (el) {
+            const id = el.getAttribute("data-folio-id");
+            const project = byId[id];
+            el.innerHTML = "";
+            if (!project || !project.images || !project.images.length) {
+              const p = document.createElement("p");
+              p.className = "folio-viewer-status";
+              p.textContent = "Images unavailable here — open the Behance link below.";
+              el.appendChild(p);
+              return;
+            }
+            const inner = document.createElement("div");
+            inner.className = "folio-viewer-inner";
+            project.images.forEach(function (src, i) {
+              const img = document.createElement("img");
+              img.src = src;
+              img.alt = (project.title || "Project") + " — slide " + (i + 1);
+              img.loading = i < 2 ? "eager" : "lazy";
+              img.decoding = "async";
+              img.referrerPolicy = "no-referrer";
+              inner.appendChild(img);
+            });
+            el.appendChild(inner);
+          });
+        })
+        .catch(function () {
+          viewers.forEach(function (el) {
+            el.innerHTML = '<p class="folio-viewer-status">Could not load gallery images. Use the Behance link below.</p>';
+          });
+        });
+    })();
+  </script>
+
+  <script async src="https://substack.com/embedjs/embed.js" charset="utf-8"></script>
 </body>
 </html>
