@@ -1,6 +1,6 @@
 # 📋 B.L.A.S.T. Task Plan
 
-## Status: 🟡 Awaiting Discovery Answers
+## Status: 🟢 Build in git; Discovery checklist still open on desktop BLAST files
 
 ---
 

@@ -7,22 +7,12 @@ Reads SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from .env
 import os
 import logging
 
+from runtime_env import load_local_env
+
 logger = logging.getLogger(__name__)
 
-# ── Load env ───────────────────────────────────────────────────────────────────
-def _load_env():
-    env_path = os.environ.get("ENV_PATH", r"C:\Users\Baba\Documents\antigravity\.env")
-    try:
-        with open(env_path) as f:
-            for line in f:
-                line = line.strip()
-                if "=" in line and not line.startswith("#"):
-                    k, v = line.split("=", 1)
-                    os.environ.setdefault(k.strip(), v.strip())
-    except FileNotFoundError:
-        pass
-
-_load_env()
+# Railway injects env vars; locally load ENV_PATH or the Codex master.env.
+load_local_env()
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 # Support both new naming (publishable/secret) and legacy (anon/service_role)

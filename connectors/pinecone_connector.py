@@ -12,26 +12,12 @@ Index: aragamago-brain (text-embedding-3-small, 1536 dims)
 import os
 import logging
 
+from runtime_env import load_local_env
+
 logger = logging.getLogger(__name__)
 
-# ── Load env ───────────────────────────────────────────────────────────────────
-def _load_env():
-    env = {}
-    env_path = os.environ.get("ENV_PATH", r"C:\Users\Baba\Documents\antigravity\.env")
-    try:
-        with open(env_path) as f:
-            for line in f:
-                line = line.strip()
-                if "=" in line and not line.startswith("#"):
-                    k, v = line.split("=", 1)
-                    env[k.strip()] = v.strip()
-    except FileNotFoundError:
-        pass
-    # Railway / Supabase injects env vars directly — os.environ takes priority
-    for k, v in env.items():
-        os.environ.setdefault(k, v)
-
-_load_env()
+# Railway injects env vars; locally load ENV_PATH or the Codex master.env.
+load_local_env()
 
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
 INDEX_NAME = os.environ.get("PINECONE_INDEX_NAME", "aragamago-brain")

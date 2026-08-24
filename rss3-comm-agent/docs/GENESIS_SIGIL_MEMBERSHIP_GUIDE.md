@@ -7,7 +7,7 @@ Maps **Genesis Sigil** (Optimism) → **Steward rights** → **Ifá initiation**
 **OpenSea (token #1):** https://opensea.io/item/optimism/0xf8f5b1fdda7925273baeafc359dd6b6cdf6c243d/1  
 **Contract (Optimism):** `0xf8f5b1fdda7925273baeafc359dd6b6cdf6c243d`
 
-**Related infra:** `../RAILWAY_URLS.md`, `../public/agents-upgrade.html`, `../../divine-cleric/agents/aragamago/bot.py`  
+**Related infra:** `../RAILWAY_URLS.md`, `../public/agents-upgrade.html`, `../../agents/aragamago/bot.py`  
 **Hats + traits + AI mimic (detailed):** [`HATS_TRAITS_AI_PROTOCOL_PLAN.md`](./HATS_TRAITS_AI_PROTOCOL_PLAN.md)
 
 ---
@@ -32,7 +32,7 @@ Maps **Genesis Sigil** (Optimism) → **Steward rights** → **Ifá initiation**
 | **Steward** | Holder of a Genesis Sigil — covenant role in Divine DAO / Temple of Roots ministry. |
 | **Ifá initiation** | Ministerial/spiritual **initiation track** (in person + covenant). Unlocks deeper ritual role and **Soul Pod** path. Not the same as “minting.” |
 | **Soul Pod** | Your **technical “soul”** asset — fused with a **body** NFT (e.g. African grey parrot series) to **awaken** agent tooling. |
-| **Aragamago** | Telegram bot (`divine-cleric`) — gated for initiated / awakened stewards. |
+| **Aragamago** | Telegram bot (`agents/aragamago/`) — gated for initiated / awakened stewards. |
 
 ---
 
@@ -227,7 +227,7 @@ Deploy tree on Optimism and bind to `agreement_version` trait — see **`HATS_TR
 [Optimism] Genesis Sigil 721 (×16 max)
       → Supabase stewards + tithe_status + ifa_initiations
       → Hats + CharmVerse (manual/API)
-      → Soul Pod fuse → Aragamago (divine-cleric)
+      → Soul Pod fuse → Aragamago (`agents/aragamago/`)
       → Maxayauwi (rss3-comm-agent) for Farcaster/RSS3 announces
 ```
 

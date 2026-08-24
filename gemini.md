@@ -37,11 +37,11 @@ Key directives include:
 
 ## Architectural Invariants
 
-1. **No code in `tools/` until Blueprint is approved.**
-2. **All API keys stored in `.env`, never hardcoded.**
-3. **All intermediate files go to `.tmp/`.**
-4. **Architecture SOPs updated before code changes.**
-5. **Data schema must be confirmed before any tool is built.**
+1. **Secrets live in env vars or `ENV_PATH`, never hardcoded and never committed.** Local default is Codex `master.env`; Windows Antigravity can set `ENV_PATH`.
+2. **Aragamago** is Python in `agents/aragamago/` (root `Dockerfile` / `railway.toml`). **Maxayauwi** is Node in `rss3-comm-agent/`.
+3. **No handling of seed phrases, private keys, or signing txs** (Watcher/Proposer only).
+4. **All intermediate files go to `.tmp/`.**
+5. **Do not treat `divine-cleric` as a separate GitHub repo** until one exists under `launchpad-PMA`.
 
 ---
 
@@ -50,3 +50,4 @@ Key directives include:
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-03-09 | Project initialized, constitution created | System Pilot |
+| 2026-08-14 | Recorded two git lineages; secrets via `runtime_env` / `ENV_PATH` | Cursor |
