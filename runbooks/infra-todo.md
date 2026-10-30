@@ -111,9 +111,20 @@ infra health — reachable from phone, Telegram, voice, and glasses, with backup
 
 ### Redundancy on your own computers
 
-- [ ] List the home machines (OS, always-on or not) that should act as nodes.
-- [ ] Private mesh between Railway, home nodes, and phone (e.g. Tailscale) — no open ports at home.
-- [ ] Run the same Docker image on a home node as a standby.
+| Device | Role | Failover order |
+|--------|------|----------------|
+| Railway | Primary: bot + JARVIS + comm agent | 1 |
+| Ubuntu desktop (likely `baba2-mainoffice`) | Always-on standby node: Docker copy of bot/JARVIS, nightly Supabase backup, local AI model fallback (e.g. Ollama) if cloud AI keys fail | 2 |
+| Windows PC laptop (`C:\Users\Baba`) | Main work machine (Cursor desktop). WSL2 + Docker standby only while awake | 3 |
+| Laptop (OS? — confirm) | Travel/dev machine; mesh member, no standby by default | — |
+| Galaxy S26 | Control surface: approvals, voice, notifications, hosts the Meta AI app for the glasses | — |
+| iPhone (old) | Keep as 2FA/recovery backup until the Galaxy move is confirmed; then wipe, or keep Wi-Fi-only for testing JARVIS on iOS | — |
+
+- [ ] Confirm the second laptop's OS and which machines stay on 24/7.
+- [ ] Install Tailscale (private mesh) on Ubuntu desktop, both laptops, and the Galaxy — no open ports at home.
+- [ ] Ubuntu desktop: Docker + the same image as Railway, set to start on boot, standby mode.
+- [ ] Remove hardcoded machine paths from code (`/home/baba2-mainoffice/...`, `C:\Users\Baba\...`) so the
+      same image runs anywhere; config comes from env vars only.
 - [ ] **Leader lock** in Supabase: only one copy polls Telegram at a time; the standby takes over when the
       primary's heartbeat stops. (Avoids `409 Conflict`.) Long term: switch Telegram to webhooks.
 - [ ] State in Supabase (single source of truth) + nightly backup to a home node.
