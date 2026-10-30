@@ -37,7 +37,11 @@ Visible to `gh` for `launchpad-PMA` but **not** mounted here:
 
 Not found as a GitHub repo under this org:
 
-- `divine-cleric` — mentioned in `README.md` and `rss3-comm-agent/RAILWAY_URLS.md` as the Aragamago home. **The live Aragamago source in this checkout is `agents/aragamago/`.** Treat `divine-cleric` as a stale pointer until you confirm a private repo.
+- `divine-cleric` — mentioned in `README.md` and `rss3-comm-agent/RAILWAY_URLS.md` as the Aragamago home. Likely under a personal account or another org, so not visible to this agent.
+
+This repo is primarily the **RSS3 / Maxayauwi** project (`rss3-comm-agent/`, most recent activity Aug 2026). `agents/aragamago/` is a **legacy copy** (last real change May 2026); Railway deployed the bot from here in April (PRs #4/#5), and it later moved to `divine-cleric`. Connect `divine-cleric` to the Cloud Agent environment to diagnose the current bot.
+
+Root `railway.toml` / `Dockerfile` still start the Python bot. If the Maxayauwi Railway service builds from the repo root instead of `rss3-comm-agent/`, it runs the Telegram poller, which never binds `PORT` — a likely cause of Maxayauwi's 502. `rss3-comm-agent/` also has no `package.json` in git.
 
 In-tree map:
 
