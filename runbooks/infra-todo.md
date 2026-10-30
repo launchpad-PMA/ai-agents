@@ -171,8 +171,13 @@ so it never reaches `www`. No CAA record blocks issuance.
 
 ## 6. Telegram bot fixes
 
-- [ ] Rotate the Telegram bot token in BotFather — the current one is printed in Railway logs.
-- [ ] Update `TELEGRAM_BOT_TOKEN` on the bot service only.
+- [x] Rotate the Telegram bot token in BotFather (done Oct 30; old token revoked).
+- [ ] Paste the **new** token into `TELEGRAM_BOT_TOKEN` on the bot service and click **Deploy** to apply.
+      As of 1:50 PM CDT Oct 30 Railway still had the revoked token → `InvalidToken` crash loop.
+- [ ] Remove `TELEGRAM_BOT_TOKEN` from the spare `ai-agents` service (it also holds the revoked token).
+- [ ] Master copy of every secret in a password manager; local copy in
+      `~/Documents/Obsidian Vault/Agents/Secrets/master.env` (outside git, `chmod 600`,
+      vault folder not synced anywhere public).
 - [ ] Stop logging the token: set the `httpx` logger to `WARNING` in `agents/aragamago/bot.py`.
 - [ ] Redeploy after PR #7 merges so `/health` answers (live deploy is `9d1b5f8`; public URL returns 502).
 - [ ] Replace `pinecone-client` with `pinecone` in `requirements.txt` ("Brain not available").
