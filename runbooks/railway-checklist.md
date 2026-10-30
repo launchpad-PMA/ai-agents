@@ -10,18 +10,8 @@ Paste the current local source of truth into Railway:
 python3 tools/export_railway_env.py
 ```
 
-Required values include:
-
-- `TELEGRAM_BOT_TOKEN`
-- `GEMINI_API_KEY`
-- `OPENROUTER_API_KEY`
-- `SUPABASE_URL`
-- `SUPABASE_PUBLISHABLE_KEY`
-- `SUPABASE_SECRET_KEY`
-- `PINECONE_API_KEY`
-- `PINECONE_HOST`
-- `PINECONE_INDEX_NAME`
-- `GOOGLE_SERVICE_ACCOUNT_JSON`
+The key list is section **2. ARAGAMAGO** of `.env.example` — don't maintain a copy here.
+Required: `TELEGRAM_BOT_TOKEN` plus at least one of `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`.
 
 ## 2. Confirm Bot Startup
 
