@@ -38,6 +38,9 @@ OPENROUTER_API_KEY = _get_env("OPENROUTER_API_KEY")
 OPENAI_API_KEY = _get_env("OPENAI_API_KEY")
 ELEVENLABS_API_KEY = _get_env("ELEVENLABS_API_KEY")
 ELEVENLABS_VOICE_ID = _get_env("ELEVENLABS_VOICE_ID") or "nPczCjzI2devNBz1zQrb"
+
+# Do not crash at import time. Railway needs the process to bind PORT and
+# answer /health even when Telegram credentials are missing so logs stay readable.
 AI_PROVIDER_ORDER = [
     provider.strip().lower()
     for provider in _get_env("AI_PROVIDER_ORDER").split(",")
@@ -46,10 +49,6 @@ AI_PROVIDER_ORDER = [
 OPENROUTER_MODEL = _get_env("OPENROUTER_MODEL") or _get_env("AI_MODEL") or "openai/gpt-4.1-mini"
 OPENAI_MODEL = _get_env("OPENAI_MODEL") or _get_env("AI_MODEL") or "gpt-4.1-mini"
 GEMINI_MODEL = _get_env("GEMINI_MODEL") or "gemini-2.0-flash"
-
-if not TELEGRAM_TOKEN:
-    raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
-
 
 def _read_prompt_file(path: Path) -> str:
     try:
@@ -677,9 +676,11 @@ async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
+    from agents.aragamago.health_server import start_health_server
+
     logger.info("🦜 Aragamago starting...")
     logger.info(
-        "Runtime config — Railway=%s ProviderOrder=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s",
+        "Runtime config — Railway=%s ProviderOrder=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s Telegram=%s",
         bool(os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_STATIC_URL")),
         ",".join(AI_PROVIDER_ORDER),
         bool(OPENROUTER_API_KEY),
@@ -687,7 +688,13 @@ def main():
         bool(GEMINI_API_KEY),
         bool(_get_env("GOOGLE_API_KEY")),
         bool(ELEVENLABS_API_KEY),
+        bool(TELEGRAM_TOKEN),
     )
+    if not TELEGRAM_TOKEN:
+        logger.error("TELEGRAM_BOT_TOKEN missing. Serving /health only; Telegram polling is off.")
+        start_health_server(block=True)
+        return
+    start_health_server()
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
