@@ -1,0 +1,6 @@
+
+# Filled secrets copies — never commit
+secrets.env
+*.secrets.env
+.env
+__pycache__/
