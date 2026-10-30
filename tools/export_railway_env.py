@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -42,7 +43,13 @@ def parse_env(path: Path) -> dict[str, str]:
 
 
 def main() -> int:
-    values = parse_env(Path(get_env_path()))
+    from agents.aragamago.rss3_tools import DEFAULT_RSS3_ENV_PATH
+
+    rss3_path = Path(os.environ.get("RSS3_ENV_PATH", DEFAULT_RSS3_ENV_PATH))
+    values = parse_env(rss3_path) if rss3_path.exists() else {}
+    bot_path = Path(get_env_path())
+    if bot_path.exists():
+        values.update(parse_env(bot_path))
     keys = template_keys()
 
     missing = []
