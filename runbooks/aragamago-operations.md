@@ -4,6 +4,8 @@ Checked Oct 31, 2026, 10:36 AM CT. This page is documentation. It does not chang
 
 PR #7 is merged. Aragamago is answering. Leave the current deployment in place until Baba approves a later change.
 
+Company and repo checklists live in the Google Tasks list named Master. This file is how to run the bot. It is not that master list. The existing 15 Google Task lists were left as they were. `/tasks` still reads `Projects list`.
+
 Merging this file onto `main` is not free. Railway rebuilds the bot on every push to `main`. That rebuild replaces the container that is answering now. Do not merge until that rebuild is an accepted step.
 
 ## 1. Known-good checkpoint, smoke tests, and rollback
