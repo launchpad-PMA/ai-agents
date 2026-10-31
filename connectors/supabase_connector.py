@@ -15,15 +15,31 @@ logger = logging.getLogger(__name__)
 
 load_local_env()
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-# Support both new naming (publishable/secret) and legacy (anon/service_role)
-SUPABASE_KEY = (
-    os.environ.get("SUPABASE_SECRET_KEY") or          # new name for service_role
-    os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or    # legacy
-    os.environ.get("SUPABASE_PUBLISHABLE_KEY") or     # new name for anon
-    os.environ.get("SUPABASE_ANON_KEY") or            # legacy
-    ""
-)
+def resolve_supabase_key(env: dict[str, str] | None = None) -> tuple[str, str]:
+    """Return (api_key, mode). Mode is "secret", "publishable", or "missing".
+
+    The database password is not used. The publishable key is enough when the
+    conversation_history policies allow the anon role. A secret key is optional.
+    """
+    source = os.environ if env is None else env
+    secret = source.get("SUPABASE_SECRET_KEY") or source.get("SUPABASE_SERVICE_ROLE_KEY") or ""
+    publishable = (
+        source.get("SUPABASE_PUBLISHABLE_KEY")
+        or source.get("SUPABASE_ANON_KEY")
+        or source.get("SUPABASE_KEY")
+        or ""
+    )
+    secret = secret.strip()
+    publishable = publishable.strip()
+    if secret and "your_" not in secret:
+        return secret, "secret"
+    if publishable and "your_" not in publishable:
+        return publishable, "publishable"
+    return "", "missing"
+
+
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip()
+SUPABASE_KEY, SUPABASE_KEY_MODE = resolve_supabase_key()
 
 def host_resolves(url: str) -> bool:
     host = urlparse(url).hostname or ""
@@ -54,7 +70,11 @@ elif not host_resolves(SUPABASE_URL):
 else:
     from supabase import create_client
     db = create_client(SUPABASE_URL, SUPABASE_KEY)
-    logger.info("Supabase connected — %s", _supabase_host(SUPABASE_URL))
+    logger.info(
+        "Supabase connected — %s (%s key, no database password)",
+        _supabase_host(SUPABASE_URL),
+        SUPABASE_KEY_MODE,
+    )
 
 
 # ── Generic helpers ────────────────────────────────────────────────────────────

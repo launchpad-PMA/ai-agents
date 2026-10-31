@@ -403,7 +403,14 @@ def get_recent_history(chat_id: str, limit: int = 5) -> str:
             return ""
         # Fetch last `limit` messages. Limit usually takes the first N, 
         # so if we want the actual most recent, we'd need to order by created_at DESC then reverse.
-        result = db.table("conversation_history").select("*").eq("chat_id", str(chat_id)).order("created_at", desc=True).limit(limit).execute()
+        result = (
+            db.table("conversation_history")
+            .select("role, content")
+            .eq("chat_id", str(chat_id))
+            .order("created_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
         history = result.data or []
         history.reverse() # Correct chronological order
         context_parts = []
