@@ -14,7 +14,7 @@ from pathlib import Path
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-from agents.aragamago.provider_keys import openrouter_model, resolve_provider_keys
+from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
 from runtime_env import clean_env_value, load_local_env
 
 # Locally load the canonical secrets file; on Railway rely on injected vars.
@@ -50,7 +50,7 @@ AI_PROVIDER_ORDER = [
     if provider.strip()
 ] or ["openrouter", "openai", "gemini"]
 OPENROUTER_MODEL = openrouter_model(_get_env("OPENROUTER_MODEL"), _get_env("AI_MODEL"))
-OPENAI_MODEL = _get_env("OPENAI_MODEL") or _get_env("AI_MODEL") or "gpt-4.1-mini"
+OPENAI_MODEL = direct_openai_model(_get_env("OPENAI_MODEL"), _get_env("AI_MODEL"))
 GEMINI_MODEL = _get_env("GEMINI_MODEL") or "gemini-2.0-flash"
 
 def _read_prompt_file(path: Path) -> str:

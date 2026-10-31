@@ -1,6 +1,6 @@
 import unittest
 
-from agents.aragamago.provider_keys import openrouter_model, resolve_provider_keys
+from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
 
 
 class ProviderKeyTests(unittest.TestCase):
@@ -19,9 +19,16 @@ class ProviderKeyTests(unittest.TestCase):
         self.assertEqual(router, "sk-or-v1-real")
         self.assertEqual(direct, "")
 
-    def test_default_model_is_the_original_openrouter_model(self):
-        self.assertEqual(openrouter_model("", ""), "google/gemini-2.5-flash")
-        self.assertEqual(openrouter_model("openai/gpt-4.1-mini", ""), "openai/gpt-4.1-mini")
+    def test_provider_name_is_not_sent_as_the_model(self):
+        self.assertEqual(openrouter_model("", "openrouter"), "openrouter/free")
+        self.assertEqual(openrouter_model("openrouter", ""), "openrouter/free")
+        self.assertEqual(openrouter_model("openrouter/free", "openrouter"), "openrouter/free")
+        self.assertEqual(openrouter_model("", "openai/gpt-4.1-mini"), "openai/gpt-4.1-mini")
+
+    def test_openai_model_ignores_openrouter_names(self):
+        self.assertEqual(direct_openai_model("", "openrouter"), "gpt-4.1-mini")
+        self.assertEqual(direct_openai_model("", "openrouter/free"), "gpt-4.1-mini")
+        self.assertEqual(direct_openai_model("gpt-4.1-mini", "openrouter"), "gpt-4.1-mini")
 
 
 if __name__ == "__main__":
