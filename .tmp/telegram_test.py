@@ -1,23 +1,23 @@
 """
 Aragamago — Telegram Bot Handshake Test
-Reads token from .env and calls getMe to verify the bot is reachable.
+Loads env via runtime_env (ENV_PATH or master.env) and calls getMe to verify the bot is reachable.
+Run from repo root: python3 .tmp/telegram_test.py
 """
-import urllib.request
 import json
+import os
+import sys
+import urllib.request
+from pathlib import Path
 
-env_path = r"C:\Users\Baba\Documents\antigravity\.env"
-token = None
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from runtime_env import load_local_env  # noqa: E402
 
-with open(env_path) as f:
-    for line in f:
-        line = line.strip()
-        if line.startswith("TELEGRAM_BOT_TOKEN="):
-            token = line.split("=", 1)[1]
-            break
+load_local_env()
+token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 
 if not token:
-    print("TELEGRAM_BOT_TOKEN not found in .env")
-    exit(1)
+    print("TELEGRAM_BOT_TOKEN not set (check ENV_PATH / master.env)")
+    sys.exit(1)
 
 url = f"https://api.telegram.org/bot{token}/getMe"
 

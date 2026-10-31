@@ -36,7 +36,7 @@ Rotate the Telegram bot token in BotFather, then update only the primary service
 3. Select the Aragamago bot.
 4. Copy the new token.
 5. Update `TELEGRAM_BOT_TOKEN` in Railway.
-6. Update `Secrets/master.env` locally.
+6. Update your one local copy (`Obsidian Vault/Agents/Secrets/master.env`, or whatever `ENV_PATH` points at).
 7. Redeploy Railway.
 
 This invalidates any hidden old poller immediately.

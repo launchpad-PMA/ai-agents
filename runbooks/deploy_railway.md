@@ -13,28 +13,9 @@ All the necessary configuration files (`Dockerfile`, `railway.toml`, `requiremen
 The bot needs its API keys to function. It will crash until these are provided.
 1. In your Railway project, click on the **Aragamago** service.
 2. Go to the **Variables** tab.
-3. Click **Raw Editor** or add them one by one. You need to add the following keys from your local `.env`:
-   - `TELEGRAM_BOT_TOKEN`
-   - `GEMINI_API_KEY`
-   - `OPENROUTER_API_KEY`
-   - `ELEVENLABS_API_KEY`
-   - `OPENAI_API_KEY`
-   - `SUPABASE_URL`
-   - `SUPABASE_PUBLISHABLE_KEY`
-   - `SUPABASE_SECRET_KEY`
-   - `PINECONE_API_KEY`
-   - `PINECONE_HOST`
-   - `PINECONE_INDEX_NAME`
-   - `GOOGLE_SERVICE_ACCOUNT_JSON`
-   - `GOOGLE_SHEET_ID`
-
-Optional, depending on features you want enabled:
-
-- `GOOGLE_SHEET_URL` if you prefer to store the full Google Sheets link instead of only the raw ID
-- `GOOGLE_TOKEN_JSON` for Google Tasks and Calendar access
-- `GOOGLE_CREDENTIALS_JSON` if you need to generate a fresh `GOOGLE_TOKEN_JSON`
-- `GOOGLE_CALENDAR_ID` if not using the default `primary` calendar
-- `ELEVENLABS_VOICE_ID` if you want a configurable voice ID later
+3. Click **Raw Editor** and paste the output of `python3 tools/export_railway_env.py`.
+   The key list lives in one place: section **2. ARAGAMAGO** of `.env.example`.
+   Only `TELEGRAM_BOT_TOKEN` and one AI key are required; the rest enable optional features.
 
 Notes:
 

@@ -14,6 +14,8 @@ from pathlib import Path
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from agents.aragamago.log_safety import silence_http_client_urls
+from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
 from runtime_env import clean_env_value, load_local_env
 
 # Locally load the canonical secrets file; on Railway rely on injected vars.
@@ -29,27 +31,28 @@ def _get_env(*names: str) -> str:
 
 
 def _has_direct_openai_key() -> bool:
-    return bool(OPENAI_API_KEY and not OPENAI_API_KEY.startswith("sk-or-"))
+    return bool(OPENAI_API_KEY)
 
 
 TELEGRAM_TOKEN = _get_env("TELEGRAM_BOT_TOKEN")
 GEMINI_API_KEY = _get_env("GEMINI_API_KEY", "GOOGLE_API_KEY")
-OPENROUTER_API_KEY = _get_env("OPENROUTER_API_KEY")
-OPENAI_API_KEY = _get_env("OPENAI_API_KEY")
+OPENROUTER_API_KEY, OPENAI_API_KEY = resolve_provider_keys(
+    _get_env("OPENROUTER_API_KEY"),
+    _get_env("OPENAI_API_KEY"),
+)
 ELEVENLABS_API_KEY = _get_env("ELEVENLABS_API_KEY")
 ELEVENLABS_VOICE_ID = _get_env("ELEVENLABS_VOICE_ID") or "nPczCjzI2devNBz1zQrb"
+
+# Do not crash at import time. Railway needs the process to bind PORT and
+# answer /health even when Telegram credentials are missing so logs stay readable.
 AI_PROVIDER_ORDER = [
     provider.strip().lower()
     for provider in _get_env("AI_PROVIDER_ORDER").split(",")
     if provider.strip()
 ] or ["openrouter", "openai", "gemini"]
-OPENROUTER_MODEL = _get_env("OPENROUTER_MODEL") or _get_env("AI_MODEL") or "openai/gpt-4.1-mini"
-OPENAI_MODEL = _get_env("OPENAI_MODEL") or _get_env("AI_MODEL") or "gpt-4.1-mini"
+OPENROUTER_MODEL = openrouter_model(_get_env("OPENROUTER_MODEL"), _get_env("AI_MODEL"))
+OPENAI_MODEL = direct_openai_model(_get_env("OPENAI_MODEL"), _get_env("AI_MODEL"))
 GEMINI_MODEL = _get_env("GEMINI_MODEL") or "gemini-2.0-flash"
-
-if not TELEGRAM_TOKEN:
-    raise ValueError("TELEGRAM_BOT_TOKEN missing from environment or .env")
-
 
 def _read_prompt_file(path: Path) -> str:
     try:
@@ -86,6 +89,7 @@ IMPORTANT: You have access to a long-term memory system. When Baba asks about pa
 SOUL = _build_system_prompt()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
+silence_http_client_urls()
 logger = logging.getLogger(__name__)
 
 # ── AI Reply Logic ─────────────────────────────────────────────────────────────
@@ -390,40 +394,14 @@ def save_to_memory(text: str, source: str = "telegram") -> bool:
         logger.error(f"Save memory error: {e}")
         return False
 
-def get_recent_history(chat_id: str, limit: int = 5) -> str:
-    try:
-        import sys
-        sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-        from connectors.supabase_connector import db
-        if not db:
-            return ""
-        # Fetch last `limit` messages. Limit usually takes the first N, 
-        # so if we want the actual most recent, we'd need to order by created_at DESC then reverse.
-        result = db.table("conversation_history").select("*").eq("chat_id", str(chat_id)).order("created_at", desc=True).limit(limit).execute()
-        history = result.data or []
-        history.reverse() # Correct chronological order
-        context_parts = []
-        for row in history:
-            role = row.get("role", "user")
-            content = row.get("content", "")
-            context_parts.append(f"{role.capitalize()}: {content}")
-        return "\n".join(context_parts)
-    except Exception as e:
-        logger.error(f"Error fetching conversation history: {e}")
-        return ""
+def get_recent_history(chat_id: str, limit: int = 6) -> str:
+    """Previous turns in this chat. Kept in the bot, not in Supabase."""
+    from agents.aragamago.chat_memory import recent
+    return recent(chat_id, limit=limit)
 
 def save_interaction(chat_id: str, role: str, content: str):
-    try:
-        import sys
-        sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-        from connectors.supabase_connector import insert
-        insert("conversation_history", {
-            "chat_id": str(chat_id),
-            "role": role,
-            "content": content
-        })
-    except Exception as e:
-        logger.error(f"Error saving to conversation history: {e}")
+    from agents.aragamago.chat_memory import remember
+    remember(chat_id, role, content)
 
 # ── Google integrations ────────────────────────────────────────────────────────
 try:
@@ -650,7 +628,11 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await status_msg.edit_text("🦜 I couldn't transcribe that voice note. Voice transcription currently depends on Gemini being configured.")
             return
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
-        reply_text = get_ai_reply(user_msg)
+        chat_id = str(update.effective_chat.id)
+        save_interaction(chat_id, "user", user_msg)
+        reply_text = get_ai_reply(user_msg, get_recent_history(chat_id))
+        if reply_text:
+            save_interaction(chat_id, "assistant", reply_text)
         if not reply_text:
             await status_msg.edit_text("🦜 AI not configured or not responding. Check OpenRouter/OpenAI first, then Gemini if you want voice and image support.")
             return
@@ -677,9 +659,11 @@ async def error_handler(update, context: ContextTypes.DEFAULT_TYPE):
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
+    from agents.aragamago.health_server import start_health_server
+
     logger.info("🦜 Aragamago starting...")
     logger.info(
-        "Runtime config — Railway=%s ProviderOrder=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s",
+        "Runtime config — Railway=%s ProviderOrder=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s Telegram=%s",
         bool(os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_STATIC_URL")),
         ",".join(AI_PROVIDER_ORDER),
         bool(OPENROUTER_API_KEY),
@@ -687,7 +671,13 @@ def main():
         bool(GEMINI_API_KEY),
         bool(_get_env("GOOGLE_API_KEY")),
         bool(ELEVENLABS_API_KEY),
+        bool(TELEGRAM_TOKEN),
     )
+    if not TELEGRAM_TOKEN:
+        logger.error("TELEGRAM_BOT_TOKEN missing. Serving /health only; Telegram polling is off.")
+        start_health_server(block=True)
+        return
+    start_health_server()
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
