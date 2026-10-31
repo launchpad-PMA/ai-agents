@@ -394,47 +394,14 @@ def save_to_memory(text: str, source: str = "telegram") -> bool:
         logger.error(f"Save memory error: {e}")
         return False
 
-def get_recent_history(chat_id: str, limit: int = 5) -> str:
-    try:
-        import sys
-        sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-        from connectors.supabase_connector import db
-        if not db:
-            return ""
-        # Fetch last `limit` messages. Limit usually takes the first N, 
-        # so if we want the actual most recent, we'd need to order by created_at DESC then reverse.
-        result = (
-            db.table("conversation_history")
-            .select("role, content")
-            .eq("chat_id", str(chat_id))
-            .order("created_at", desc=True)
-            .limit(limit)
-            .execute()
-        )
-        history = result.data or []
-        history.reverse() # Correct chronological order
-        context_parts = []
-        for row in history:
-            role = row.get("role", "user")
-            content = row.get("content", "")
-            context_parts.append(f"{role.capitalize()}: {content}")
-        return "\n".join(context_parts)
-    except Exception as e:
-        logger.error(f"Error fetching conversation history: {e}")
-        return ""
+def get_recent_history(chat_id: str, limit: int = 6) -> str:
+    """Previous turns in this chat. Kept in the bot, not in Supabase."""
+    from agents.aragamago.chat_memory import recent
+    return recent(chat_id, limit=limit)
 
 def save_interaction(chat_id: str, role: str, content: str):
-    try:
-        import sys
-        sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-        from connectors.supabase_connector import insert
-        insert("conversation_history", {
-            "chat_id": str(chat_id),
-            "role": role,
-            "content": content
-        })
-    except Exception as e:
-        logger.error(f"Error saving to conversation history: {e}")
+    from agents.aragamago.chat_memory import remember
+    remember(chat_id, role, content)
 
 # ── Google integrations ────────────────────────────────────────────────────────
 try:
@@ -661,7 +628,11 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await status_msg.edit_text("🦜 I couldn't transcribe that voice note. Voice transcription currently depends on Gemini being configured.")
             return
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
-        reply_text = get_ai_reply(user_msg)
+        chat_id = str(update.effective_chat.id)
+        save_interaction(chat_id, "user", user_msg)
+        reply_text = get_ai_reply(user_msg, get_recent_history(chat_id))
+        if reply_text:
+            save_interaction(chat_id, "assistant", reply_text)
         if not reply_text:
             await status_msg.edit_text("🦜 AI not configured or not responding. Check OpenRouter/OpenAI first, then Gemini if you want voice and image support.")
             return
