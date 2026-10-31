@@ -6,6 +6,8 @@ Reads SUPABASE_URL + SUPABASE_SECRET_KEY via runtime_env.load_local_env()
 
 import os
 import logging
+import socket
+from urllib.parse import urlparse
 
 from runtime_env import load_local_env
 
@@ -23,20 +25,42 @@ SUPABASE_KEY = (
     ""
 )
 
+def host_resolves(url: str) -> bool:
+    host = urlparse(url).hostname or ""
+    if not host:
+        return False
+    try:
+        socket.getaddrinfo(host, 443)
+        return True
+    except OSError:
+        return False
+
+
+def _supabase_host(url: str) -> str:
+    return urlparse(url).hostname or "missing-host"
+
+
 if not SUPABASE_URL or not SUPABASE_KEY or "your_" in SUPABASE_KEY:
-    logger.warning("⚠️  Supabase not configured — DB offline")
+    logger.warning("Supabase not configured — conversation history is off")
+    db = None
+elif not host_resolves(SUPABASE_URL):
+    logger.warning(
+        "Supabase host %s does not resolve. Conversation history is off. "
+        "The project is paused or deleted. Restore it in the Supabase dashboard, "
+        "or set SUPABASE_URL to a live project.",
+        _supabase_host(SUPABASE_URL),
+    )
     db = None
 else:
     from supabase import create_client
     db = create_client(SUPABASE_URL, SUPABASE_KEY)
-    logger.info(f"✅ Supabase connected — {SUPABASE_URL}")
+    logger.info("Supabase connected — %s", _supabase_host(SUPABASE_URL))
 
 
 # ── Generic helpers ────────────────────────────────────────────────────────────
 def insert(table: str, data: dict) -> dict | None:
     """Insert a row and return the inserted record."""
     if db is None:
-        logger.error("Supabase not connected")
         return None
     try:
         result = db.table(table).insert(data).execute()

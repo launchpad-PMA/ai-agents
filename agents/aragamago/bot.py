@@ -14,6 +14,7 @@ from pathlib import Path
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from agents.aragamago.log_safety import silence_http_client_urls
 from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
 from runtime_env import clean_env_value, load_local_env
 
@@ -88,6 +89,7 @@ IMPORTANT: You have access to a long-term memory system. When Baba asks about pa
 SOUL = _build_system_prompt()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(levelname)s — %(message)s")
+silence_http_client_urls()
 logger = logging.getLogger(__name__)
 
 # ── AI Reply Logic ─────────────────────────────────────────────────────────────
