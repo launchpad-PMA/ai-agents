@@ -1,7 +1,9 @@
 # Infra Todo
 
 Open work for Adbongo Group LLC: phone, GitHub, Railway, butler AI, domain, social, career.
-State as of Oct 30, 2026. Work top to bottom.
+State corrected Oct 31, 2026, 10:36 AM CT.
+
+PR #7 is merged and Aragamago is answering. Do not redeploy, rotate the Telegram token, rename the Railway service, or delete a service from this list. Those steps would replace the working bot. The checkpoint, smoke tests, rollback, and acceptance criteria are in `runbooks/aragamago-operations.md`.
 
 ## Where things live
 
@@ -10,9 +12,9 @@ State as of Oct 30, 2026. Work top to bottom.
 | Main phone | Galaxy S26 (Android) — replaces the old iPhone |
 | Glasses (coming) | Meta Ray-Ban Display |
 | Code | GitHub org `launchpad-PMA`: `ai-agents`, `daomaker`, `docs`, `templates` — **all public** |
-| Telegram bot (Aragamago) | Railway project `Root-Pool`, service `rss3-comm-agent` (misnamed) |
-| Duplicate bot | Railway service `ai-agents` — last deploy FAILED |
-| JARVIS voice PWA | Branch `cursor/jarvis-phase1-voice-prototype-ad5d` (PR #7), not deployed |
+| Telegram bot (Aragamago) | Railway project `Root-Pool`, service `aragamago-telegram`. Public host is still `rss3-comm-agent-production.up.railway.app`. One replica. Health was HTTP 200 at 10:36 AM CT Oct 31 |
+| Duplicate bot | Not visible in that project on Oct 31. Do not delete `aragamago-telegram` |
+| JARVIS voice PWA | In `jarvis/` on `main` after PR #7. Not the process Railway starts |
 | `www.adbongo.io` | Substack (behind Cloudflare) |
 | `adbongo.io` (bare) | GoDaddy domain forwarding — **HTTPS broken** |
 | `web3.adbongo.io` | Linode `172.232.129.170`, nginx — serves `rss3-comm-agent/public/index.html` |
@@ -38,8 +40,8 @@ State as of Oct 30, 2026. Work top to bottom.
 - [ ] Protect `main`: require a PR, block force-push. Railway auto-deploys from `main`, so every merge ships.
 - [ ] Turn on **Automatically delete head branches** (currently off).
 - [ ] Merge or close open PRs:
-  - [ ] #8 this todo list
-  - [ ] #7 JARVIS Phase 1 + bot `/health` server (needed before the bot redeploy in section 6)
+  - [x] #7 JARVIS Phase 1 + bot `/health` — merged 9:52 AM CT Oct 31 (`8d0b332`)
+  - [ ] #8 this todo list — documentation only. Merging it to `main` makes Railway rebuild the bot. See `aragamago-operations.md` before merging
   - [ ] #6 Antigravity/Codex reconcile (Aug 14 — likely stale; review and close)
 - [ ] Delete stale branches from closed/merged PRs: `cursor/debug-railway-deployment-healthcheck-failure-e4fc`,
       `cursor/distinguish-railway-agent-scope-from-vercel-deployment-e154`,
@@ -49,13 +51,13 @@ State as of Oct 30, 2026. Work top to bottom.
 
 ### Railway cleanup
 
-- [ ] Rename project `Root-Pool` → `launchpad-agents`.
-- [ ] Rename service `rss3-comm-agent` → `aragamago-telegram-bot` (renaming changes its `*.railway.internal` host).
-- [ ] Service `ai-agents`: remove `TELEGRAM_BOT_TOKEN` or delete it. Two pollers on one token = `409 Conflict`
-      (`telegram-409-recovery.md`).
-- [ ] One service = one job = one root directory. Bot: repo root. Future RSS3/comm agent: `rss3-comm-agent/`.
-- [ ] Add Railway deploy notifications (project webhook) → Telegram/phone, so failed deploys show up on the Galaxy.
-- [ ] Keep a project-scoped Railway token for Cloud Agents (read-only work); never paste it in chat or git.
+Do not rename or delete the working service. The bot that is answering is `aragamago-telegram` in project `Root-Pool`. Its public hostname still contains `rss3-comm-agent`. Renaming it changes hosts and forces a new deploy.
+
+- [ ] Leave `aragamago-telegram` running. A rename is a later, approved change, not part of this document.
+- [ ] If a second service with `TELEGRAM_BOT_TOKEN` ever shows up, remove that token. Two pollers on one token return `409 Conflict` (`telegram-409-recovery.md`). None was visible Oct 31.
+- [ ] One service = one job = one root directory. Bot: repo root. A future comm agent would be its own service with root `rss3-comm-agent/`, and it must not get the Telegram token.
+- [ ] Add Railway deploy notifications (project webhook) → phone, so a failed deploy shows up on the Galaxy.
+- [ ] Keep a project-scoped Railway token for Cloud Agents. Never paste it in chat or git.
 
 ---
 
@@ -97,13 +99,14 @@ infra health — reachable from phone, Telegram, voice, and glasses, with backup
 
 ### Rules
 
-- [ ] Reads are automatic; **every write/post/spend/delete needs an Approve tap** on phone or glasses.
-- [ ] Audit log of every action in Supabase.
-- [ ] Secrets live in Railway/host env and a password manager — never in git, chat, or the glasses app.
+- [ ] Reads are automatic. Every write, post, spend, or delete needs an Approve tap on the phone or glasses.
+- [ ] A chat reply must still go out when Supabase, Pinecone, and Obsidian are down (`aragamago-operations.md` section 4). Do not make the reply wait on a Supabase audit log.
+- [ ] Secrets live in Railway and a password manager. Never in git, chat, or the glasses app.
+- [ ] Paid model changes and OpenRouter credit purchases need Baba's explicit yes.
 
 ### Build order
 
-- [ ] Merge PR #7, deploy JARVIS behind its access code (one Railway service).
+- [x] Merge PR #7. The Telegram bot is the live service. The JARVIS PWA is not deployed.
 - [ ] Replace JARVIS mock tools with real ones: Google Calendar/Tasks/Gmail (read), Railway status, site health.
 - [ ] Morning briefing to Telegram + glasses: calendar, tasks, failed deploys, mentions.
 - [ ] Glasses Web App: briefing card, approve/reject buttons, "next meeting", quick capture.
@@ -125,9 +128,8 @@ infra health — reachable from phone, Telegram, voice, and glasses, with backup
 - [ ] Ubuntu desktop: Docker + the same image as Railway, set to start on boot, standby mode.
 - [ ] Remove hardcoded machine paths from code (`/home/baba2-mainoffice/...`, `C:\Users\Baba\...`) so the
       same image runs anywhere; config comes from env vars only.
-- [ ] **Leader lock** in Supabase: only one copy polls Telegram at a time; the standby takes over when the
-      primary's heartbeat stops. (Avoids `409 Conflict`.) Long term: switch Telegram to webhooks.
-- [ ] State in Supabase (single source of truth) + nightly backup to a home node.
+- [ ] One Telegram poller, without a Supabase lock. Today that means `numReplicas` 1 on `aragamago-telegram` and no local `bot.py`. A standby may exist only after it cannot poll until the primary has stopped. Chat must still answer if Supabase is down.
+- [ ] Nightly backup of secrets and the git commit, as in `aragamago-operations.md` section 8. The chat transcript is not in that backup yet.
 - [ ] External uptime check on `/health` → alert to phone.
 
 ---
@@ -171,29 +173,25 @@ so it never reaches `www`. No CAA record blocks issuance.
 
 ## 6. Telegram bot fixes
 
-- [x] Rotate the Telegram bot token in BotFather (done Oct 30; old token revoked).
-- [ ] Paste the **new** token into `TELEGRAM_BOT_TOKEN` on the bot service and click **Deploy** to apply.
-      As of 1:50 PM CDT Oct 30 Railway still had the revoked token → `InvalidToken` crash loop.
-- [ ] Remove `TELEGRAM_BOT_TOKEN` from the spare `ai-agents` service (it also holds the revoked token).
-- [ ] Master copy of every secret in a password manager; local copy in
-      `~/Documents/Obsidian Vault/Agents/Secrets/master.env` (outside git, `chmod 600`,
-      vault folder not synced anywhere public).
-- [ ] Stop logging the token: set the `httpx` logger to `WARNING` in `agents/aragamago/bot.py`.
-- [ ] Redeploy after PR #7 merges so `/health` answers (live deploy is `9d1b5f8`; public URL returns 502).
-- [ ] Replace `pinecone-client` with `pinecone` in `requirements.txt` ("Brain not available").
-- [ ] `OPENAI_API_KEY` holds an OpenRouter key (`sk-or-…`): add a real OpenAI key or drop `openai`
-      from `AI_PROVIDER_ORDER`.
+The Oct 30 crash-loop notes are historical. On Oct 31 the bot is answering and `/health` is HTTP 200. Do not paste a token or click Deploy from this section.
 
-## 7. RSS3 (checked Oct 30, 2026)
+- [x] PR #7 merged. `httpx` is at `WARNING`, and new logs redact `/bot<id>:<token>`.
+- [x] `/health` answers on `https://rss3-comm-agent-production.up.railway.app/health`.
+- [ ] Token rotation stays a separate approved step. Procedure: `aragamago-operations.md` section 6. Old logs from before the filter can still contain a token. Treat them as secrets.
+- [ ] Master copy of every secret in a password manager. Local copy in `master.env` outside git, mode `600`.
+- [ ] Pinecone still logs `Brain not available` because `requirements.txt` has `pinecone-client`. Chat does not need it. Change that package only in a later approved deploy.
+- [ ] `OPENAI_API_KEY` is an OpenRouter-shaped key, and the live provider order does not call OpenAI with it. Leave it until a paid-key change is approved.
 
-- RSS3 retired its VSL chain (Apr 24, 2026) and moved `$RSS3` to Ethereum (complete Apr 30);
-  `$POWER` converted 23:1. Source: `rss3.io/blog/the-next-stage-of-rss3.html`.
-- **No new Ethereum node to run.** DSL is being folded into RSSHub; `rss3-network/node` is still
-  v2.0.1 (Apr 2025). DSL operators' earned rewards are covered by an on-chain snapshot.
-- [ ] Claim migrated `$RSS3` at `rss3.io/migration` with the operator/staking wallet. Connect the
-      wallet only — never type a seed phrase into any site.
-- [ ] Keep node containers stopped. Don't delete the Linode — it serves `web3.adbongo.io`.
-- [ ] Remove `NODE_CONFIG_*`, `NODE_DATABASE_URL`, `RSS3_ACCESS_TOKEN` from the bot when `/rss3status` is retired.
+## 7. RSS3 (rechecked Oct 31, 2026)
+
+Public sources agree on the migration story. This check did not connect a wallet, did not claim tokens, and did not prove the Linode process is stopped. Details and the other infrastructure checks are in `aragamago-operations.md` section 9.
+
+- [The Next Stage of RSS3](https://rss3.io/blog/the-next-stage-of-rss3.html) says VSL hands over to Ethereum, DSL folds into RSSHub, `$POWER` converts at 23:1, and DSL operator rewards are covered by an on-chain snapshot.
+- [rss3.io/migration](https://rss3.io/migration/) says VSL assets have been migrated to Ethereum.
+- L2BEAT records the VSL halt on Apr 24, 2026. A third-party mirror quotes a completion post dated Apr 30, 2026.
+- [ ] Claim migrated `$RSS3` only from `rss3.io/migration`, and only when Baba chooses to. Connect the wallet. Never type a seed phrase into a site, and do not do it from this PR.
+- [ ] `web3.adbongo.io` answered HTTPS 200 from nginx on Oct 31 (DNS `172.232.129.170`). Do not delete that machine from this list.
+- [ ] Leave `NODE_*` and `RSS3_ACCESS_TOKEN` on the bot until `/rss3status` is retired in an approved change. Removing them is a production edit.
 
 ## 8. Comm agent on Railway (when needed)
 
