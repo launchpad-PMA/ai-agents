@@ -1,12 +1,12 @@
 # Aragamago operations
 
-Checked Oct 31, 2026, 10:36 AM CT. This page is documentation. It does not change Railway, tokens, DNS, or the running container.
+Checked Oct 31, 2026, 11:18 AM CT. This page is documentation. It does not change Railway, tokens, DNS, or the running container.
 
-PR #7 is merged. Aragamago is answering. Leave the current deployment in place until Baba approves a later change.
+PR #7, PR #9, and PR #8 are on `main`. Aragamago is answering. The running image is commit `968ddf2`.
 
 Company and repo checklists live in the Google Tasks list named Master. This file is how to run the bot. It is not that master list. The existing 15 Google Task lists were left as they were. `/tasks` still reads `Projects list`.
 
-Merging this file onto `main` is not free. Railway rebuilds the bot on every push to `main`. That rebuild replaces the container that is answering now. Do not merge until that rebuild is an accepted step.
+A change that only edits this file does not match the service watch paths, so merging it should not build a new image. See "Documentation does not redeploy" below. Do not merge this update until Baba says so. After it merges, the newest deployment should still be `adf62e8f-8c0f-4e87-9d35-0253cae92618`.
 
 ## 1. Known-good checkpoint, smoke tests, and rollback
 
@@ -14,21 +14,56 @@ Merging this file onto `main` is not free. Railway rebuilds the bot on every pus
 
 | Item | Value |
 |------|--------|
-| `main` | `8d0b3326f0ba6e797d8eff1f12a587b6d3d206bf` |
-| What that commit is | Merge of PR #7, 9:52 AM CT Oct 31, 2026 |
+| `main` | `968ddf25c554f461a618793612d128285430d447` |
+| What that commit is | Merge of PR #8, 10:57 AM CT Oct 31, 2026. It contains the PR #9 bot (`117125f`, 10:38 AM CT) and the PR #7 merge (`8d0b332`, 9:52 AM CT) |
 | Railway project | `Root-Pool` (`1b7ddd13-9d51-445b-8561-f338444f29b7`) |
 | Environment | `production` |
 | Service | `aragamago-telegram` (`1135865f-bd02-409b-a330-fefe4f59efc5`) |
 | Public URL | `https://rss3-comm-agent-production.up.railway.app/health` |
-| Running deployment | `9981cc0b-4daf-404d-af8f-32e9bb46bf37` |
-| Deployment created | 10:29 AM CT Oct 31, 2026, status `SUCCESS` |
-| How it was shipped | Railway CLI upload. It has no git commit attached. |
-| Process | Dockerfile, one replica, `python agents/aragamago/bot.py` |
-| Health at 10:36 AM CT | HTTP 200, `ok: true`, `telegram_configured: true`, `polling: true`, `mode: bot+health` |
+| Running deployment | `adf62e8f-8c0f-4e87-9d35-0253cae92618` |
+| Deployment created | 11:17 AM CT Oct 31, 2026, status `SUCCESS` |
+| Image | `sha256:52c1442ea30fb6a2706ac1d2c5b72229896bc8b4d18438502d2da153ed915f39` |
+| How it was shipped | Same commit and same image as `502d99e5`. Saving the service watch paths redeployed that image. It did not compile a different image |
+| Process | Dockerfile, one replica in `us-east4`, `python agents/aragamago/bot.py` |
+| Runtime config at start | `ProviderOrder=openrouter,gemini`. OpenRouter, Gemini, ElevenLabs, and Telegram are set. Direct OpenAI is off |
+| Health at 11:18 AM CT | HTTP 200, `ok: true`, `telegram_configured: true`, `polling: true`, `mode: bot+health` |
+| Handoff | One Telegram `409` at 11:17 AM CT. The logs after that do not show a second `409` |
 
-The CLI image is newer than `main`. It includes reply logging, direct Google Tasks and Calendar answers, and the ElevenLabs package from PR #9, which is not merged. Railway variables are separate from the image. They already include `OPENROUTER_MODEL=openrouter/free`, `AI_PROVIDER_ORDER=openrouter,gemini`, and `GEMINI_MODEL=gemini-3.5-flash`. A GitHub deploy of `main` keeps those variables and drops the unmerged code.
+Railway variables are separate from the image. The live names are `OPENROUTER_MODEL=openrouter/free`, `AI_PROVIDER_ORDER=openrouter,gemini`, and `GEMINI_MODEL=gemini-3.5-flash`. `AI_MODEL` is unset.
 
-Last GitHub deployment of PR #7, now removed because the CLI upload replaced it: `08b045a2-6a4f-4e77-9bfb-74ce27377320` on commit `8d0b332`.
+Same image, previous deployment, removed and still redeployable: `502d99e5-07ed-4f9b-822d-3e3a5b6de45f`. Created 10:57 AM CT, commit `968ddf2`, digest `sha256:52c1442ea30fb6a2706ac1d2c5b72229896bc8b4d18438502d2da153ed915f39`. `canRedeploy` and `canRollback` are both true.
+
+Previous different image, the PR #9 GitHub deploy: `7ddd8f0f-c396-4666-b2f9-65c9a74db5b4`. Created 10:38 AM CT, commit `117125f`, digest `sha256:ce5801440ecc1f4683f509a20b50eff2d7b1c1531ab746e7f3b125316a9b80a5`. Status `REMOVED`. `canRedeploy` and `canRollback` are both true.
+
+### Documentation does not redeploy
+
+Service `build.watchPatterns` on production, saved at 11:17 AM CT:
+
+- `/agents/**`
+- `/connectors/**`
+- `/requirements.txt`
+- `/Dockerfile`
+- `/railway.toml`
+- `/runtime_env.py`
+- `/tools/**`
+- `/.dockerignore`
+
+Railway creates a deployment only when a push to `main` changes one of those paths. These do not create one:
+
+- `runbooks/`
+- `TODO.md`
+- `tests/`
+- `docs/`
+- `jarvis/`
+- `rss3-comm-agent/`
+- `vercel.json`
+- other markdown
+
+`railway.toml` does not list watch patterns. The service setting is what skips creating a deployment. A deployment that has already started still reads `railway.toml` for the builder, Dockerfile path, start command, and restart policy. Those file values override the dashboard for that deployment only. Editing `railway.toml` matches a watch path, so that commit deploys once. Do not add watch patterns to `railway.toml` inside a documentation commit.
+
+Saving the service setting committed environment config, and Railway redeployed the current commit. That is why the running id changed from `502d99e5` to `adf62e8f` with the same image digest. A later markdown merge should not do that again.
+
+This file is the check. After Baba merges it, the deployment list should still show `adf62e8f` as the newest deployment. A newer row means the watch paths did not skip the push.
 
 ### Smoke tests
 
@@ -56,11 +91,13 @@ Live Telegram check, one person, after any future deploy:
 
 ### Rollback
 
-Do not roll back as part of this document.
+Do not roll back as part of this document. The ids below were queried read-only on Oct 31, 2026, 11:18 AM CT. `deploymentRedeploy` was not called. `railway deployment redeploy` with no id restarts the latest deployment and can cause another `409`. Do not use that command to reach an older id.
 
-1. Open the `aragamago-telegram` service in Railway. Use **Redeploy** on `9981cc0b-4daf-404d-af8f-32e9bb46bf37`. Do not deploy the latest GitHub commit.
-2. If that deployment cannot be redeployed, redeploy `08b045a2-6a4f-4e77-9bfb-74ce27377320` (PR #7 on `main`). Variables stay. Unmerged CLI-only code does not.
+1. To return to the image that is running now, redeploy `adf62e8f-8c0f-4e87-9d35-0253cae92618` from the Railway deployment page. The same image is also `502d99e5-07ed-4f9b-822d-3e3a5b6de45f`.
+2. To return to the PR #9 image from before the documentation merge, redeploy `7ddd8f0f-c396-4666-b2f9-65c9a74db5b4`. Variables stay. That digest is `sha256:ce5801440ecc1f4683f509a20b50eff2d7b1c1531ab746e7f3b125316a9b80a5`.
 3. Run the health check and the two Telegram messages before calling the rollback done.
+
+`adf62e8f`, `502d99e5`, and `7ddd8f0f` each reported `canRedeploy: true` and `canRollback: true`.
 
 ## 2. Telegram-to-OpenRouter tests
 
@@ -155,8 +192,8 @@ What exists today:
 
 | Data | Backup |
 |------|--------|
-| Code on `main` | Git, commit `8d0b332` |
-| Running image | Railway deployment `9981cc0b-4daf-404d-af8f-32e9bb46bf37` |
+| Code on `main` | Git, commit `968ddf2` |
+| Running image | Railway deployment `adf62e8f-8c0f-4e87-9d35-0253cae92618`, digest `sha256:52c1442ea30fb6a2706ac1d2c5b72229896bc8b4d18438502d2da153ed915f39` |
 | Railway variable names | `.env.example` section 2. Values stay in Railway, the password manager, and `master.env` |
 | Chat transcript | None. It lives in RAM and dies on restart |
 | Google Tasks and Calendar | Google's own account, not this repo |
@@ -180,8 +217,8 @@ Checked read-only on Oct 31, 2026. Nothing here was changed.
 
 | Claim | Result |
 |-------|--------|
-| PR #7 is on `main` | Confirmed. `8d0b332`, 9:52 AM CT |
-| Bot health URL responds | Confirmed. HTTP 200, polling true, 10:36 AM CT |
+| PR #7, PR #9, and PR #8 are on `main` | Confirmed. `8d0b332` at 9:52 AM CT, `117125f` at 10:38 AM CT, `968ddf2` at 10:57 AM CT |
+| Bot health URL responds | Confirmed. HTTP 200, polling true, 11:18 AM CT, after the watch-path redeploy |
 | Only one Railway service in this project | Confirmed earlier Oct 31. Service name is `aragamago-telegram`. The hostname still says `rss3-comm-agent-production`. No second service was visible to rename or delete |
 | `https://www.adbongo.io/` | HTTP 200, Cloudflare, Substack |
 | `http://adbongo.io/` | 301 to `https://adbongo.io/` |
@@ -197,17 +234,17 @@ This document passes when all of the following are true. The live bot already me
 
 | # | Check | How to measure | Oct 31 |
 |---|--------|----------------|--------|
-| 1 | Known-good deploy is recorded and still the one running | Deployment id `9981cc0b-4daf-404d-af8f-32e9bb46bf37` is `SUCCESS` and health is 200 | Pass |
-| 2 | Health smoke test | `curl` in section 1 returns `"polling": true` | Pass |
+| 1 | Known-good deploy is recorded and still the one running | Deployment id `adf62e8f-8c0f-4e87-9d35-0253cae92618` is `SUCCESS`, image digest matches `502d99e5`, and health is 200 | Pass at 11:18 AM CT |
+| 2 | Health smoke test | `curl` in section 1 returns `"polling": true` | Pass at 11:18 AM CT |
 | 3 | Offline unit tests | The four `unittest` modules in section 1 pass on `main` | Pass on the merged code. Not re-run for this doc edit |
-| 4 | Two live texts get replies | Second reply can use the first turn | Pass before the 10:29 AM CT image. Re-check after any future deploy |
+| 4 | Two live texts get replies | Second reply can use the first turn | Not re-sent after the 11:17 AM CT restart. A photo at 11:12 AM CT got HTTP 429 from OpenRouter and from Gemini and did not get a reply |
 | 5 | OpenRouter failure test exists and uses fakes | Section 2 table is implemented under `tests/` without live keys | Open |
 | 6 | Transcript survives a restart and holds more than 12 turns | Restart the service, ask it for a turn from before the restart | Open. Today it forgets on restart |
 | 7 | Supabase, Pinecone, and Obsidian can fail | Logs may warn. A text still gets a model reply | Pass for the merged chat path |
 | 8 | Free model and bounded retries | First request is `openrouter/free`. A 429 shows at most two retries, then Gemini. No paid slug | Pass for the live variables |
 | 9 | Paid use stays gated | No credit purchase and no paid model change without Baba's yes | Pass. This PR does not buy anything |
 | 10 | New logs hide the bot token | `tests.test_log_safety` and no `/bot<id>:<token>` in new lines | Pass in PR #7 code |
-| 11 | One poller | `numReplicas` is 1, and a `409` does not continue past the deploy handoff | Pass at 10:36 AM CT, after one handoff error |
+| 11 | One poller | `numReplicas` is 1, and a `409` does not continue past the deploy handoff | Pass at 11:18 AM CT. One handoff `409` at 11:17 AM CT, then none |
 | 12 | Galaxy and glasses are not pollers | No `bot.py` on the phone or glasses | Pass. They are not connected |
 | 13 | Restore path is written down | Section 8 names the deployment to redeploy and says the transcript is not in the backup | Pass as documentation |
 | 14 | Infrastructure claims match section 9 | Re-run the read-only checks. Bare `https://adbongo.io/` still fails TLS | Pass for the checks above |
