@@ -22,6 +22,7 @@ from agents.aragamago.image_reading import (
     image_provider_names,
 )
 from agents.aragamago.log_safety import silence_http_client_urls
+from agents.aragamago.voice_audio import elevenlabs_key_usable, telegram_voice_mime
 from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
 from runtime_env import clean_env_value, load_local_env
 
@@ -339,7 +340,10 @@ async def get_transcription(file_path: str) -> str:
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        audio_file = genai.upload_file(path=file_path)
+        audio_file = genai.upload_file(
+            path=file_path,
+            mime_type=telegram_voice_mime(file_path),
+        )
         model = genai.GenerativeModel(GEMINI_MODEL)
         response = model.generate_content([
             "Please transcribe this audio message.",
@@ -351,7 +355,9 @@ async def get_transcription(file_path: str) -> str:
         return ""
 
 def generate_voice(text: str) -> str:
-    if not ELEVENLABS_API_KEY or not text:
+    if not text or not elevenlabs_key_usable(ELEVENLABS_API_KEY):
+        if ELEVENLABS_API_KEY and not elevenlabs_key_usable(ELEVENLABS_API_KEY):
+            logger.error("ElevenLabs TTS error: stored value is a key id, not an sk_ API key")
         return None
     try:
         from elevenlabs.client import ElevenLabs
@@ -749,15 +755,24 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not reply_text:
             await status_msg.edit_text("🦜 AI not configured or not responding. Check OpenRouter/OpenAI first, then Gemini if you want voice and image support.")
             return
-        if ELEVENLABS_API_KEY:
+        if elevenlabs_key_usable(ELEVENLABS_API_KEY):
             await status_msg.edit_text("🦜 *Speaking...*", parse_mode="Markdown")
             audio_path = generate_voice(reply_text)
             if audio_path:
                 with open(audio_path, "rb") as voice_data:
-                    await update.message.reply_voice(voice=voice_data, caption=reply_text, parse_mode="Markdown")
+                    await update.message.reply_voice(voice=voice_data, caption=reply_text[:1000])
                 await status_msg.delete()
                 return
-        await status_msg.edit_text(reply_text, parse_mode="Markdown")
+            reply_text = (
+                f"{reply_text}\n\nI understood you. The ElevenLabs voice did not play. "
+                "Check the voice id and the account quota."
+            )
+        elif ELEVENLABS_API_KEY:
+            reply_text = (
+                f"{reply_text}\n\nI understood you. I could not speak with ElevenLabs. "
+                "The value in ELEVENLABS_API_KEY is a key id. The working key starts with sk_."
+            )
+        await status_msg.edit_text(reply_text[:4000])
     except Exception as e:
         logger.error(f"Voice handler error: {e}")
         await status_msg.edit_text("🦜 Something disrupted the signal.")
