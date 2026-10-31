@@ -14,6 +14,7 @@ from pathlib import Path
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from agents.aragamago.provider_keys import openrouter_model, resolve_provider_keys
 from runtime_env import clean_env_value, load_local_env
 
 # Locally load the canonical secrets file; on Railway rely on injected vars.
@@ -29,13 +30,15 @@ def _get_env(*names: str) -> str:
 
 
 def _has_direct_openai_key() -> bool:
-    return bool(OPENAI_API_KEY and not OPENAI_API_KEY.startswith("sk-or-"))
+    return bool(OPENAI_API_KEY)
 
 
 TELEGRAM_TOKEN = _get_env("TELEGRAM_BOT_TOKEN")
 GEMINI_API_KEY = _get_env("GEMINI_API_KEY", "GOOGLE_API_KEY")
-OPENROUTER_API_KEY = _get_env("OPENROUTER_API_KEY")
-OPENAI_API_KEY = _get_env("OPENAI_API_KEY")
+OPENROUTER_API_KEY, OPENAI_API_KEY = resolve_provider_keys(
+    _get_env("OPENROUTER_API_KEY"),
+    _get_env("OPENAI_API_KEY"),
+)
 ELEVENLABS_API_KEY = _get_env("ELEVENLABS_API_KEY")
 ELEVENLABS_VOICE_ID = _get_env("ELEVENLABS_VOICE_ID") or "nPczCjzI2devNBz1zQrb"
 
@@ -46,7 +49,7 @@ AI_PROVIDER_ORDER = [
     for provider in _get_env("AI_PROVIDER_ORDER").split(",")
     if provider.strip()
 ] or ["openrouter", "openai", "gemini"]
-OPENROUTER_MODEL = _get_env("OPENROUTER_MODEL") or _get_env("AI_MODEL") or "openai/gpt-4.1-mini"
+OPENROUTER_MODEL = openrouter_model(_get_env("OPENROUTER_MODEL"), _get_env("AI_MODEL"))
 OPENAI_MODEL = _get_env("OPENAI_MODEL") or _get_env("AI_MODEL") or "gpt-4.1-mini"
 GEMINI_MODEL = _get_env("GEMINI_MODEL") or "gemini-2.0-flash"
 
