@@ -327,15 +327,16 @@ async def get_transcription(file_path: str) -> str:
         return ""
 
 def generate_voice(text: str) -> str:
-    if not ELEVENLABS_API_KEY:
+    if not ELEVENLABS_API_KEY or not text:
         return None
     try:
         from elevenlabs.client import ElevenLabs
         client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
-        audio_generator = client.generate(
-            text=text,
-            voice=ELEVENLABS_VOICE_ID,
-            model="eleven_multilingual_v2"
+        audio_generator = client.text_to_speech.convert(
+            text=text[:2500],
+            voice_id=ELEVENLABS_VOICE_ID,
+            model_id="eleven_multilingual_v2",
+            output_format="mp3_44100_128",
         )
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_file:
             output_path = temp_file.name
@@ -344,7 +345,43 @@ def generate_voice(text: str) -> str:
                 f.write(chunk)
         return output_path
     except Exception as e:
-        logger.error(f"ElevenLabs TTS error: {e}")
+        logger.error("ElevenLabs TTS error: %s", e)
+        return None
+
+
+def log_outbound(user_name: str, reply: str) -> None:
+    """Railway log line for the bot's own reply, so it can be read without a paste."""
+    flat = " ".join((reply or "").split())
+    logger.info("Reply to %s: %s", user_name or "traveler", flat[:4000])
+
+
+def _voice_ready() -> bool:
+    if not ELEVENLABS_API_KEY:
+        return False
+    try:
+        import elevenlabs  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+def _tool_reply(user_msg: str):
+    from agents.aragamago.direct_answers import direct_answer
+
+    try:
+        tasks_fn = get_tasks
+        events_fn = get_upcoming_events
+    except NameError:
+        return None
+    try:
+        return direct_answer(
+            user_msg,
+            list_tasks=tasks_fn,
+            list_events=events_fn,
+            voice_ready=_voice_ready(),
+        )
+    except Exception as e:
+        logger.error("Tool reply error: %s", e)
         return None
 
 # ── Brain Memory ───────────────────────────────────────────────────────────────
@@ -594,7 +631,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     chat_id = str(update.effective_chat.id)
     save_interaction(chat_id, "user", user_msg)
-    
+
+    reply = _tool_reply(user_msg)
+    if reply:
+        save_interaction(chat_id, "assistant", reply)
+        log_outbound(user_name, reply)
+        await update.message.reply_text(reply)
+        return
+
     # Context combination
     context_text = search_memory(user_msg)
     recent_history = get_recent_history(chat_id, limit=5)
@@ -609,7 +653,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not reply:
         reply = _build_text_unavailable_message(user_name)
-    
+
+    log_outbound(user_name, reply)
     await update.message.reply_text(reply, parse_mode="Markdown")
 
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -630,9 +675,10 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
         chat_id = str(update.effective_chat.id)
         save_interaction(chat_id, "user", user_msg)
-        reply_text = get_ai_reply(user_msg, get_recent_history(chat_id))
+        reply_text = _tool_reply(user_msg) or get_ai_reply(user_msg, get_recent_history(chat_id))
         if reply_text:
             save_interaction(chat_id, "assistant", reply_text)
+            log_outbound(user_name, reply_text)
         if not reply_text:
             await status_msg.edit_text("🦜 AI not configured or not responding. Check OpenRouter/OpenAI first, then Gemini if you want voice and image support.")
             return
