@@ -6,6 +6,7 @@ Uses Google Gemini, Pinecone brain memory, Google Tasks & Sheets.
 
 import os
 import logging
+import threading
 import time
 import uuid
 import base64
@@ -463,6 +464,15 @@ def save_interaction(chat_id: str, role: str, content: str):
     from agents.aragamago.chat_memory import remember
     remember(chat_id, role, content)
 
+
+def _seed_brain():
+    """Index the BABA_SYSTEM map once. Failure leaves chat running."""
+    try:
+        from baba_system.pipeline import seed_system_map
+        seed_system_map(upsert_to_brain, query_brain)
+    except Exception as e:
+        logger.warning("Brain seed skipped: %s", e)
+
 # ── Google integrations ────────────────────────────────────────────────────────
 try:
     from agents.aragamago.google_tools import (
@@ -612,11 +622,39 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not reply:
             reply = _build_image_unavailable_message()
         log_outbound(user_name, reply)
-        await status_msg.edit_text(reply, parse_mode="Markdown")
+        await status_msg.edit_text(reply[:4000])
     except Exception as e:
         logger.error(f"Photo handler error: {e}")
         log_outbound(user_name, "Something disrupted the signal.")
         await status_msg.edit_text("🦜 Something disrupted the signal.")
+
+async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Store a raw file in the BABA_SYSTEM library and the Pinecone brain."""
+    user_name = update.effective_user.first_name or "traveler"
+    document = update.message.document
+    filename = document.file_name or "document"
+    caption = update.message.caption or ""
+    status_msg = await update.message.reply_text("🦜 Reading that into the library...")
+    try:
+        import io
+        from baba_system.pipeline import ingest_document, ingest_report
+
+        telegram_file = await document.get_file()
+        buffer = io.BytesIO()
+        await telegram_file.download_to_memory(buffer)
+        result = ingest_document(
+            filename,
+            buffer.getvalue(),
+            caption=caption,
+            upsert=upsert_to_brain,
+        )
+        reply = ingest_report(result)
+    except Exception as e:
+        logger.error("Document ingest error: %s", e)
+        reply = "I could not store that file. Send a .docx, .pdf, .md, or .txt file."
+    log_outbound(user_name, reply)
+    await status_msg.edit_text(reply[:4000])
+
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_msg = update.message.text
@@ -700,7 +738,11 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
         chat_id = str(update.effective_chat.id)
         save_interaction(chat_id, "user", user_msg)
-        reply_text = _tool_reply(user_msg) or get_ai_reply(user_msg, get_recent_history(chat_id))
+        context_text = search_memory(user_msg)
+        recent_history = get_recent_history(chat_id)
+        if recent_history:
+            context_text = f"--- RECENT CHAT HISTORY ---\n{recent_history}\n\n--- VECTOR MEMORY ---\n{context_text}"
+        reply_text = _tool_reply(user_msg) or get_ai_reply(user_msg, context_text)
         if reply_text:
             save_interaction(chat_id, "assistant", reply_text)
             log_outbound(user_name, reply_text)
@@ -749,6 +791,7 @@ def main():
         start_health_server(block=True)
         return
     start_health_server()
+    threading.Thread(target=_seed_brain, name="baba-system-seed", daemon=True).start()
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
@@ -759,6 +802,7 @@ def main():
     app.add_handler(CommandHandler("calendar", calendar_cmd))
     app.add_handler(CommandHandler("rss3status", rss3status_cmd))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+    app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     app.add_error_handler(error_handler)
