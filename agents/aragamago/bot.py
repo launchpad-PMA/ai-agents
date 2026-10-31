@@ -401,10 +401,7 @@ def get_recent_history(chat_id: str, limit: int = 6) -> str:
 
 def save_interaction(chat_id: str, role: str, content: str):
     from agents.aragamago.chat_memory import remember
-    from agents.aragamago.obsidian_brain import save_turn
-
     remember(chat_id, role, content)
-    save_turn(chat_id, role, content)
 
 # ── Google integrations ────────────────────────────────────────────────────────
 try:
