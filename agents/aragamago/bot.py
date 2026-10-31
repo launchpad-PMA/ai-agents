@@ -6,6 +6,7 @@ Uses Google Gemini, Pinecone brain memory, Google Tasks & Sheets.
 
 import os
 import logging
+import time
 import uuid
 import base64
 import tempfile
@@ -14,6 +15,11 @@ from pathlib import Path
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from agents.aragamago.image_reading import (
+    GEMINI_IMAGE_FALLBACK,
+    gemini_retry_wait_seconds,
+    image_provider_names,
+)
 from agents.aragamago.log_safety import silence_http_client_urls
 from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
 from runtime_env import clean_env_value, load_local_env
@@ -230,7 +236,7 @@ def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -
     return None
 
 def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
-    """Handle messages with images using the same provider fallback chain as text."""
+    """Read a photo with Gemini first. The free text pool is the fallback."""
     full_prompt = _build_full_prompt(context)
 
     providers = {
@@ -238,7 +244,7 @@ def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
         "openai": lambda: _chat_image_via_openai(full_prompt, user_message, image_bytes),
         "gemini": lambda: _chat_via_gemini_image(full_prompt, user_message, image_bytes),
     }
-    for provider in AI_PROVIDER_ORDER:
+    for provider in image_provider_names(AI_PROVIDER_ORDER):
         handler = providers.get(provider)
         if not handler:
             continue
@@ -252,25 +258,42 @@ def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
     return None
 
 
+def _gemini_image_once(model_name: str, full_prompt: str, user_message: str, image_bytes) -> str:
+    import google.generativeai as genai
+    from PIL import Image
+
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel(model_name)
+    image_bytes.seek(0)
+    image = Image.open(image_bytes)
+    response = model.generate_content([full_prompt, image, f"\n\nBaba says: {user_message}"])
+    return (response.text or "").strip()
+
+
 def _chat_via_gemini_image(full_prompt: str, user_message: str, image_bytes) -> str:
     if not GEMINI_API_KEY:
         return None
-    try:
-        import google.generativeai as genai
-        from PIL import Image
-
-        genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel(GEMINI_MODEL)
-
-        image_bytes.seek(0)
-        image = Image.open(image_bytes)
-        content_parts = [full_prompt, image, f"\n\nBaba says: {user_message}"]
-        response = model.generate_content(content_parts)
-
-        return response.text.strip()
-    except Exception as e:
-        logger.error("Gemini image error: %s", e)
-        return None
+    model_names = [GEMINI_MODEL]
+    if GEMINI_IMAGE_FALLBACK and GEMINI_IMAGE_FALLBACK != GEMINI_MODEL:
+        model_names.append(GEMINI_IMAGE_FALLBACK)
+    for index, model_name in enumerate(model_names):
+        allow_retry = index == 0
+        while True:
+            try:
+                reply = _gemini_image_once(model_name, full_prompt, user_message, image_bytes)
+                if reply:
+                    return reply
+                break
+            except Exception as e:
+                wait = gemini_retry_wait_seconds(str(e)) if allow_retry else None
+                if wait:
+                    logger.warning("Gemini image %s rate limited, retrying in %.1fs", model_name, wait)
+                    time.sleep(wait)
+                    allow_retry = False
+                    continue
+                logger.error("Gemini image error: %s", e)
+                break
+    return None
 
 
 def _build_text_unavailable_message(user_name: str) -> str:
@@ -588,9 +611,11 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         if not reply:
             reply = _build_image_unavailable_message()
+        log_outbound(user_name, reply)
         await status_msg.edit_text(reply, parse_mode="Markdown")
     except Exception as e:
         logger.error(f"Photo handler error: {e}")
+        log_outbound(user_name, "Something disrupted the signal.")
         await status_msg.edit_text("🦜 Something disrupted the signal.")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
