@@ -17,6 +17,8 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
+from agents.aragamago.talk_page import TALK_PATH, talk_page_html
+
 logger = logging.getLogger(__name__)
 
 HEALTH_PATHS = {"/", "/health", "/healthz"}
@@ -38,6 +40,9 @@ def health_payload(telegram_configured: bool | None = None) -> dict[str, Any]:
 class HealthHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0]
+        if path == TALK_PATH:
+            self._write_html(200, talk_page_html())
+            return
         if path not in HEALTH_PATHS:
             self._write(404, {"ok": False, "error": "not_found"})
             return
@@ -57,6 +62,14 @@ class HealthHandler(BaseHTTPRequestHandler):
         body = json.dumps(payload).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _write_html(self, code: int, page: str) -> None:
+        body = page.encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
