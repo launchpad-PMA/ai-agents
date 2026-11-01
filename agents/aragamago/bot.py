@@ -6,6 +6,7 @@ Uses Google Gemini, Pinecone brain memory, Google Tasks & Sheets.
 
 import os
 import logging
+import threading
 import time
 import uuid
 import base64
@@ -21,6 +22,7 @@ from agents.aragamago.image_reading import (
     image_provider_names,
 )
 from agents.aragamago.log_safety import silence_http_client_urls
+from agents.aragamago.voice_audio import elevenlabs_key_usable, telegram_voice_mime
 from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
 from runtime_env import clean_env_value, load_local_env
 
@@ -338,7 +340,10 @@ async def get_transcription(file_path: str) -> str:
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        audio_file = genai.upload_file(path=file_path)
+        audio_file = genai.upload_file(
+            path=file_path,
+            mime_type=telegram_voice_mime(file_path),
+        )
         model = genai.GenerativeModel(GEMINI_MODEL)
         response = model.generate_content([
             "Please transcribe this audio message.",
@@ -350,7 +355,9 @@ async def get_transcription(file_path: str) -> str:
         return ""
 
 def generate_voice(text: str) -> str:
-    if not ELEVENLABS_API_KEY or not text:
+    if not text or not elevenlabs_key_usable(ELEVENLABS_API_KEY):
+        if ELEVENLABS_API_KEY and not elevenlabs_key_usable(ELEVENLABS_API_KEY):
+            logger.error("ElevenLabs TTS error: stored value is a key id, not an sk_ API key")
         return None
     try:
         from elevenlabs.client import ElevenLabs
@@ -462,6 +469,15 @@ def get_recent_history(chat_id: str, limit: int = 6) -> str:
 def save_interaction(chat_id: str, role: str, content: str):
     from agents.aragamago.chat_memory import remember
     remember(chat_id, role, content)
+
+
+def _seed_brain():
+    """Index the BABA_SYSTEM map once. Failure leaves chat running."""
+    try:
+        from baba_system.pipeline import seed_system_map
+        seed_system_map(upsert_to_brain, query_brain)
+    except Exception as e:
+        logger.warning("Brain seed skipped: %s", e)
 
 # ── Google integrations ────────────────────────────────────────────────────────
 try:
@@ -612,11 +628,39 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not reply:
             reply = _build_image_unavailable_message()
         log_outbound(user_name, reply)
-        await status_msg.edit_text(reply, parse_mode="Markdown")
+        await status_msg.edit_text(reply[:4000])
     except Exception as e:
         logger.error(f"Photo handler error: {e}")
         log_outbound(user_name, "Something disrupted the signal.")
         await status_msg.edit_text("🦜 Something disrupted the signal.")
+
+async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Store a raw file in the BABA_SYSTEM library and the Pinecone brain."""
+    user_name = update.effective_user.first_name or "traveler"
+    document = update.message.document
+    filename = document.file_name or "document"
+    caption = update.message.caption or ""
+    status_msg = await update.message.reply_text("🦜 Reading that into the library...")
+    try:
+        import io
+        from baba_system.pipeline import ingest_document, ingest_report
+
+        telegram_file = await document.get_file()
+        buffer = io.BytesIO()
+        await telegram_file.download_to_memory(buffer)
+        result = ingest_document(
+            filename,
+            buffer.getvalue(),
+            caption=caption,
+            upsert=upsert_to_brain,
+        )
+        reply = ingest_report(result)
+    except Exception as e:
+        logger.error("Document ingest error: %s", e)
+        reply = "I could not store that file. Send a .docx, .pdf, .md, or .txt file."
+    log_outbound(user_name, reply)
+    await status_msg.edit_text(reply[:4000])
+
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_msg = update.message.text
@@ -700,22 +744,35 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
         chat_id = str(update.effective_chat.id)
         save_interaction(chat_id, "user", user_msg)
-        reply_text = _tool_reply(user_msg) or get_ai_reply(user_msg, get_recent_history(chat_id))
+        context_text = search_memory(user_msg)
+        recent_history = get_recent_history(chat_id)
+        if recent_history:
+            context_text = f"--- RECENT CHAT HISTORY ---\n{recent_history}\n\n--- VECTOR MEMORY ---\n{context_text}"
+        reply_text = _tool_reply(user_msg) or get_ai_reply(user_msg, context_text)
         if reply_text:
             save_interaction(chat_id, "assistant", reply_text)
             log_outbound(user_name, reply_text)
         if not reply_text:
             await status_msg.edit_text("🦜 AI not configured or not responding. Check OpenRouter/OpenAI first, then Gemini if you want voice and image support.")
             return
-        if ELEVENLABS_API_KEY:
+        if elevenlabs_key_usable(ELEVENLABS_API_KEY):
             await status_msg.edit_text("🦜 *Speaking...*", parse_mode="Markdown")
             audio_path = generate_voice(reply_text)
             if audio_path:
                 with open(audio_path, "rb") as voice_data:
-                    await update.message.reply_voice(voice=voice_data, caption=reply_text, parse_mode="Markdown")
+                    await update.message.reply_voice(voice=voice_data, caption=reply_text[:1000])
                 await status_msg.delete()
                 return
-        await status_msg.edit_text(reply_text, parse_mode="Markdown")
+            reply_text = (
+                f"{reply_text}\n\nI understood you. The ElevenLabs voice did not play. "
+                "Check the voice id and the account quota."
+            )
+        elif ELEVENLABS_API_KEY:
+            reply_text = (
+                f"{reply_text}\n\nI understood you. I could not speak with ElevenLabs. "
+                "The value in ELEVENLABS_API_KEY is a key id. The working key starts with sk_."
+            )
+        await status_msg.edit_text(reply_text[:4000])
     except Exception as e:
         logger.error(f"Voice handler error: {e}")
         await status_msg.edit_text("🦜 Something disrupted the signal.")
@@ -749,6 +806,7 @@ def main():
         start_health_server(block=True)
         return
     start_health_server()
+    threading.Thread(target=_seed_brain, name="baba-system-seed", daemon=True).start()
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
@@ -759,6 +817,7 @@ def main():
     app.add_handler(CommandHandler("calendar", calendar_cmd))
     app.add_handler(CommandHandler("rss3status", rss3status_cmd))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+    app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     app.add_error_handler(error_handler)
