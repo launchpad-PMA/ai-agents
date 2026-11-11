@@ -13,6 +13,12 @@ class ImageReadingTests(unittest.TestCase):
     def test_order_without_gemini_stays_put(self):
         self.assertEqual(image_provider_names(["openrouter"]), ["openrouter"])
 
+    def test_local_ollama_stays_first_for_photos(self):
+        self.assertEqual(
+            image_provider_names(["ollama", "gemini", "openrouter"]),
+            ["ollama", "gemini", "openrouter"],
+        )
+
     def test_retry_wait_uses_the_provider_hint(self):
         text = "429 Please retry in 9.210868863s"
         self.assertAlmostEqual(gemini_retry_wait_seconds(text), 9.710868863)

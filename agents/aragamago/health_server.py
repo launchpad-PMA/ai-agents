@@ -22,6 +22,12 @@ logger = logging.getLogger(__name__)
 HEALTH_PATHS = {"/", "/health", "/healthz"}
 
 
+def _local_status() -> dict[str, Any]:
+    from agents.aragamago.local_stack import stack_status
+
+    return stack_status()
+
+
 def health_payload(telegram_configured: bool | None = None) -> dict[str, Any]:
     if telegram_configured is None:
         telegram_configured = bool(os.environ.get("TELEGRAM_BOT_TOKEN", "").strip())
@@ -32,6 +38,7 @@ def health_payload(telegram_configured: bool | None = None) -> dict[str, Any]:
         "telegram_configured": telegram_configured,
         "polling": True,
         "mode": "health-only" if not telegram_configured else "bot+health",
+        "local": _local_status(),
     }
 
 

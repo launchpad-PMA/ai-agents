@@ -10,8 +10,10 @@ def image_provider_names(order):
     names = []
     for provider in order or []:
         provider = (provider or "").strip().lower()
-        if provider in ("gemini", "openrouter", "openai") and provider not in names:
+        if provider in ("gemini", "openrouter", "openai", "ollama") and provider not in names:
             names.append(provider)
+    if names and names[0] == "ollama":
+        return names
     if "gemini" in names:
         names.remove("gemini")
         names.insert(0, "gemini")
