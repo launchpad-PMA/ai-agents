@@ -28,7 +28,8 @@ All of this is free.
 | General model | `qwen3.6:27b` at temperature 0.3 and a 64K context |
 | Vision model | `qwen3.8:27b` |
 | Search model | `nomic-embed-text` |
-| Agent | Aragamago. It already has Telegram, Google tools, short chat memory, skills, and the local archive |
+| Chief of staff | Aragamago. Telegram, Google tools, short chat memory, skills, and its own archive folder |
+| Separate room | Maxayauwi. RSS3, Farcaster, and the public site. Its files and credentials stay there |
 
 On the home machine:
 
@@ -51,14 +52,28 @@ Railway is unchanged. The default provider order is still OpenRouter, then OpenA
 
 Hermes Agent is the framework named in the talk for memory, skills, tools, and schedules. Aragamago is the agent that already holds the Telegram token. Keep it that way. A second Hermes process on the same token causes Telegram 409s.
 
-## Layer 3. The knowledge
+## Where the rooms are going
 
-Two kinds of text.
+The talk showed one chief of staff and separate agents. Each agent had its own knowledge, its own credentials, and its own boundary. That shape is the example. His roster is not ours, and those names are not created here.
 
-The public library from the talk is [Project NOMAD](https://projectnomad.us): Wikipedia, medicine, survival, farming, repair, and maps, offline. Copy the text you want into the archive folder, or set `ARAGAMAGO_ARCHIVE` at the folder that already holds those exports.
+Ours today:
 
-The private archive is what only Baba has: notes, documents, and transcripts saved as `.md` or `.txt`. A message that starts with "remember that" or "save this" writes a note under `archive/inbox/` when `ARAGAMAGO_ARCHIVE` is set, and still sends a copy to Pinecone when that index is up. Chat turns are not written into the archive.
+| Room | What it holds |
+|------|----------------|
+| Aragamago | Chief of staff. Sacred library, tasks, calendar, Telegram |
+| Maxayauwi | Comm agent. RSS3 node, Farcaster, public site |
+
+A new room is added when Baba names it. It gets its own folder and its own credentials before it gets a prompt. The local models are shared infrastructure: every room may call Ollama on the house machine. Files and credentials do not cross.
+
+The library can live on the NAS, one directory per room:
+
+```text
+$ARAGAMAGO_ARCHIVE/aragamago/
+$ARAGAMAGO_ARCHIVE/maxayauwi/
+```
+
+Aragamago searches and writes only `aragamago/`. A note that starts with "remember that" or "save this" goes in that room's `inbox/`, and still updates Pinecone when the index is up. Chat turns are not written into the archive. If the archive has no room folders yet, notes stay in a single `inbox/` as before.
 
 Skills live in `agents/aragamago/skills/`. A skill is included on a turn when the message contains one of its trigger words.
 
-`/health` adds a `local` object: whether Ollama is configured, the three model names, and whether an archive folder is set. It does not print the folder path.
+`/health` adds a `local` object: whether Ollama is configured, the three model names, whether an archive folder is set, and the active room id. It does not print the folder path.

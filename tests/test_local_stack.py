@@ -13,11 +13,13 @@ from agents.aragamago.local_stack import (
     TEMPERATURE,
     VISION_MODEL,
     embed_text,
+    local_context,
     ollama_chat,
     relevant_skills,
     search_archive,
     write_archive_note,
 )
+from agents.aragamago.rooms import ROOMS, staff_directory
 
 
 class _Capture(BaseHTTPRequestHandler):
@@ -100,6 +102,38 @@ class LocalStackTests(unittest.TestCase):
         self.assertEqual(chat["options"]["temperature"], 0.3)
         self.assertEqual(chat["options"]["num_ctx"], 64000)
         self.assertFalse(chat["stream"])
+
+    def test_rooms_do_not_bleed_and_are_ours(self):
+        titles = [room.title for room in ROOMS]
+        self.assertEqual(titles, ["Aragamago", "Maxayauwi"])
+        directory = staff_directory()
+        self.assertIn("Chief of staff", directory)
+        self.assertIn("Maxayauwi", directory)
+        for borrowed in ("Freedom Farmers", "Enoch", "NOMAD", "Off-Grid"):
+            self.assertNotIn(borrowed, directory)
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "aragamago").mkdir()
+            (root / "maxayauwi").mkdir()
+            (root / "aragamago" / "dao.md").write_text(
+                "The Divine Dao is kept in the sacred library.",
+                encoding="utf-8",
+            )
+            (root / "maxayauwi" / "node.md").write_text(
+                "Maxayauwi keeps the RSS3 signer on its own service.",
+                encoding="utf-8",
+            )
+            link = root / "aragamago" / "leak.md"
+            link.symlink_to(root / "maxayauwi" / "node.md")
+            chief = search_archive("signer service", root=root, room="aragamago")
+            self.assertNotIn("signer", chief.lower())
+            comm = search_archive("signer service", root=root, room="maxayauwi")
+            self.assertIn("RSS3", comm)
+            library = search_archive("sacred library", root=root, room="aragamago")
+            self.assertIn("dao.md", library)
+            shown = local_context("which agents do we have")
+        self.assertIn("Aragamago", shown)
+        self.assertNotIn("Freedom Farmers", shown)
 
     def test_missing_server_is_a_skip(self):
         self.assertIsNone(ollama_chat("system", "user", base_url=""))

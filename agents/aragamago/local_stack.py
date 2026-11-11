@@ -1,10 +1,9 @@
 """Local AI stack for the home machine.
 
-Three layers, matching the Exit & Build local-AI talk:
+The machine runs the models. Ollama serves them. Knowledge is plain text Baba controls.
 
-1. The machine runs the models. A 27B model wants about 32 GB of graphics memory.
-2. Ollama serves the models. Aragamago is the agent: memory, skills, and tools.
-3. The knowledge is plain text in an archive folder Baba controls.
+Aragamago is the chief of staff. Maxayauwi is a separate room. A search for one
+room does not open the other room's files. The talk's agent list is not our roster.
 
 Railway stays on the cloud providers. Ollama is used only when OLLAMA_BASE_URL is set.
 """
@@ -18,6 +17,8 @@ import urllib.error
 import urllib.request
 from datetime import datetime
 from pathlib import Path
+
+from agents.aragamago.rooms import ROOM_IDS, staff_directory
 
 GENERAL_MODEL = "qwen3.6:27b"
 VISION_MODEL = "qwen3.8:27b"
@@ -66,6 +67,7 @@ def stack_status() -> dict[str, object]:
         "vision_model": vision_model(),
         "embed_model": embed_model(),
         "archive": archive_root() is not None,
+        "room": _active_room_id(),
     }
 
 
@@ -134,7 +136,10 @@ def write_archive_note(
     folder = root if root is not None else archive_root()
     if folder is None or not note:
         return False
-    inbox = Path(folder) / "inbox"
+    base = _knowledge_dir(Path(folder), None)
+    if base is None:
+        return False
+    inbox = base / "inbox"
     inbox.mkdir(parents=True, exist_ok=True)
     stamp = (now or datetime.now()).strftime("%Y%m%d%H%M%S")
     slug = re.sub(r"[^a-z0-9]+", "-", note.lower()).strip("-")[:40] or "note"
@@ -146,9 +151,12 @@ def write_archive_note(
     return True
 
 
-def search_archive(query: str, *, root: Path | None = None, limit: int = 3) -> str:
+def search_archive(query: str, *, root: Path | None = None, room: str | None = None, limit: int = 3) -> str:
     folder = root if root is not None else archive_root()
     if folder is None or not Path(folder).is_dir():
+        return ""
+    base = _knowledge_dir(Path(folder), room)
+    if base is None:
         return ""
     tokens = [
         token
@@ -158,10 +166,12 @@ def search_archive(query: str, *, root: Path | None = None, limit: int = 3) -> s
     if not tokens:
         return ""
     scored: list[tuple[int, str, str]] = []
-    for path in sorted(Path(folder).rglob("*")):
+    for path in sorted(base.rglob("*")):
         if not path.is_file() or path.suffix.lower() not in _TEXT_SUFFIXES:
             continue
         if path.name.startswith("."):
+            continue
+        if not _inside(base, path):
             continue
         try:
             if path.stat().st_size > 1_000_000:
@@ -199,8 +209,10 @@ def relevant_skills(message: str, *, folder: Path | None = None) -> str:
 
 
 def local_context(message: str) -> str:
-    """Skills plus archive passages for one turn. Empty when nothing matches."""
+    """Skills plus this room's archive. Other rooms' files stay out."""
     parts: list[str] = []
+    if re.search(r"\b(agents?|maxayauwi|delegate|rooms?)\b", message or "", re.IGNORECASE):
+        parts.append(f"--- ROOMS ---\n{staff_directory()}\n--- END ROOMS ---")
     skills = relevant_skills(message)
     if skills:
         parts.append(f"--- SKILLS ---\n{skills}\n--- END SKILLS ---")
@@ -208,6 +220,37 @@ def local_context(message: str) -> str:
     if archive:
         parts.append(f"--- LOCAL ARCHIVE ---\n{archive}\n--- END LOCAL ARCHIVE ---")
     return "\n\n".join(parts)
+
+
+def _active_room_id() -> str:
+    chosen = os.environ.get("ARAGAMAGO_ROOM", "").strip().lower() or "aragamago"
+    if chosen not in ROOM_IDS:
+        return "aragamago"
+    return chosen
+
+
+def _knowledge_dir(folder: Path, room: str | None) -> Path | None:
+    """Flat archive, or one room folder. Never a sibling room."""
+    if not folder.is_dir():
+        return None
+    present = [name for name in sorted(ROOM_IDS) if (folder / name).is_dir()]
+    if not present:
+        return folder
+    chosen = (room or _active_room_id()).strip().lower()
+    if chosen not in ROOM_IDS:
+        return None
+    target = folder / chosen
+    if not target.is_dir():
+        return None
+    return target
+
+
+def _inside(root: Path, path: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
 
 
 def _skill_triggers(raw: str) -> list[str]:
