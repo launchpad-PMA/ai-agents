@@ -83,6 +83,8 @@ class LocalStackTests(unittest.TestCase):
         twin = relevant_skills("ask John Bushe to post")
         self.assertIn("reserved and closed", twin)
         self.assertNotIn("reserved and closed", relevant_skills("what time is supper"))
+        dev = relevant_skills("have Cursor edit the code")
+        self.assertIn("Cursor's room", dev)
 
     def test_ollama_chat_sends_context_and_temperature(self):
         _Capture.seen = []
@@ -117,6 +119,7 @@ class LocalStackTests(unittest.TestCase):
             [
                 ("Aragamago", "active"),
                 ("Maxayauwi", "hold"),
+                ("Cursor", "development"),
                 ("Legal", "reserved"),
                 ("John Bushe", "reserved"),
                 ("Hall of Records", "reserved"),
@@ -124,7 +127,8 @@ class LocalStackTests(unittest.TestCase):
             ],
         )
         directory = staff_directory()
-        self.assertIn("Chief of staff", directory)
+        self.assertIn("Administrative cleric", directory)
+        self.assertIn("Development AI", directory)
         self.assertIn("On hold while RSS3 moves to Ethereum", directory)
         self.assertIn("No legal bot is built yet", directory)
         for borrowed in ("Freedom Farmers", "Enoch", "NOMAD", "Off-Grid"):
@@ -132,8 +136,13 @@ class LocalStackTests(unittest.TestCase):
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "aragamago").mkdir()
+            (root / "cursor").mkdir()
             (root / "maxayauwi").mkdir()
             (root / "hall-of-records").mkdir()
+            (root / "cursor" / "diff.md").write_text(
+                "Cursor keeps the repository diff in the development room.",
+                encoding="utf-8",
+            )
             (root / "aragamago" / "dao.md").write_text(
                 "The Divine Dao is kept in the sacred library.",
                 encoding="utf-8",
@@ -152,12 +161,14 @@ class LocalStackTests(unittest.TestCase):
             self.assertNotIn("signer", chief.lower())
             records = search_archive("elder teaching", root=root, room="aragamago")
             self.assertNotIn("elder", records.lower())
+            dev_notes = search_archive("repository diff", root=root, room="aragamago")
+            self.assertNotIn("diff", dev_notes.lower())
             comm = search_archive("signer service", root=root, room="maxayauwi")
             self.assertIn("RSS3", comm)
             library = search_archive("sacred library", root=root, room="aragamago")
             self.assertIn("dao.md", library)
             prior = os.environ.get("ARAGAMAGO_ROOM")
-            os.environ["ARAGAMAGO_ROOM"] = "legal"
+            os.environ["ARAGAMAGO_ROOM"] = "cursor"
             try:
                 self.assertEqual(_active_room_id(), "aragamago")
                 stayed = search_archive("sacred library", root=root)

@@ -58,21 +58,23 @@ The talk's shape is the one that is working: private, one chief of staff, and ot
 
 | Room | Status | What it is |
 |------|--------|------------|
-| Aragamago | Active | Chief of staff. The Jarvis. Sacred library, tasks, calendar, Telegram. This is the bot being built |
+| Aragamago | Active | Administrative cleric. Sacred library, tasks, calendar, Telegram. This is the bot being built |
+| Cursor | Development | Development AI for this repo. Separate from the cleric. The Telegram bot cannot open this room |
 | Maxayauwi | Hold | Comm agent for RSS3. Closed while RSS3 moves to Ethereum |
 | Legal | Reserved | A later bot. No prompt, no files, no credentials yet |
 | John Bushe | Reserved | AI twin for AdBongo social video and business. Not built. The chief does not speak as him |
 | Hall of Records | Reserved | Church library for elder knowledge. Records only. Not built |
 | Twins | Reserved | AI twins of important people, including elders. Apart from the hall of records. Not built |
 
-The `jarvis/` page is a phone surface for the chief. It is not a second agent and it does not poll Telegram.
+The `jarvis/` page is a phone surface for the cleric. It is not a second agent and it does not poll Telegram.
 
-The local models are shared infrastructure on the house machine. Files and credentials stay in the room. The chief can name a closed room. It cannot open that folder or speak as a twin. Pointing `ARAGAMAGO_ROOM` at a closed room does not open it.
+The local models are shared infrastructure on the house machine. Files and credentials stay in the room. The cleric can name another room. It cannot open that folder, speak as the twin, or edit the repo. Pointing `ARAGAMAGO_ROOM` at Cursor, or at a closed room, does not open it.
 
 The library can live on the NAS, one directory per room:
 
 ```text
 $ARAGAMAGO_ARCHIVE/aragamago/
+$ARAGAMAGO_ARCHIVE/cursor/
 $ARAGAMAGO_ARCHIVE/maxayauwi/
 $ARAGAMAGO_ARCHIVE/legal/
 $ARAGAMAGO_ARCHIVE/john-bushe/

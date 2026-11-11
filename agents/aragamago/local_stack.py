@@ -223,7 +223,7 @@ def local_context(message: str) -> str:
 
 
 def _active_room_id() -> str:
-    """The chief of staff stays the open room. Hold and reserved rooms stay closed."""
+    """The cleric stays the open room. Development, hold, and reserved rooms stay closed."""
     chosen = os.environ.get("ARAGAMAGO_ROOM", "").strip().lower()
     room = room_by_id(chosen) if chosen else None
     if room is not None and room.status == "active":

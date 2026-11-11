@@ -1,10 +1,9 @@
 """House rooms. The talk's agent list is the shape, not our roster.
 
-Aragamago is the chief of staff and the only active bot. Max stays closed
-while RSS3 moves to Ethereum. Legal, John Bushe, the hall of records, and
-the twins room are reserved. None of those bots are built yet.
-Each room has its own files and its own credentials. The chief can name
-another room. It does not read that room's files.
+Aragamago is the cleric and the only Telegram bot. Cursor is the development
+AI, in a separate room the cleric cannot open. Max stays closed while RSS3
+moves to Ethereum. Legal, John Bushe, the hall of records, and the twins
+room are reserved.
 """
 
 from __future__ import annotations
@@ -26,9 +25,9 @@ ROOMS: tuple[Room, ...] = (
         id="aragamago",
         title="Aragamago",
         role=(
-            "Chief of staff, the Jarvis for Baba. Sets priorities, delegates, "
-            "and reports back. Holds the sacred library, tasks, calendar, and "
-            "this Telegram conversation."
+            "Administrative cleric for the church. Keeps the sacred library, "
+            "tasks, calendar, and this Telegram desk. Reports back to Baba. "
+            "Does not speak as Baba and does not edit the code."
         ),
         status="active",
         credentials=(
@@ -48,6 +47,16 @@ ROOMS: tuple[Room, ...] = (
         ),
         status="hold",
         credentials=("NEYNAR_API_KEY", "NEYNAR_SIGNER_UUID", "YOUTUBE_API_KEY"),
+    ),
+    Room(
+        id="cursor",
+        title="Cursor",
+        role=(
+            "Development AI. Builds and changes this repo. Dev credentials stay "
+            "with Cursor and are not the house keys. The cleric does not open this room."
+        ),
+        status="development",
+        credentials=(),
     ),
     Room(
         id="legal",
@@ -109,7 +118,7 @@ def active_room() -> Room:
 def staff_directory() -> str:
     lines = [
         "Private rooms. Each has its own knowledge and its own credentials. "
-        "The chief of staff does not read another room's files.",
+        "The cleric does not read another room's files.",
     ]
     for room in ROOMS:
         lines.append(f"{room.title} ({room.status}): {room.role}")
