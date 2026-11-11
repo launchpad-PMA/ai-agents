@@ -1,7 +1,8 @@
 """House rooms. The talk's agent list is the shape, not our roster.
 
 Aragamago is the chief of staff and the only active bot. Max stays closed
-while RSS3 moves to Ethereum. Legal is a reserved room with no bot yet.
+while RSS3 moves to Ethereum. Legal, John Bushe, the hall of records, and
+the twins room are reserved. None of those bots are built yet.
 Each room has its own files and its own credentials. The chief can name
 another room. It does not read that room's files.
 """
@@ -52,6 +53,36 @@ ROOMS: tuple[Room, ...] = (
         id="legal",
         title="Legal",
         role="Reserved. No legal bot is built yet, and this room has no files and no credentials.",
+        status="reserved",
+        credentials=(),
+    ),
+    Room(
+        id="john-bushe",
+        title="John Bushe",
+        role=(
+            "Reserved AI twin for AdBongo. Social videos and business would live here later. "
+            "Not built. The chief does not speak as this twin."
+        ),
+        status="reserved",
+        credentials=(),
+    ),
+    Room(
+        id="hall-of-records",
+        title="Hall of Records",
+        role=(
+            "Reserved library for the church. Elder knowledge would be kept here as records. "
+            "Not built. A record is not a speaking twin."
+        ),
+        status="reserved",
+        credentials=(),
+    ),
+    Room(
+        id="twins",
+        title="Twins",
+        role=(
+            "Reserved room for AI twins of important people, including elders for the church. "
+            "Not built. Each twin stays in this room, apart from the hall of records."
+        ),
         status="reserved",
         credentials=(),
     ),

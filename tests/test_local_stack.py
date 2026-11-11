@@ -80,6 +80,9 @@ class LocalStackTests(unittest.TestCase):
             self.assertEqual(relevant_skills("what time is it", folder=folder), "")
         closed = relevant_skills("talk to the lawyer")
         self.assertIn("legal bot is not built yet", closed)
+        twin = relevant_skills("ask John Bushe to post")
+        self.assertIn("reserved and closed", twin)
+        self.assertNotIn("reserved and closed", relevant_skills("what time is supper"))
 
     def test_ollama_chat_sends_context_and_temperature(self):
         _Capture.seen = []
@@ -111,7 +114,14 @@ class LocalStackTests(unittest.TestCase):
         titles = [(room.title, room.status) for room in ROOMS]
         self.assertEqual(
             titles,
-            [("Aragamago", "active"), ("Maxayauwi", "hold"), ("Legal", "reserved")],
+            [
+                ("Aragamago", "active"),
+                ("Maxayauwi", "hold"),
+                ("Legal", "reserved"),
+                ("John Bushe", "reserved"),
+                ("Hall of Records", "reserved"),
+                ("Twins", "reserved"),
+            ],
         )
         directory = staff_directory()
         self.assertIn("Chief of staff", directory)
@@ -123,6 +133,7 @@ class LocalStackTests(unittest.TestCase):
             root = Path(tmp)
             (root / "aragamago").mkdir()
             (root / "maxayauwi").mkdir()
+            (root / "hall-of-records").mkdir()
             (root / "aragamago" / "dao.md").write_text(
                 "The Divine Dao is kept in the sacred library.",
                 encoding="utf-8",
@@ -131,10 +142,16 @@ class LocalStackTests(unittest.TestCase):
                 "Maxayauwi keeps the RSS3 signer on its own service.",
                 encoding="utf-8",
             )
+            (root / "hall-of-records" / "elder.md").write_text(
+                "The hall keeps one elder teaching under that elder's own name.",
+                encoding="utf-8",
+            )
             link = root / "aragamago" / "leak.md"
             link.symlink_to(root / "maxayauwi" / "node.md")
             chief = search_archive("signer service", root=root, room="aragamago")
             self.assertNotIn("signer", chief.lower())
+            records = search_archive("elder teaching", root=root, room="aragamago")
+            self.assertNotIn("elder", records.lower())
             comm = search_archive("signer service", root=root, room="maxayauwi")
             self.assertIn("RSS3", comm)
             library = search_archive("sacred library", root=root, room="aragamago")
