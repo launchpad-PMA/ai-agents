@@ -54,22 +54,24 @@ Hermes Agent is the framework named in the talk for memory, skills, tools, and s
 
 ## Where the rooms are going
 
-The talk showed one chief of staff and separate agents. Each agent had its own knowledge, its own credentials, and its own boundary. That shape is the example. His roster is not ours, and those names are not created here.
+The talk's shape is the one that is working: private, one chief of staff, and other agents that do not share files or credentials. His names are not our names.
 
-Ours today:
+| Room | Status | What it is |
+|------|--------|------------|
+| Aragamago | Active | Chief of staff. The Jarvis. Sacred library, tasks, calendar, Telegram. This is the bot being built |
+| Maxayauwi | Hold | Comm agent for RSS3. Closed while RSS3 moves to Ethereum |
+| Legal | Reserved | A later bot. No prompt, no files, no credentials yet |
 
-| Room | What it holds |
-|------|----------------|
-| Aragamago | Chief of staff. Sacred library, tasks, calendar, Telegram |
-| Maxayauwi | Comm agent. RSS3 node, Farcaster, public site |
+The `jarvis/` page is a phone surface for the chief. It is not a second agent and it does not poll Telegram.
 
-A new room is added when Baba names it. It gets its own folder and its own credentials before it gets a prompt. The local models are shared infrastructure: every room may call Ollama on the house machine. Files and credentials do not cross.
+The local models are shared infrastructure on the house machine. Files and credentials stay in the room. The chief can say that Max or Legal exists. It cannot open their folders. Pointing `ARAGAMAGO_ROOM` at a closed room does not open it.
 
 The library can live on the NAS, one directory per room:
 
 ```text
 $ARAGAMAGO_ARCHIVE/aragamago/
 $ARAGAMAGO_ARCHIVE/maxayauwi/
+$ARAGAMAGO_ARCHIVE/legal/
 ```
 
 Aragamago searches and writes only `aragamago/`. A note that starts with "remember that" or "save this" goes in that room's `inbox/`, and still updates Pinecone when the index is up. Chat turns are not written into the archive. If the archive has no room folders yet, notes stay in a single `inbox/` as before.

@@ -18,7 +18,7 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-from agents.aragamago.rooms import ROOM_IDS, staff_directory
+from agents.aragamago.rooms import ROOM_IDS, active_room, room_by_id, staff_directory
 
 GENERAL_MODEL = "qwen3.6:27b"
 VISION_MODEL = "qwen3.8:27b"
@@ -223,10 +223,12 @@ def local_context(message: str) -> str:
 
 
 def _active_room_id() -> str:
-    chosen = os.environ.get("ARAGAMAGO_ROOM", "").strip().lower() or "aragamago"
-    if chosen not in ROOM_IDS:
-        return "aragamago"
-    return chosen
+    """The chief of staff stays the open room. Hold and reserved rooms stay closed."""
+    chosen = os.environ.get("ARAGAMAGO_ROOM", "").strip().lower()
+    room = room_by_id(chosen) if chosen else None
+    if room is not None and room.status == "active":
+        return room.id
+    return active_room().id
 
 
 def _knowledge_dir(folder: Path, room: str | None) -> Path | None:

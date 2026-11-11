@@ -1,4 +1,5 @@
 import json
+import os
 import threading
 import unittest
 from datetime import datetime
@@ -18,6 +19,7 @@ from agents.aragamago.local_stack import (
     relevant_skills,
     search_archive,
     write_archive_note,
+    _active_room_id,
 )
 from agents.aragamago.rooms import ROOMS, staff_directory
 
@@ -76,6 +78,8 @@ class LocalStackTests(unittest.TestCase):
             )
             self.assertIn("Wait for approval", relevant_skills("please draft the letter", folder=folder))
             self.assertEqual(relevant_skills("what time is it", folder=folder), "")
+        closed = relevant_skills("talk to the lawyer")
+        self.assertIn("legal bot is not built yet", closed)
 
     def test_ollama_chat_sends_context_and_temperature(self):
         _Capture.seen = []
@@ -104,11 +108,15 @@ class LocalStackTests(unittest.TestCase):
         self.assertFalse(chat["stream"])
 
     def test_rooms_do_not_bleed_and_are_ours(self):
-        titles = [room.title for room in ROOMS]
-        self.assertEqual(titles, ["Aragamago", "Maxayauwi"])
+        titles = [(room.title, room.status) for room in ROOMS]
+        self.assertEqual(
+            titles,
+            [("Aragamago", "active"), ("Maxayauwi", "hold"), ("Legal", "reserved")],
+        )
         directory = staff_directory()
         self.assertIn("Chief of staff", directory)
-        self.assertIn("Maxayauwi", directory)
+        self.assertIn("On hold while RSS3 moves to Ethereum", directory)
+        self.assertIn("No legal bot is built yet", directory)
         for borrowed in ("Freedom Farmers", "Enoch", "NOMAD", "Off-Grid"):
             self.assertNotIn(borrowed, directory)
         with TemporaryDirectory() as tmp:
@@ -131,6 +139,17 @@ class LocalStackTests(unittest.TestCase):
             self.assertIn("RSS3", comm)
             library = search_archive("sacred library", root=root, room="aragamago")
             self.assertIn("dao.md", library)
+            prior = os.environ.get("ARAGAMAGO_ROOM")
+            os.environ["ARAGAMAGO_ROOM"] = "legal"
+            try:
+                self.assertEqual(_active_room_id(), "aragamago")
+                stayed = search_archive("sacred library", root=root)
+            finally:
+                if prior is None:
+                    os.environ.pop("ARAGAMAGO_ROOM", None)
+                else:
+                    os.environ["ARAGAMAGO_ROOM"] = prior
+            self.assertIn("dao.md", stayed)
             shown = local_context("which agents do we have")
         self.assertIn("Aragamago", shown)
         self.assertNotIn("Freedom Farmers", shown)
