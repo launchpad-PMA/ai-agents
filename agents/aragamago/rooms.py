@@ -73,7 +73,7 @@ ROOMS: tuple[Room, ...] = (
         role=(
             "Main bot. Baba's twin for AdBongo: voice, social video, and business. "
             "His brain is mapped inside this room by one archaeologist with five jobs: "
-            "collector, archivist, action, content, and review. "
+            "researcher, archivist, action, content, and review. The researcher scrapes. "
             "Sources, when built: Gmail, Google Drive, exported ChatGPT logs, Apple notes, and Obsidian. "
             "Not built. The cleric does not speak as him or read this room."
         ),
@@ -104,7 +104,11 @@ ROOMS: tuple[Room, ...] = (
 
 # Jobs inside the John Bushe room. They are not separate house rooms.
 ARCHAEOLOGIST: tuple[tuple[str, str], ...] = (
-    ("collector", "Imports Gmail, Google Drive, exported ChatGPT logs, Apple notes, and Obsidian. Originals stay where they are."),
+    (
+        "researcher",
+        "Scrapes Gmail, Google Drive, exported ChatGPT logs, Apple notes, Obsidian, and the NAS "
+        "onto the knowledge shelf. Originals stay where they are. This is not Hermes and not Max.",
+    ),
     (
         "archivist",
         "Cleans, classifies, and deduplicates into five collections. Originals are kept. Not one vault.",

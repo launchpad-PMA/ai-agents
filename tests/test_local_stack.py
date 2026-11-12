@@ -133,7 +133,7 @@ class LocalStackTests(unittest.TestCase):
         self.assertIn("No legal bot is built yet", directory)
         self.assertEqual(
             [name for name, _ in ARCHAEOLOGIST],
-            ["collector", "archivist", "action", "content", "review"],
+            ["researcher", "archivist", "action", "content", "review"],
         )
         self.assertTrue(all(name not in ROOM_IDS for name, _ in ARCHAEOLOGIST))
         self.assertEqual(
