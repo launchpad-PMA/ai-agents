@@ -62,7 +62,7 @@ The talk's shape is the one that is working: private, one chief of staff, and ot
 | Cursor | Development | Development AI for this repo. Separate from the cleric. The Telegram bot cannot open this room |
 | Maxayauwi | Hold | Comm agent for RSS3. Closed while RSS3 moves to Ethereum |
 | Legal | Reserved | A later bot. No prompt, no files, no credentials yet |
-| John Bushe | Reserved | AI twin for AdBongo social video and business. Not built. The chief does not speak as him |
+| John Bushe | Main | Baba's twin, and the main bot once his brain exists. Not built. One archaeologist inside the room: collector, archivist, action, content, review. Sources later: Gmail, Drive, ChatGPT exports, Apple notes, Obsidian |
 | Hall of Records | Reserved | Church library for elder knowledge. Records only. Not built |
 | Twins | Reserved | AI twins of important people, including elders. Apart from the hall of records. Not built |
 

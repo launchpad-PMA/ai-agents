@@ -2,8 +2,8 @@
 
 Aragamago is the cleric and the only Telegram bot. Cursor is the development
 AI, in a separate room the cleric cannot open. Max stays closed while RSS3
-moves to Ethereum. Legal, John Bushe, the hall of records, and the twins
-room are reserved.
+moves to Ethereum. John Bushe is the main bot, still unbuilt.
+Legal, the hall of records, and the twins room are reserved.
 """
 
 from __future__ import annotations
@@ -69,10 +69,13 @@ ROOMS: tuple[Room, ...] = (
         id="john-bushe",
         title="John Bushe",
         role=(
-            "Reserved AI twin for AdBongo. Social videos and business would live here later. "
-            "Not built. The chief does not speak as this twin."
+            "Main bot. Baba's twin for AdBongo: voice, social video, and business. "
+            "His brain is mapped inside this room by one archaeologist with five jobs: "
+            "collector, archivist, action, content, and review. "
+            "Sources, when built: Gmail, Google Drive, exported ChatGPT logs, Apple notes, and Obsidian. "
+            "Not built. The cleric does not speak as him or read this room."
         ),
-        status="reserved",
+        status="main",
         credentials=(),
     ),
     Room(
@@ -95,6 +98,15 @@ ROOMS: tuple[Room, ...] = (
         status="reserved",
         credentials=(),
     ),
+)
+
+# Jobs inside the John Bushe room. They are not separate house rooms.
+ARCHAEOLOGIST: tuple[tuple[str, str], ...] = (
+    ("collector", "Imports Gmail, Google Drive, exported ChatGPT logs, Apple notes, and Obsidian. Originals stay where they are."),
+    ("archivist", "Cleans, classifies, and deduplicates records. Originals are kept."),
+    ("action", "Extracts tasks, drops what is no longer relevant, and prepares a daily list."),
+    ("content", "Finds reusable ideas, writes drafts, and proposes a publishing calendar."),
+    ("review", "Flags confidential information, unsupported claims, and duplicates before anything leaves the room."),
 )
 
 ROOM_IDS = {room.id for room in ROOMS}

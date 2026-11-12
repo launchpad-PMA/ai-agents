@@ -21,7 +21,7 @@ from agents.aragamago.local_stack import (
     write_archive_note,
     _active_room_id,
 )
-from agents.aragamago.rooms import ROOMS, staff_directory
+from agents.aragamago.rooms import ARCHAEOLOGIST, ROOM_IDS, ROOMS, staff_directory
 
 
 class _Capture(BaseHTTPRequestHandler):
@@ -81,7 +81,7 @@ class LocalStackTests(unittest.TestCase):
         closed = relevant_skills("talk to the lawyer")
         self.assertIn("legal bot is not built yet", closed)
         twin = relevant_skills("ask John Bushe to post")
-        self.assertIn("reserved and closed", twin)
+        self.assertIn("not built yet", twin)
         self.assertNotIn("reserved and closed", relevant_skills("what time is supper"))
         dev = relevant_skills("have Cursor edit the code")
         self.assertIn("Cursor's room", dev)
@@ -121,7 +121,7 @@ class LocalStackTests(unittest.TestCase):
                 ("Maxayauwi", "hold"),
                 ("Cursor", "development"),
                 ("Legal", "reserved"),
-                ("John Bushe", "reserved"),
+                ("John Bushe", "main"),
                 ("Hall of Records", "reserved"),
                 ("Twins", "reserved"),
             ],
@@ -131,6 +131,11 @@ class LocalStackTests(unittest.TestCase):
         self.assertIn("Development AI", directory)
         self.assertIn("On hold while RSS3 moves to Ethereum", directory)
         self.assertIn("No legal bot is built yet", directory)
+        self.assertEqual(
+            [name for name, _ in ARCHAEOLOGIST],
+            ["collector", "archivist", "action", "content", "review"],
+        )
+        self.assertTrue(all(name not in ROOM_IDS for name, _ in ARCHAEOLOGIST))
         for borrowed in ("Freedom Farmers", "Enoch", "NOMAD", "Off-Grid"):
             self.assertNotIn(borrowed, directory)
         with TemporaryDirectory() as tmp:
