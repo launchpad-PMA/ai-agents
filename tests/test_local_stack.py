@@ -21,7 +21,7 @@ from agents.aragamago.local_stack import (
     write_archive_note,
     _active_room_id,
 )
-from agents.aragamago.rooms import ARCHAEOLOGIST, ROOM_IDS, ROOMS, staff_directory
+from agents.aragamago.rooms import ARCHAEOLOGIST, COLLECTIONS, ROOM_IDS, ROOMS, staff_directory
 
 
 class _Capture(BaseHTTPRequestHandler):
@@ -136,6 +136,11 @@ class LocalStackTests(unittest.TestCase):
             ["collector", "archivist", "action", "content", "review"],
         )
         self.assertTrue(all(name not in ROOM_IDS for name, _ in ARCHAEOLOGIST))
+        self.assertEqual(
+            [name for name, _ in COLLECTIONS],
+            ["action", "ideas", "content", "projects", "knowledge"],
+        )
+        self.assertTrue(all(name not in ROOM_IDS for name, _ in COLLECTIONS))
         for borrowed in ("Freedom Farmers", "Enoch", "NOMAD", "Off-Grid"):
             self.assertNotIn(borrowed, directory)
         with TemporaryDirectory() as tmp:

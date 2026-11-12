@@ -103,10 +103,27 @@ ROOMS: tuple[Room, ...] = (
 # Jobs inside the John Bushe room. They are not separate house rooms.
 ARCHAEOLOGIST: tuple[tuple[str, str], ...] = (
     ("collector", "Imports Gmail, Google Drive, exported ChatGPT logs, Apple notes, and Obsidian. Originals stay where they are."),
-    ("archivist", "Cleans, classifies, and deduplicates records. Originals are kept."),
+    (
+        "archivist",
+        "Cleans, classifies, and deduplicates into five collections. Originals are kept. Not one vault.",
+    ),
     ("action", "Extracts tasks, drops what is no longer relevant, and prepares a daily list."),
     ("content", "Finds reusable ideas, writes drafts, and proposes a publishing calendar."),
     ("review", "Flags confidential information, unsupported claims, and duplicates before anything leaves the room."),
+)
+
+# The archivist's shelves inside the John Bushe room. Not house rooms, and not one vault.
+COLLECTIONS: tuple[tuple[str, str], ...] = (
+    ("action", "Open tasks, promises, deadlines, follow-ups, and project milestones."),
+    ("ideas", "Business concepts, inventions, research, spiritual teachings, and strategic insights."),
+    ("content", "Article drafts, video scripts, podcast topics, and social material."),
+    ("projects", "AdBongo, Temple of Roots, LexClinic, the AI infrastructure, and other projects."),
+    (
+        "knowledge",
+        "Source conversations, emails, documents, research, and reference material. "
+        "Each record keeps its original source, date, project, and privacy. "
+        "This shelf is not the hall of records.",
+    ),
 )
 
 ROOM_IDS = {room.id for room in ROOMS}
