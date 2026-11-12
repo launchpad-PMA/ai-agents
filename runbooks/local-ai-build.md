@@ -60,11 +60,15 @@ The talk's shape is the one that is working: private, one chief of staff, and ot
 |------|--------|------------|
 | Aragamago | Active | Administrative cleric. Sacred library, tasks, calendar, Telegram. This is the bot being built |
 | Cursor | Development | Development AI for this repo. Separate from the cleric. The Telegram bot cannot open this room |
-| Maxayauwi | Hold | Comm agent for RSS3. Closed while RSS3 moves to Ethereum |
+| Maxayauwi | Hold | Publisher. Closed while RSS3 moves to Ethereum. Today he can cast text to Farcaster. A YouTube live check is announced there too. He does not upload video or post anywhere else |
 | Legal | Reserved | A later bot. No prompt, no files, no credentials yet |
 | John Bushe | Main | Baba's twin, and the main bot once his brain exists. Not built. One archaeologist inside the room: collector, archivist, action, content, review. The archivist keeps five shelves, not one vault: action, ideas, content, projects, knowledge. Each record keeps source, date, project, and privacy. The knowledge shelf is not the hall of records. Sources later: Gmail, Drive, ChatGPT exports, Apple notes, Obsidian |
 | Hall of Records | Reserved | Church library for elder knowledge. Records only. Not built |
 | Twins | Reserved | AI twins of important people, including elders. Apart from the hall of records. Not built |
+
+Hermes is the content studio inside John Bushe's room: discover, research, draft, verify. It is not a second Telegram bot. After Baba approves the exact text and the destination, the package for Max carries the text, media references, destination, scheduled time, and approval id. `rss3-comm-agent/publish_handoff.js` checks that package and turns it into the body Max's Farcaster route already accepts, `{ message }`. It does not post. Max returns a cast hash when Neynar has one. The current code has no public URL for that hash.
+
+n8n, Qdrant, and a SQLite receipt log are not in this repo. The cleric's long memory today is Pinecone. Obsidian and the NAS are sources and storage. The scheduler and the receipt file come later.
 
 The `jarvis/` page is a phone surface for the cleric. It is not a second agent and it does not poll Telegram.
 

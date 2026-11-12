@@ -42,8 +42,10 @@ ROOMS: tuple[Room, ...] = (
         id="maxayauwi",
         title="Maxayauwi",
         role=(
-            "Comm agent for the RSS3 node, Farcaster, and the public site. "
-            "On hold while RSS3 moves to Ethereum. Its credentials stay on that service."
+            "Publisher. On hold while RSS3 moves to Ethereum. "
+            "The only content post he can make today is a Farcaster cast through Neynar. "
+            "YouTube is a live check that he announces on Farcaster. He does not upload videos "
+            "or post to other social networks. Credentials stay on his service."
         ),
         status="hold",
         credentials=("NEYNAR_API_KEY", "NEYNAR_SIGNER_UUID", "YOUTUBE_API_KEY"),
@@ -108,7 +110,11 @@ ARCHAEOLOGIST: tuple[tuple[str, str], ...] = (
         "Cleans, classifies, and deduplicates into five collections. Originals are kept. Not one vault.",
     ),
     ("action", "Extracts tasks, drops what is no longer relevant, and prepares a daily list."),
-    ("content", "Finds reusable ideas, writes drafts, and proposes a publishing calendar."),
+    (
+        "content",
+        "Hermes content studio: discover, research, draft, and verify. "
+        "Drafts stay here until Baba approves. Max publishes. There is no second publisher.",
+    ),
     ("review", "Flags confidential information, unsupported claims, and duplicates before anything leaves the room."),
 )
 
