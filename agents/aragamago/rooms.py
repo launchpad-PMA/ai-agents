@@ -119,7 +119,12 @@ ARCHAEOLOGIST: tuple[tuple[str, str], ...] = (
         "Hermes content studio: discover, research, draft, and verify. "
         "Drafts stay here until Baba approves. Max publishes. There is no second publisher.",
     ),
-    ("review", "Flags confidential information, unsupported claims, and duplicates before anything leaves the room."),
+    (
+        "review",
+        "Flags confidential information, unsupported claims, and duplicates before anything leaves the room. "
+        "Gauges a draft as marketing, a membership perk, or a sale. The gauge recommends. "
+        "Max decides and is the only publisher.",
+    ),
 )
 
 # The archivist's shelves inside the John Bushe room. Not house rooms, and not one vault.
