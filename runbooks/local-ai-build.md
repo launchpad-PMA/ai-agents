@@ -18,6 +18,8 @@ Processor, 32 GB of DDR5-6000 memory, a 2 TB NVMe, motherboard, power supply, ca
 
 Power, solar, and the EcoFlow backup are house equipment. This repo does not change GPU power limits.
 
+The Archipelago desktop is the foundation stone. The models run there first. Other devices join that same brain later, each as its own source. A device does not become a second archive, and its files do not land in a room by themselves. Memory, disk, and the graphics card are recorded only from a reading on that desktop. This cloud machine is not it.
+
 ## Layer 2. The software
 
 All of this is free.
