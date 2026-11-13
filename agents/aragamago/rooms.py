@@ -73,9 +73,11 @@ ROOMS: tuple[Room, ...] = (
         role=(
             "Main bot. Baba's twin for AdBongo: voice, social video, and business. "
             "His brain is mapped inside this room by one archaeologist with five jobs: "
-            "researcher, archivist, action, content, and review. The researcher scrapes. "
-            "Sources, when built: Gmail, Google Drive, exported ChatGPT logs, Apple notes, and Obsidian. "
-            "Not built. The cleric does not speak as him or read this room."
+            "researcher, archivist, action, content, and review. "
+            "The researcher mines, digs, and scrapes Baba's notes, and scans business cards into the CRM book in this room. "
+            "Sources, when built: Gmail, Google Drive, exported ChatGPT logs, Apple notes, Obsidian, "
+            "handwritten pages, and business cards. "
+            "Not built. The cleric does not speak as him, scan his papers, or read this room."
         ),
         status="main",
         credentials=(),
@@ -106,8 +108,12 @@ ROOMS: tuple[Room, ...] = (
 ARCHAEOLOGIST: tuple[tuple[str, str], ...] = (
     (
         "researcher",
-        "Scrapes Gmail, Google Drive, exported ChatGPT logs, Apple notes, Obsidian, and the NAS "
-        "onto the knowledge shelf. Originals stay where they are. This is not Hermes and not Max.",
+        "Mines, digs, and scrapes Baba's notes: Apple notes, Obsidian, and handwritten pages. "
+        "A handwritten page is scanned or photographed, then read onto the knowledge shelf. "
+        "Scans business cards into the CRM book in this room. "
+        "Also scrapes Gmail, Google Drive, exported ChatGPT logs, and the NAS onto the knowledge shelf. "
+        "Originals stay where they are. The CRM book is not a sixth shelf and not a house room. "
+        "This is not Hermes and not Max.",
     ),
     (
         "archivist",
@@ -121,6 +127,9 @@ ARCHAEOLOGIST: tuple[tuple[str, str], ...] = (
     ),
     ("review", "Flags confidential information, unsupported claims, and duplicates before anything leaves the room."),
 )
+
+# Business book inside the John Bushe room. Not a sixth shelf and not a house room.
+CRM_BOOK = "crm"
 
 # The archivist's shelves inside the John Bushe room. Not house rooms, and not one vault.
 COLLECTIONS: tuple[tuple[str, str], ...] = (

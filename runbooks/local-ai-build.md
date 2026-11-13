@@ -64,13 +64,15 @@ The talk's shape is the one that is working: private, one chief of staff, and ot
 | Cursor | Development | Development AI for this repo. Separate from the cleric. The Telegram bot cannot open this room |
 | Maxayauwi | Hold | Publisher. Closed while RSS3 moves to Ethereum. Today he can cast text to Farcaster. A YouTube live check is announced there too. He does not upload video or post anywhere else |
 | Legal | Reserved | A later bot. No prompt, no files, no credentials yet |
-| John Bushe | Main | Baba's twin, and the main bot once his brain exists. Not built. One archaeologist inside the room: researcher, archivist, action, content, review. The researcher scrapes. The archivist keeps five shelves, not one vault: action, ideas, content, projects, knowledge. Each record keeps source, date, project, and privacy. The knowledge shelf is not the hall of records. Sources later: Gmail, Drive, ChatGPT exports, Apple notes, Obsidian |
+| John Bushe | Main | Baba's twin, and the main bot once his brain exists. Not built. One archaeologist inside the room: researcher, archivist, action, content, review. The researcher mines, digs, and scrapes Baba's notes, and scans business cards into the CRM book in this room. The archivist keeps five shelves, not one vault: action, ideas, content, projects, knowledge. Each record keeps source, date, project, and privacy. The knowledge shelf is not the hall of records. The CRM book is not a sixth shelf. Sources later: Gmail, Drive, ChatGPT exports, Apple notes, Obsidian, handwritten pages, and business cards |
 | Hall of Records | Reserved | Church library for elder knowledge. Records only. Not built |
 | Twins | Reserved | AI twins of important people, including elders. Apart from the hall of records. Not built |
 
 Hermes is the content studio inside John Bushe's room: discover, research, draft, verify. It is not a second Telegram bot. After Baba approves the exact text and the destination, the package for Max carries the text, media references, destination, scheduled time, and approval id. `rss3-comm-agent/publish_handoff.js` checks that package and turns it into the body Max's Farcaster route already accepts, `{ message }`. It does not post. Max returns a cast hash when Neynar has one. The current code has no public URL for that hash.
 
 n8n, Qdrant, and a SQLite receipt log are not in this repo. The cleric's long memory today is Pinecone. Obsidian and the NAS are sources and storage. The scheduler and the receipt file come later.
+
+Handwritten pages are photographed or scanned. The house vision model, `qwen3.8:27b`, reads the page onto John Bushe's knowledge shelf when that room is built. The paper stays where it is. A business card is scanned the same way, and the reading goes into `$ARAGAMAGO_ARCHIVE/john-bushe/crm/`. That book holds the person, organization, role, phone, email, scan date, project, and privacy. The card stays where it is. The cleric does not read either folder.
 
 The `jarvis/` page is a phone surface for the cleric. It is not a second agent and it does not poll Telegram.
 

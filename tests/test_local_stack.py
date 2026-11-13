@@ -21,7 +21,7 @@ from agents.aragamago.local_stack import (
     write_archive_note,
     _active_room_id,
 )
-from agents.aragamago.rooms import ARCHAEOLOGIST, COLLECTIONS, ROOM_IDS, ROOMS, staff_directory
+from agents.aragamago.rooms import ARCHAEOLOGIST, COLLECTIONS, CRM_BOOK, ROOM_IDS, ROOMS, staff_directory
 
 
 class _Capture(BaseHTTPRequestHandler):
@@ -82,6 +82,10 @@ class LocalStackTests(unittest.TestCase):
         self.assertIn("legal bot is not built yet", closed)
         twin = relevant_skills("ask John Bushe to post")
         self.assertIn("not built yet", twin)
+        notes = relevant_skills("scan my handwritten notes")
+        self.assertIn("knowledge shelf", notes)
+        cards = relevant_skills("scan this business card into the crm")
+        self.assertIn("CRM book", cards)
         self.assertNotIn("reserved and closed", relevant_skills("what time is supper"))
         dev = relevant_skills("have Cursor edit the code")
         self.assertIn("Cursor's room", dev)
@@ -136,6 +140,13 @@ class LocalStackTests(unittest.TestCase):
             ["researcher", "archivist", "action", "content", "review"],
         )
         self.assertTrue(all(name not in ROOM_IDS for name, _ in ARCHAEOLOGIST))
+        researcher = dict(ARCHAEOLOGIST)["researcher"]
+        self.assertIn("Mines, digs, and scrapes", researcher)
+        self.assertIn("handwritten", researcher)
+        self.assertIn("CRM", researcher)
+        self.assertNotIn(CRM_BOOK, ROOM_IDS)
+        self.assertNotIn(CRM_BOOK, {name for name, _ in COLLECTIONS})
+        self.assertIn("handwritten", staff_directory())
         self.assertEqual(
             [name for name, _ in COLLECTIONS],
             ["action", "ideas", "content", "projects", "knowledge"],
