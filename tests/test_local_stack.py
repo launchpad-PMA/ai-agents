@@ -140,6 +140,9 @@ class LocalStackTests(unittest.TestCase):
             ["researcher", "archivist", "action", "content", "review"],
         )
         self.assertTrue(all(name not in ROOM_IDS for name, _ in ARCHAEOLOGIST))
+        review = dict(ARCHAEOLOGIST)["review"]
+        self.assertIn("Gauges a draft", review)
+        self.assertIn("Max decides", review)
         researcher = dict(ARCHAEOLOGIST)["researcher"]
         self.assertIn("Mines, digs, and scrapes", researcher)
         self.assertIn("handwritten", researcher)

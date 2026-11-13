@@ -76,6 +76,14 @@ Handwritten pages are photographed or scanned. The house vision model, `qwen3.8:
 
 The `jarvis/` page is a phone surface for the cleric. It is not a second agent and it does not poll Telegram.
 
+## Member handout
+
+`rss3-comm-agent/drafts/sovereign-first-downloads/guide.html` is the illustrated download order for a member's own machine. Open that file in a browser. It is not under `public/`, so the site does not serve it.
+
+Download order: Linux Mint first on a new PC, Ollama first on a Mac, then the three models, then Obsidian. The apps are free and are not ours to sell. The teaching is the order, the model settings, and the rule that notes stay on their machine.
+
+Review gauges that draft with `rss3-comm-agent/offer_gauge.js`. A free official app comes back as marketing. The model settings come back as a membership perk, and the same teaching may be sold if the publisher chooses. Secrets, house files, and another teacher's prices are held. The gauge does not publish. Max still needs Baba's approval before a Farcaster cast. His decision sheet is `rss3-comm-agent/drafts/sovereign-first-downloads/OFFER.md`.
+
 The local models are shared infrastructure on the house machine. Files and credentials stay in the room. The cleric can name another room. It cannot open that folder, speak as the twin, or edit the repo. Pointing `ARAGAMAGO_ROOM` at Cursor, or at a closed room, does not open it.
 
 The library can live on the NAS, one directory per room:
