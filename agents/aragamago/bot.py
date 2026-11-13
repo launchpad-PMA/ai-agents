@@ -21,6 +21,7 @@ from agents.aragamago.image_reading import (
     gemini_retry_wait_seconds,
     image_provider_names,
 )
+from agents.aragamago.local_stack import local_context, ollama_base_url, ollama_chat, write_archive_note
 from agents.aragamago.log_safety import silence_http_client_urls
 from agents.aragamago.voice_audio import elevenlabs_key_usable, telegram_voice_mime
 from agents.aragamago.provider_keys import direct_openai_model, openrouter_model, resolve_provider_keys
@@ -138,6 +139,16 @@ def _chat_via_openai(full_prompt: str, user_message: str) -> str:
     return (response.choices[0].message.content or "").strip()
 
 
+def _chat_via_ollama(full_prompt: str, user_message: str) -> str:
+    return ollama_chat(full_prompt, user_message)
+
+
+def _chat_image_via_ollama(full_prompt: str, user_message: str, image_bytes) -> str:
+    image_bytes.seek(0)
+    image_b64 = base64.b64encode(image_bytes.read()).decode("utf-8")
+    return ollama_chat(full_prompt, user_message or "Describe this image.", images=[image_b64])
+
+
 def _chat_via_gemini(combined_prompt: str) -> str:
     if not GEMINI_API_KEY:
         return None
@@ -220,6 +231,7 @@ def get_ai_reply(user_message: str, context: str = "", image_path: str = None) -
     combined_prompt = f"{full_prompt}\n\nBaba says: {user_message}"
 
     providers = {
+        "ollama": lambda: _chat_via_ollama(full_prompt, user_message),
         "openrouter": lambda: _chat_via_openrouter(full_prompt, user_message),
         "openai": lambda: _chat_via_openai(full_prompt, user_message),
         "gemini": lambda: _chat_via_gemini(combined_prompt),
@@ -242,6 +254,7 @@ def get_ai_reply_image(user_message: str, context: str, image_bytes) -> str:
     full_prompt = _build_full_prompt(context)
 
     providers = {
+        "ollama": lambda: _chat_image_via_ollama(full_prompt, user_message, image_bytes),
         "openrouter": lambda: _chat_image_via_openrouter(full_prompt, user_message, image_bytes),
         "openai": lambda: _chat_image_via_openai(full_prompt, user_message, image_bytes),
         "gemini": lambda: _chat_via_gemini_image(full_prompt, user_message, image_bytes),
@@ -307,6 +320,11 @@ def _build_text_unavailable_message(user_name: str) -> str:
         "• `GEMINI_API_KEY` is present only if you still want Gemini as a fallback or for image/voice features\n"
         "• provider credits/quota are available\n"
         "• the service was redeployed after variable changes"
+        + (
+            "\n• `OLLAMA_BASE_URL` is reachable and `qwen3.6:27b` is pulled"
+            if ollama_base_url()
+            else ""
+        )
     )
 
 
@@ -446,8 +464,9 @@ def search_memory(query: str, top_k: int = 5) -> str:
         return ""
 
 def save_to_memory(text: str, source: str = "telegram") -> bool:
+    local_ok = write_archive_note(text, source=source)
     if upsert_to_brain is None:
-        return False
+        return local_ok
     try:
         doc_id = f"telegram_{uuid.uuid4().hex[:12]}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         metadata = {
@@ -456,10 +475,25 @@ def save_to_memory(text: str, source: str = "telegram") -> bool:
             "date": datetime.now().isoformat(),
             "user": "baba"
         }
-        return upsert_to_brain(doc_id, text, metadata)
+        return bool(upsert_to_brain(doc_id, text, metadata)) or local_ok
     except Exception as e:
         logger.error(f"Save memory error: {e}")
-        return False
+        return local_ok
+
+def _turn_context(user_msg: str, chat_id: str) -> str:
+    """Skills, the local archive, recent chat, then the Pinecone brain."""
+    parts = []
+    local = local_context(user_msg)
+    if local:
+        parts.append(local)
+    recent_history = get_recent_history(chat_id, limit=5)
+    if recent_history:
+        parts.append(f"--- RECENT CHAT HISTORY ---\n{recent_history}")
+    memory = search_memory(user_msg)
+    if memory:
+        parts.append(f"--- VECTOR MEMORY ---\n{memory}")
+    return "\n\n".join(parts)
+
 
 def get_recent_history(chat_id: str, limit: int = 6) -> str:
     """Previous turns in this chat. Kept in the bot, not in Supabase."""
@@ -708,14 +742,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(reply)
         return
 
-    # Context combination
-    context_text = search_memory(user_msg)
-    recent_history = get_recent_history(chat_id, limit=5)
-    
-    if recent_history:
-        context_text = f"--- RECENT CHAT HISTORY ---\n{recent_history}\n\n--- VECTOR MEMORY ---\n{context_text}"
-        
-    reply = get_ai_reply(user_msg, context_text)
+    reply = get_ai_reply(user_msg, _turn_context(user_msg, chat_id))
     
     if reply:
         save_interaction(chat_id, "assistant", reply)
@@ -744,11 +771,7 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await status_msg.edit_text(f"🦜 *Heard:* _{user_msg}_\n*Thinking...*", parse_mode="Markdown")
         chat_id = str(update.effective_chat.id)
         save_interaction(chat_id, "user", user_msg)
-        context_text = search_memory(user_msg)
-        recent_history = get_recent_history(chat_id)
-        if recent_history:
-            context_text = f"--- RECENT CHAT HISTORY ---\n{recent_history}\n\n--- VECTOR MEMORY ---\n{context_text}"
-        reply_text = _tool_reply(user_msg) or get_ai_reply(user_msg, context_text)
+        reply_text = _tool_reply(user_msg) or get_ai_reply(user_msg, _turn_context(user_msg, chat_id))
         if reply_text:
             save_interaction(chat_id, "assistant", reply_text)
             log_outbound(user_name, reply_text)
@@ -791,9 +814,10 @@ def main():
 
     logger.info("🦜 Aragamago starting...")
     logger.info(
-        "Runtime config — Railway=%s ProviderOrder=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s Telegram=%s",
+        "Runtime config — Railway=%s ProviderOrder=%s Ollama=%s OpenRouter=%s OpenAI=%s Gemini=%s GeminiAlias=%s ElevenLabs=%s Telegram=%s",
         bool(os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_STATIC_URL")),
         ",".join(AI_PROVIDER_ORDER),
+        bool(ollama_base_url()),
         bool(OPENROUTER_API_KEY),
         _has_direct_openai_key(),
         bool(GEMINI_API_KEY),

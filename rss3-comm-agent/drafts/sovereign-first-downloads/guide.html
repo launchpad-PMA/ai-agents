@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Download these first</title>
+  <style>
+    :root {
+      --paper: #f3eee4;
+      --ink: #1c1915;
+      --sage: #3f5344;
+      --sage-soft: #d7e0d4;
+      --line: #cfc6b6;
+      --red: #8c3a2f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Palatino, "Palatino Linotype", "Iowan Old Style", Georgia, serif;
+      line-height: 1.5;
+    }
+    main {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0.35rem 0 0.9rem;
+      background: #efe8da;
+    }
+    h1, h2 { font-weight: 600; letter-spacing: 0; line-height: 1.15; }
+    h1 { font-size: 2.6rem; margin: 1rem 0 0.4rem; }
+    h2 { font-size: 1.7rem; margin: 0; }
+    p { margin: 0.7rem 0; }
+    a { color: var(--sage); }
+    .kicker {
+      margin: 0;
+      color: var(--sage);
+      font-family: "Gill Sans", "Trebuchet MS", sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .plate { margin: 0 0 2.6rem; }
+    .step {
+      display: flex;
+      gap: 0.9rem;
+      align-items: baseline;
+      margin-bottom: 0.8rem;
+    }
+    .num {
+      flex: 0 0 auto;
+      width: 1.8rem;
+      height: 1.8rem;
+      border-radius: 50%;
+      background: var(--sage);
+      color: var(--paper);
+      font-family: "Gill Sans", "Trebuchet MS", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.8rem;
+      text-align: center;
+    }
+    .call {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 0.9rem 0;
+      margin: 1.2rem 0 2rem;
+    }
+    .call p { margin: 0.35rem 0; }
+    .call strong { font-weight: 600; }
+    pre {
+      background: #e7e1d4;
+      padding: 0.85rem 1rem;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin-top: 0.7rem;
+      font-family: "Gill Sans", "Trebuchet MS", sans-serif;
+      font-size: 0.92rem;
+    }
+    .legend span { display: block; color: var(--red); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .download {
+      display: inline-block;
+      margin-top: 0.4rem;
+      padding: 0.45rem 0.8rem;
+      background: var(--sage);
+      color: var(--paper);
+      text-decoration: none;
+      font-family: "Gill Sans", "Trebuchet MS", sans-serif;
+      font-size: 0.95rem;
+    }
+    footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--sage);
+      font-size: 0.95rem;
+    }
+    @media print {
+      body { background: white; }
+      main { max-width: none; padding: 0; }
+      .plate { break-inside: avoid; page-break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article class="plate">
+      <p class="kicker">Temple of Roots · Sovereign AI</p>
+      <img src="assets/sovereign-cover.jpg" alt="An African grey parrot on a closed laptop, with mint, three jars, and a closed notebook." />
+      <h1>Download these first</h1>
+      <p>Four steps. Your machine. Your notes. The familiar can teach the order. He does not keep your papers.</p>
+      <div class="call">
+        <p><strong>Mac, or a computer that already runs:</strong> download Ollama first. Skip Linux Mint.</p>
+        <p><strong>New PC:</strong> download Linux Mint first, install it, then Ollama.</p>
+      </div>
+    </article>
+
+    <article class="plate" id="mint">
+      <div class="step"><div class="num">1</div><h2>Linux Mint</h2></div>
+      <img src="assets/sovereign-mint.jpg" alt="A parrot on a monitor, a sprig of mint on the keyboard, and a USB stick." />
+      <p>This is the system for a new PC. Download the current Cinnamon edition and write it to a USB before any other app. A Mac already has a system, so this step is not for a Mac.</p>
+      <a class="download" href="https://linuxmint.com">linuxmint.com</a>
+    </article>
+
+    <article class="plate" id="ollama">
+      <div class="step"><div class="num">2</div><h2>Ollama</h2></div>
+      <img src="assets/sovereign-ollama.jpg" alt="A parrot on a mantel above a hearth, with a laptop on the hearthstone." />
+      <p>This is the first app on a Mac, and the first app after Mint on a PC. It runs the models on this computer. This step does not send your notes anywhere.</p>
+      <a class="download" href="https://ollama.com/download">ollama.com/download</a>
+    </article>
+
+    <article class="plate" id="models">
+      <div class="step"><div class="num">3</div><h2>Three models</h2></div>
+      <img src="assets/sovereign-models.jpg" alt="Three jars on a shelf: a quill, an eye, and a compass, with a parrot beside them." />
+      <p>After Ollama is installed, pull these, in this order. They are free weights. You are not buying them from us.</p>
+      <div class="legend">
+        <p><span>Quill</span>Writing</p>
+        <p><span>Eye</span>Photos</p>
+        <p><span>Compass</span>Search</p>
+      </div>
+      <pre>ollama pull qwen3.6:27b
+ollama pull qwen3.8:27b
+ollama pull nomic-embed-text</pre>
+      <p>Use the writing model at temperature 0.3. Start Ollama with a 64K context. Its own default is too small.</p>
+      <pre>OLLAMA_CONTEXT_LENGTH=64000 ollama serve</pre>
+    </article>
+
+    <article class="plate" id="obsidian">
+      <div class="step"><div class="num">4</div><h2>Obsidian</h2></div>
+      <img src="assets/sovereign-notes.jpg" alt="An open notebook, a black stone, and a parrot standing on a closed box." />
+      <p>Download it after the models. Make a vault on this computer and keep the notes as markdown. Leave Sync off. The vault is yours. It is not the church archive.</p>
+      <a class="download" href="https://obsidian.md">obsidian.md</a>
+    </article>
+
+    <article class="plate" id="stay-home">
+      <h2>Notes stay home</h2>
+      <p>Do not download a copy of the house bot, and do not put these notes in anyone else's library. Telegram is how a member talks with the familiar. It is not one of the four downloads, and the familiar does not keep your vault.</p>
+    </article>
+
+    <footer>
+      Temple of Roots. The apps are free. This page is the teaching.
+    </footer>
+  </main>
+</body>
+</html>
