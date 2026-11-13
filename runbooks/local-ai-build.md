@@ -1,0 +1,97 @@
+# Local AI build
+
+The Exit & Build talk at [freedomfarmers.com/ai/build](https://freedomfarmers.com/ai/build/) splits a private AI into three layers: the machine, the software, and the knowledge. This is Aragamago on that same shape. Buy links and prices stay on that page. This file is how the bot uses the stack.
+
+Checked against that page on November 11, 2026.
+
+## Layer 1. The machine
+
+The graphics card's memory decides which models fit.
+
+| Role | Spec from the talk |
+|------|--------------------|
+| Full build | RTX 5090, 32 GB. That holds a 27B model, about 17 GB on disk and about 20 GB in use with a 64K context |
+| Smaller card | RTX 5060 Ti, 16 GB. The same 27B models still load, and part of the model spills into system memory, so answers are slower. An 8 GB card with the same name is too small |
+| Mac | Mac mini, M5 Pro, 64 GB. Shared memory holds the models. It does not run NVIDIA CUDA |
+
+Processor, 32 GB of DDR5-6000 memory, a 2 TB NVMe, motherboard, power supply, case, and cooler are on the talk page. Expect the full build around $9,000 to $10,000, most of it the graphics card. The cheaper routes on that page start near $2,000.
+
+Power, solar, and the EcoFlow backup are house equipment. This repo does not change GPU power limits.
+
+The Archipelago desktop is the foundation stone. The models run there first. Other devices join that same brain later, each as its own source. A device does not become a second archive, and its files do not land in a room by themselves. Memory, disk, and the graphics card are recorded only from a reading on that desktop. This cloud machine is not it.
+
+## Layer 2. The software
+
+All of this is free.
+
+| Piece | What Aragamago uses |
+|-------|---------------------|
+| Model runner | [Ollama](https://ollama.com) |
+| General model | `qwen3.6:27b` at temperature 0.3 and a 64K context |
+| Vision model | `qwen3.8:27b` |
+| Search model | `nomic-embed-text` |
+| Chief of staff | Aragamago. Telegram, Google tools, short chat memory, skills, and its own archive folder |
+| Separate room | Maxayauwi. RSS3, Farcaster, and the public site. Its files and credentials stay there |
+
+On the home machine:
+
+```bash
+sh tools/local_ai_up.sh
+```
+
+Then run the bot with:
+
+```bash
+OLLAMA_BASE_URL=http://127.0.0.1:11434 \
+AI_PROVIDER_ORDER=ollama,openrouter,gemini \
+ARAGAMAGO_ARCHIVE=$HOME/aragamago/archive \
+python agents/aragamago/bot.py
+```
+
+Start Ollama itself with `OLLAMA_CONTEXT_LENGTH=64000`. Its own default context is too small for a tool-using agent.
+
+Railway is unchanged. The default provider order is still OpenRouter, then OpenAI, then Gemini. Ollama runs only when `OLLAMA_BASE_URL` is set, and a photo uses the local vision model when `ollama` is first in `AI_PROVIDER_ORDER`.
+
+Hermes Agent is the framework named in the talk for memory, skills, tools, and schedules. Aragamago is the agent that already holds the Telegram token. Keep it that way. A second Hermes process on the same token causes Telegram 409s.
+
+## Where the rooms are going
+
+The talk's shape is the one that is working: private, one chief of staff, and other agents that do not share files or credentials. His names are not our names.
+
+| Room | Status | What it is |
+|------|--------|------------|
+| Aragamago | Active | Administrative cleric. Sacred library, tasks, calendar, Telegram. This is the bot being built |
+| Cursor | Development | Development AI for this repo. Separate from the cleric. The Telegram bot cannot open this room |
+| Maxayauwi | Hold | Publisher. Closed while RSS3 moves to Ethereum. Today he can cast text to Farcaster. A YouTube live check is announced there too. He does not upload video or post anywhere else |
+| Legal | Reserved | A later bot. No prompt, no files, no credentials yet |
+| John Bushe | Main | Baba's twin, and the main bot once his brain exists. Not built. One archaeologist inside the room: researcher, archivist, action, content, review. The researcher mines, digs, and scrapes Baba's notes, and scans business cards into the CRM book in this room. The archivist keeps five shelves, not one vault: action, ideas, content, projects, knowledge. Each record keeps source, date, project, and privacy. The knowledge shelf is not the hall of records. The CRM book is not a sixth shelf. Sources later: Gmail, Drive, ChatGPT exports, Apple notes, Obsidian, handwritten pages, and business cards |
+| Hall of Records | Reserved | Church library for elder knowledge. Records only. Not built |
+| Twins | Reserved | AI twins of important people, including elders. Apart from the hall of records. Not built |
+
+Hermes is the content studio inside John Bushe's room: discover, research, draft, verify. It is not a second Telegram bot. After Baba approves the exact text and the destination, the package for Max carries the text, media references, destination, scheduled time, and approval id. `rss3-comm-agent/publish_handoff.js` checks that package and turns it into the body Max's Farcaster route already accepts, `{ message }`. It does not post. Max returns a cast hash when Neynar has one. The current code has no public URL for that hash.
+
+n8n, Qdrant, and a SQLite receipt log are not in this repo. The cleric's long memory today is Pinecone. Obsidian and the NAS are sources and storage. The scheduler and the receipt file come later.
+
+Handwritten pages are photographed or scanned. The house vision model, `qwen3.8:27b`, reads the page onto John Bushe's knowledge shelf when that room is built. The paper stays where it is. A business card is scanned the same way, and the reading goes into `$ARAGAMAGO_ARCHIVE/john-bushe/crm/`. That book holds the person, organization, role, phone, email, scan date, project, and privacy. The card stays where it is. The cleric does not read either folder.
+
+The `jarvis/` page is a phone surface for the cleric. It is not a second agent and it does not poll Telegram.
+
+The local models are shared infrastructure on the house machine. Files and credentials stay in the room. The cleric can name another room. It cannot open that folder, speak as the twin, or edit the repo. Pointing `ARAGAMAGO_ROOM` at Cursor, or at a closed room, does not open it.
+
+The library can live on the NAS, one directory per room:
+
+```text
+$ARAGAMAGO_ARCHIVE/aragamago/
+$ARAGAMAGO_ARCHIVE/cursor/
+$ARAGAMAGO_ARCHIVE/maxayauwi/
+$ARAGAMAGO_ARCHIVE/legal/
+$ARAGAMAGO_ARCHIVE/john-bushe/
+$ARAGAMAGO_ARCHIVE/hall-of-records/
+$ARAGAMAGO_ARCHIVE/twins/
+```
+
+Aragamago searches and writes only `aragamago/`. A note that starts with "remember that" or "save this" goes in that room's `inbox/`, and still updates Pinecone when the index is up. Chat turns are not written into the archive. If the archive has no room folders yet, notes stay in a single `inbox/` as before.
+
+Skills live in `agents/aragamago/skills/`. A skill is included on a turn when the message contains one of its trigger words.
+
+`/health` adds a `local` object: whether Ollama is configured, the three model names, whether an archive folder is set, and the active room id. It does not print the folder path.
