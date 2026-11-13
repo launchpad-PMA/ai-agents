@@ -3,6 +3,7 @@ import unittest
 from urllib.request import urlopen
 
 from agents.aragamago.health_server import health_payload, resolve_port, start_health_server
+from agents.aragamago.talk_page import AGENT_ID, TALK_PATH
 
 
 class HealthTests(unittest.TestCase):
@@ -30,6 +31,12 @@ class HealthTests(unittest.TestCase):
                 self.assertEqual(response.status, 200)
             self.assertTrue(body["ok"])
             self.assertEqual(body["service"], "aragamago")
+            with urlopen(f"http://127.0.0.1:{port}{TALK_PATH}", timeout=3) as talk:
+                page = talk.read().decode("utf-8")
+                self.assertEqual(talk.status, 200)
+                self.assertIn("text/html", talk.headers.get("Content-Type", ""))
+            self.assertIn(AGENT_ID, page)
+            self.assertIn("elevenlabs-convai", page)
         finally:
             server.shutdown()
             server.server_close()

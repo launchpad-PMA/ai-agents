@@ -4,3 +4,4 @@ secrets.env
 *.secrets.env
 .env
 __pycache__/
+baba_system/library/
